@@ -1,0 +1,431 @@
+{
+  "navigation": {
+    "home": "Home",
+    "document": "Document",
+    "usage": "API Usage",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "language": "Language",
+    "current": "Current"
+  },
+  "userMenu": {
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "billing": "Billing",
+    "logout": "Logout"
+  },
+  "pricingSection": {
+    "title": "Choose Your Plan",
+    "nonlogin": "Please log in to subscribe",
+    "subtitle": "Flexible pricing plans for developers with different needs, from personal learning to team collaboration, there's always one that suits you",
+    "featuredBadge": "Most Popular",
+    "cta": "Get Started",
+    "ctaFeatured": "Start Now",
+    "mostPopular": "Most Popular",
+    "includesQuota": "Includes quota",
+    "includesRequests": "Monthly requests",
+    "requests": "requests",
+    "month": "month",
+    "quarter": "quarter",
+    "year": "year",
+    "allPlansInclude": "All plans include:",
+    "securePayment": "Secure payment",
+    "instantAccess": "Instant access",
+    "cancelAnytime": "Cancel anytime",
+    "loadError": "Failed to load pricing plans: {{error}}",
+    "retry": "Retry",
+    "noPlansTitle": "No Plans Available",
+    "noPlansDescription": "Please check back later or contact support.",
+    "features": "Features",
+    "claudeModel": "Claude Sonnet 4.5 model",
+    "apiKeys": "{{count}} individual API keys",
+    "tokensOff": "{{percent}}% tokens off",
+    "allModels": "All AI models",
+    "prioritySupport": "Priority support",
+    "apiAccess": "API access",
+    "billing": {
+      "monthly": "Monthly",
+      "quarterly": "Quarterly",
+      "yearly": "Yearly",
+      "quarterlyDiscount": "15% OFF",
+      "yearlyDiscount": "30% OFF"
+    }
+  },
+  "pricingModal": {
+    "upgrade": "Upgrade",
+    "title": "Upgrade your account"
+  },
+  "hero": {
+    "title": "Coding AI In Your IDE",
+    "subtitle": "Experience the future of software development with AI-powered coding assistance. Write better code faster, debug intelligently, and transform complex projects into manageable tasks. Your development workflow, supercharged.",
+    "cta": "Get Started",
+    "learnMore": "Learn More",
+    "readDoc": "Read Document",
+    "installNodeJs": "Install",
+    "nodeJsLinkText": "Node.js 18+",
+    "thenRun": "then run"
+  },
+  "productFeatures": {
+    "title": "What is Claude IDE",
+    "description": "Claude IDE is a powerful AI coding assistant embedded directly in your terminal and VS Code, bringing AI-assisted development right to your fingertips.",
+    "features": {
+      "intelligentUnderstanding": {
+        "title": "Intelligent Code Understanding",
+        "description": "Understands your entire codebase instead of isolated snippets, makes coordinated changes across files, and offers suggestions that truly fit your project."
+      },
+      "worksWhereYouWork": {
+        "title": "Works Where You Work",
+        "description": "Lives right inside your terminal and IDE with no context switching, deeply integrated with VS Code and JetBrains."
+      },
+      "seamlessIntegration": {
+        "title": "Seamless Integration",
+        "description": "Competitive pricing that makes advanced AI coding assistance accessible to more developers without worrying about high costs."
+      }
+    }
+  },
+  "useCases": {
+    "title": "What Could You Do With Claude IDE?",
+    "codeOnboarding": {
+      "title": "Quick Code Familiarization",
+      "description": "Claude Code analyzes and explains complete codebases in seconds. Through intelligent search, it automatically grasps project architecture and dependencies without requiring manual context file selection."
+    },
+    "issueToPR": {
+      "title": "From Issues to PRs",
+      "description": "Say goodbye to constant tool switching. Claude Code deeply integrates with GitHub, GitLab, and command-line tools to manage the complete workflow—reading issues, writing code, executing tests, and submitting PRs—all within your terminal."
+    },
+    "powerfulEdits": {
+      "title": "Execute Powerful Edits",
+      "description": "With deep understanding of your codebase and dependencies, Claude Code performs powerful multi-file edits that ensure accuracy and functionality."
+    }
+  },
+  "testimonials": {
+    "title": "What Developers Are Saying",
+    "items": [
+      {
+        "name": "Alice, Frontend Engineer",
+        "feedback": "Claude IDE helps me onboard new projects quickly by mapping out the entire codebase in seconds.",
+        "avatar": "/user_1.jpg"
+      },
+      {
+        "name": "Ben, Backend Developer",
+        "feedback": "I love that it runs right inside my terminal and VS Code—no more constant context switching.",
+        "avatar": "/user_2.jpg"
+      },
+      {
+        "name": "Chen, Full-Stack Engineer",
+        "feedback": "The multi-file edits are spot-on and save me from a ton of manual refactoring work.",
+        "avatar": "/user_3.jpg"
+      },
+      {
+        "name": "Diana, DevOps Engineer",
+        "feedback": "Integration with GitHub means I can go from Issue to PR entirely from my terminal. Super smooth workflow!",
+        "avatar": "/user_4.jpg"
+      },
+      {
+        "name": "Eric, Mobile Developer",
+        "feedback": "Claude IDE’s suggestions match my project’s style—it feels like working with another experienced teammate.",
+        "avatar": "/user_5.jpg"
+      }
+    ]
+  },
+  "plans": {
+    "lite": {
+      "name": "Lite",
+      "price": 9.9,
+      "quota_tokens": 10000000,
+      "description": "For students and hobbyists. Entry-level access with ~10M tokens per month."
+    },
+    "pro": {
+      "name": "Pro",
+      "price": 39,
+      "quota_tokens": 50000000,
+      "description": "Best value for individual developers. ~50M tokens per month for daily coding tasks."
+    },
+    "team": {
+      "name": "Team",
+      "price": 99,
+      "quota_tokens": 200000000,
+      "description": "For startups and small teams. ~200M tokens per month with high cost efficiency."
+    }
+  },
+  "footer": {
+    "description": "AI-powered coding assistant that transforms your development workflow. Write better code faster with intelligent suggestions and seamless IDE integration.",
+    "product": {
+      "title": "Product",
+      "features": "Features",
+      "pricing": "Pricing",
+      "documentation": "Documentation",
+      "usage": "API usage"
+    },
+    "wealsobuilt": {
+      "title": "We also built",
+      "cs61b": "CS open courses"
+    },
+    "copyright": "Claude IDE",
+    "allRightsReserved": "All rights reserved",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about Claude IDE and get started with AI-powered coding assistance.",
+    "moreQuestions": "Still have questions?",
+    "contactSupport": "Contact our support team",
+    "items": [
+      {
+        "question": "How to use claude ide?",
+        "answer": "After installing Node.js and the official Claude Code plugin, simply configure the API key and API base URL in the terminal. The setup takes only a minute. We also provide a self-testing interface, allowing you to test the connection before subscribing. We offer a wide range of subscription plans with generous monthly service quotas to meet various needs."
+      },
+      {
+        "question": "What model does claude ide use?",
+        "answer": "claude ide is built on top of Claude Opus 4.1 model."
+      },
+      {
+        "question": "What is this model suitable for?",
+        "answer": "Claude-IDE is an efficient intelligent development and automation tool that integrates seamlessly with your existing IDE and development tools, without requiring any changes to your workflow. It supports multiple programming languages and helps developers quickly generate, debug, and optimize code. Additionally, Claude-IDE can collaborate with common command-line tools (like Git) and MCP servers (such as GitHub), extending its capabilities and making your development process even more efficient."
+      },
+      {
+        "question": "What if I don't use up my subscription quota?",
+        "answer": "If you don't use up your quota, you can share it with friends or team members. We support creating multiple API keys under one account, and you can set individual quotas and expiration times for each API key. Lite members can create up to 3 API keys, Pro members can create up to 10, and Team members can create up to 50 API keys."
+      },
+      {
+        "question": "Which OS and programming languages are supported?",
+        "answer": "It supports Windows/Mac/Linux and all common languages, including Python, JavaScript/TypeScript, Java, C++, Go, Rust, and more."
+      },
+      {
+        "question": "Does it support cache read?",
+        "answer": "Yes, cache read is supported. When calculating the consumed tokens, input tokens from cache read will be multiplied by a discount factor. In addition, different membership levels enjoy different token consumption discounts: Pro members get a 10% reduction, while Team members get a 15% reduction."
+      }
+    ]
+  },
+  "language": {
+    "current": "Current"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "description": "Monitor and manage your application statistics",
+    "overview": "Overview",
+    "users": {
+      "title": "Users",
+      "total": "Total Users",
+      "growth": "Growth"
+    },
+    "revenue": {
+      "title": "Revenue",
+      "total": "Total Revenue",
+      "monthly": "Monthly Revenue"
+    },
+    "usage": {
+      "title": "Usage",
+      "totalTokens": "Total Tokens",
+      "activeUsers": "Active Users"
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "active": "Active",
+      "total": "Total",
+      "conversionRate": "Conversion Rate"
+    },
+    "loading": "Loading...",
+    "error": "Failed to load statistics",
+    "accessDenied": "Access denied. Admin privileges required."
+  },
+  "usage": {
+    "title": "API Key Usage",
+    "description": "Enter your API key to check its usage information and details",
+    "apiKeyLabel": "API Key",
+    "apiKeyPlaceholder": "Enter your API key...",
+    "checkUsage": "Check Usage",
+    "checking": "Checking...",
+    "apiKeyRequired": "API key is required",
+    "invalidApiKey": "Invalid API key",
+    "checkError": "Failed to check API key usage",
+    "apiKeyInfo": {
+      "title": "API Key Information",
+      "name": "Key Name",
+      "status": "Status",
+      "requestLimit": "Request Limit",
+      "tokensUsed": "Tokens Used",
+      "remainingQuota": "Remaining Quota",
+      "createdAt": "Created At",
+      "lastUsedAt": "Last Used At",
+      "expiredAt": "Expires At",
+      "active": "Active",
+      "expired": "Expired",
+      "expiring": "Expiring Soon",
+      "noLimit": "No Limit",
+      "neverUsed": "Never Used",
+      "noExpiration": "No Expiration",
+      "unlimited": "Unlimited"
+    },
+    "usageDetails": {
+      "title": "Usage Details",
+      "currentMonth": "Current Month Usage",
+      "quotaUsage": "Quota Usage",
+      "noUsageData": "No usage data available"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "apiKeys": "API Keys",
+    "billing": "Subscription",
+    "profile": "Profile",
+    "settings": "Settings",
+    "navigation": "Navigation",
+    "utcNotice": "All dates and times are UTC-based, and data may be delayed up to 5 minutes.",
+    "monthlyQuota": "Monthly Quota",
+    "currentUsage": "Current Usage",
+    "ofQuota": "of quota",
+    "upgradePlan": "Upgrade Plan",
+    "dailyUsage": "Daily Usage",
+    "averageDailyTokens": "Average daily tokens",
+    "month": "Month",
+    "dailyTokenUsage": "Daily Token Usage"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Manage your API keys and monitor your token usage",
+    "noUsageData": "No usage data available for selected month",
+    "welcome": {
+      "title": "Welcome to your dashboard! 🎉",
+      "message": "Your account has been set up successfully. Start exploring our features!"
+    },
+    "tokenStats": {
+      "total": "Total Tokens",
+      "totalDescription": "Your monthly token allocation",
+      "used": "Tokens Used",
+      "usedDescription": "Tokens consumed this month",
+      "remaining": "Tokens Remaining",
+      "remainingDescription": "Tokens available for use"
+    },
+    "usage": {
+      "title": "Token Usage",
+      "description": "Monitor your token consumption throughout the billing cycle",
+      "currentUsage": "Current Usage",
+      "used": "used",
+      "total": "total"
+    },
+    "apiKeys": {
+      "title": "API Keys",
+      "description": "Manage your API keys for accessing Claude IDE services",
+      "create": "Create API Key",
+      "createTitle": "Create New API Key",
+      "createDescription": "Generate a new API key for your applications",
+      "nameLabel": "Key Name",
+      "namePlaceholder": "Enter a descriptive name for this key",
+      "cancel": "Cancel",
+      "created": "Created",
+      "lastUsed": "Last used",
+      "copied": "Copied!",
+      "noApiKeys": "No API Keys Yet",
+      "noApiKeysDescription": "Create your first API key to start using our services",
+      "planLimitError": "{{plan}} members can create up to {{limit}} API keys",
+      "creating": "Creating new API key",
+      "createError": "Failed to create API key",
+      "deleting": "Deleting",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete API Key",
+      "deleteConfirmMessage": "Are you sure you want to delete the API key '{{name}}'? This action cannot be undone.",
+      "deleteConfirmWarning": "Warning: All applications using this API key will lose access immediately.",
+      "deleteError": "Failed to delete API key",
+      "totalApiKeys": "Total API Keys",
+      "ofPlanLimitPrefix": "of ",
+      "ofPlanLimitSuffix": " allowed",
+      "noPlanLimit": "No plan limit set",
+      "apiKeysQuotaUsed": "API Keys Quota Used",
+      "ofTotalPrefix": "of ",
+      "ofTotalSuffix": " total",
+      "noKeysCreated": "No keys created",
+      "yourMonthlyQuota": "Your Monthly Quota",
+      "basedOnSubscription": "Based on your subscription plan",
+      "monthlyRequestLimit": "Monthly Request Limit (tokens)",
+      "noLimit": "No Limit",
+      "unlimitedQuota": "Unlimited Quota",
+      "unlimitedAccess": "Unlimited Access",
+      "quotaDescription": "Set the monthly token limit for this API key",
+      "active": "Active",
+      "expired": "Expired",
+      "expiring": "Expiring Soon",
+      "expirationDate": "Expiration Date",
+      "expirationDateOptional": "Expiration Date (Optional)",
+      "expirationDescription": "Leave empty for no expiration date. API keys will expire automatically at 00:00:00 of the selected date.",
+      "noExpire": "No Expiration",
+      "oneMonth": "1 Month",
+      "threeMonths": "3 Months",
+      "sixMonths": "6 Months (Half Year)",
+      "oneYear": "1 Year",
+      "periodDescription": "Choose when the API key should expire. Keys will expire at 00:00:00 on the selected date.",
+      "editTitle": "Edit API Key",
+      "editDescription": "Update your API key settings",
+      "save": "Save Changes",
+      "updating": "Updating...",
+      "updateError": "Failed to update API key"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your profile information",
+      "noSubscription": "Please subscribe to access your profile.",
+      "basicInformation": "Basic Information",
+      "accountDetails": "Account Details",
+      "preferences": "Preferences",
+      "name": "Name",
+      "email": "Email Address",
+      "nickname": "Nickname",
+      "emailVerified": "Email Verified",
+      "verified": "Verified",
+      "notVerified": "Not Verified",
+      "userId": "User ID",
+      "lastUpdated": "Last Updated",
+      "subscriptionType": "Subscription Type",
+      "subscriptionExpireDate": "Subscription Expire Date",
+      "requestLimit": "Request Limit",
+      "language": "Language",
+      "requestRefund": "Request Refund",
+      "refundConfirm": "Are you sure you want to request a refund? We'll reply your email within 24-48 hours.",
+      "openEmailClient": "Open Email Client",
+      "cancel": "Cancel",
+      "notProvided": "Not provided"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for might have been removed or is temporarily unavailable.",
+    "backToHome": "Back to Home"
+  },
+  "tutorial": {
+    "title": "Getting Started with Our Service",
+    "subtitle": "Follow these 5 simple steps to start using our AI-powered development tools",
+    "steps": {
+      "title": "Setup Steps"
+    },
+    "step1": {
+      "title": "Quick Start Guide",
+      "description": "Install Node.js 18.0.0 or higher and Claude Code CLI tool globally. Get up and running in just a few minutes.\n\nPrerequisites:\n• Node.js - Install Node.js version 18.0.0 or higher\n  node --version (v18.0.0 or higher)\n• Claude Code - Install Claude Code CLI tool globally\n  npm install -g @anthropic-ai/claude-code"
+    },
+    "step2": {
+      "title": "Test with API Key",
+      "description": "Use our test API key to verify everything works correctly and learn how to make your first API call"
+    },
+    "step3": {
+      "title": "Subscribe to a Plan",
+      "description": "Choose the subscription plan that best fits your needs and complete the payment process to unlock full features"
+    },
+    "step4": {
+      "title": "Create Your API",
+      "description": "Generate your API keys and learn how to integrate our services into your development workflow"
+    },
+    "step5": {
+      "title": "Start Building",
+      "description": "Begin using our AI tools to accelerate your development process and unlock new possibilities"
+    },
+    "help": {
+      "title": "Need Help?",
+      "description": "If you encounter any issues or have questions, our support team is here to help you succeed",
+      "documentation": "Documentation",
+      "community": "Community Forum"
+    },
+    "markAllComplete": "Mark All as Complete"
+  }
+}
