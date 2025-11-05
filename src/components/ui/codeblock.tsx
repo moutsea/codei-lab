@@ -16,9 +16,8 @@ export default async function CodeBlock({
     return (
         <div className="relative rounded-xl border border-white/10 bg-[#0f1115] p-3 text-sm shadow-md">
             {/* 可滚动 */}
-            <div className="[&_*]:!font-mono [&_*]:!break-words whitespace-pre-wrap break-all min-w-0">
+            <div className="[&_*]:!font-mono [&_*]:!break-words whitespace-pre-wrap break-all min-w-0 ml-8">
                 <div dangerouslySetInnerHTML={{ __html: cleanHtml }} />
-                {/* <p className='text-white'>test doc</p> */}
             </div>
 
             <CopyButton text={code} />

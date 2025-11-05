@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateBillingLink } from '@/lib/stripe';
-import { getStripeCustomerIdByAuth0Id } from '@/lib/services/user_service'
+import { getStripeCustomerIdByAuth0Id, getUserDetailByAuth0IdWithCache } from '@/lib/services/user_service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,16 +16,21 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      stripeCustomerId = await getStripeCustomerIdByAuth0Id(auth0UserId);
+      const [fetchedStripeCustomerId, fetchedUserDetail] = await Promise.all([
+        getStripeCustomerIdByAuth0Id(auth0UserId),
+        getUserDetailByAuth0IdWithCache(auth0UserId),
+      ]);
 
-      if (!stripeCustomerId) {
-        return NextResponse.json(
-          { error: 'Missing stripeCustomerId' },
-          { status: 400 }
-        );
+      if (!fetchedStripeCustomerId || !fetchedUserDetail) {
+        return NextResponse.json({ error: "Missing stripeCustomerId" }, { status: 400 });
       }
-    }
 
+      if (!fetchedUserDetail.active) {
+        return NextResponse.json({ billingUrl: "/#pricing" });
+      }
+
+      stripeCustomerId = fetchedStripeCustomerId;
+    }
     const billingUrl = await generateBillingLink(stripeCustomerId);
 
     if (!billingUrl) {

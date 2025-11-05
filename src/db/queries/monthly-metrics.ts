@@ -56,13 +56,15 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
       .groupBy(sql`TO_CHAR(${payments.createdAt}, 'YYYY-MM')`, payments.currency);
 
     // Get monthly token usage
+    const firstDayOfMonth = `${startDate.toISOString().slice(0, 7)}-1`;
+
     const tokensQuery = db()
       .select({
-        month: monthlyApiUsage.month,
+        month: sql<string>`SUBSTRING(${monthlyApiUsage.month}, 1, 7)`.as('month'),
         total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)`
       })
       .from(monthlyApiUsage)
-      .where(sql`${monthlyApiUsage.month} >= ${startDate.toISOString().slice(0, 7)}`)
+      .where(gte(monthlyApiUsage.month, firstDayOfMonth))
       .groupBy(monthlyApiUsage.month);
 
     // Get monthly subscription counts
@@ -82,17 +84,6 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
       tokensQuery,
       subscriptionsQuery
     ]);
-
-    // console.log('Query results:', {
-    //   usersResult: usersResult.length,
-    //   usersData: usersResult,
-    //   revenueResult: revenueResult.length,
-    //   revenueData: revenueResult,
-    //   tokensResult: tokensResult.length,
-    //   tokensData: tokensResult,
-    //   subscriptionsResult: subscriptionsResult.length,
-    //   subscriptionsData: subscriptionsResult
-    // });
 
     // Helper function to convert month string to Date for sorting
     const monthToDate = (monthStr: string) => new Date(monthStr + '-01');
@@ -153,12 +144,6 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
 
     // Sort by month and return
     const sortedResult = result.sort((a, b) => monthToDate(a.month).getTime() - monthToDate(b.month).getTime());
-
-    // console.log('Final monthly metrics result:', {
-    //   totalMonths: sortedResult.length,
-    //   months: sortedResult.map(m => m.month),
-    //   data: sortedResult
-    // });
 
     return sortedResult;
   } catch (error) {

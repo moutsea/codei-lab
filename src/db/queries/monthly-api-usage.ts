@@ -275,12 +275,12 @@ export async function getTotalTokensUsed(): Promise<number> {
  */
 export async function getTokensUsedThisMonth(): Promise<number> {
   const now = new Date();
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-1`;
 
   const [result] = await db()
     .select({ total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)` })
     .from(monthlyApiUsage)
-    .where(eq(monthlyApiUsage.month, currentMonth));
+    .where(gte(monthlyApiUsage.month, currentMonth));
 
   return Number(result.total) || 0;
 }

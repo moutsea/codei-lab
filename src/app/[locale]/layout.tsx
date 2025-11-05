@@ -3,6 +3,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import "../globals.css";
 import { locales } from "@/i18n/config";
+import { ThemeProvider } from "@/contexts/theme-context";
 
 import type { Metadata } from 'next'
 import {
@@ -109,10 +110,12 @@ export default async function LocaleLayout({
 
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <main>
-        {children}
-      </main>
-    </NextIntlClientProvider>
+    <ThemeProvider>
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <main>
+          {children}
+        </main>
+      </NextIntlClientProvider>
+    </ThemeProvider>
   );
 }

@@ -99,7 +99,7 @@ export function AdminDashboardClient() {
       });
 
       if (!response.ok) {
-        console.log('Failed to fetch monthly metrics:', response.status);
+        window.location.assign('/');
         return;
       }
 
@@ -112,7 +112,8 @@ export function AdminDashboardClient() {
         setLoading(false);
       }
     } catch (error) {
-      console.error('Error fetching monthly metrics:', error);
+      window.location.assign('/');
+      return;
     }
   }, []);
 
@@ -155,7 +156,6 @@ export function AdminDashboardClient() {
     return firstCurrency ? firstCurrency.amount : 0;
   };
 
-  // Transform monthly metrics to include all revenue data and ensure current month is included
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
   const hasCurrentMonth = monthlyMetrics.some(metric => metric.month === currentMonth);
 
