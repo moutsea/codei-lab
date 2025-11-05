@@ -10,7 +10,7 @@ const InstallNodeDiv = () => {
     return (
         <div>
             <p>
-                {t('hero.installNodeJs')}{' '} <Link href="https://nodejs.org/" target="_blank" className="text-slate-500 underline">Node.js 18+</Link>, {t('hero.thenRun')}:
+                {t('hero.installNodeJs')}{' '} <Link href="https://nodejs.org/" target="_blank" className="text-muted-foreground underline">Node.js 18+</Link>, {t('hero.thenRun')}:
             </p>
         </div>
     );
@@ -22,20 +22,25 @@ export default function HeroSection() {
     const codeSnippet = `npm install -g @anthropic-ai/claude-code`;
 
     return (
-        <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto text-center">
-                <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
-                    {t("hero.title")}
-                </h1>
+        <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 section-themed">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                {/* Left Column - Content */}
+                <div className="text-center md:text-left">
+                    <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
+                        {t("hero.title")}
+                    </h1>
 
-                <div className="w-full items-center">
-                    <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed mt-12">
+                    <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl leading-relaxed">
                         {t("hero.subtitle")}
                     </p>
 
-                    <div className="flex justify-center gap-6">
-
-                        <Button variant="black" size="lg" className="text-lg px-8 py-4 h-12 rounded-2xl mr-6" asChild>
+                    <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mb-12">
+                        <Button
+                            variant="black"
+                            size="lg"
+                            className="text-lg px-8 py-4 h-12 rounded-2xl transition-colors duration-200 button-themed"
+                            asChild
+                        >
                             <Link href={`/${locale}/docs`}>
                                 {t("hero.cta")} <Zap />
                             </Link>
@@ -44,7 +49,7 @@ export default function HeroSection() {
                         <Button
                             variant="link"
                             size="lg"
-                            className="text-lg px-8 py-4 h-12 rounded-2xl mr-6" asChild
+                            className="text-lg px-8 py-4 h-12 rounded-2xl text-foreground hover:text-muted-foreground" asChild
                         >
                             <Link href={`/${locale}/#pricing`}>
                                 {t('pricingModal.upgrade')} <ArrowRight />
@@ -53,56 +58,30 @@ export default function HeroSection() {
 
                     </div>
 
-                    <div className="flex sm:flex-row gap-4 justify-center items-center mb-24 mt-6">
-                        <div className='flex justify-start mt-6'>
-                            <Image
-                                className='h-12 w-12 my-auto object-cover rounded-full ring-0 ring-gray-500'
-                                src="/user_1.jpg"
-                                alt="Happy user 1"
-                                width={48}
-                                height={48}
-                            />
-                            <Image
-                                className='h-12 w-12 my-auto object-cover rounded-full ring-0 ring-gray-500 -ml-2'
-                                src="/user_2.jpg"
-                                alt="Happy user 2"
-                                width={48}
-                                height={48}
-                            />
-                            <Image
-                                className='h-12 w-12 my-auto object-cover rounded-full ring-0 ring-gray-500 -ml-2'
-                                src="/user_3.jpg"
-                                alt="Happy user 3"
-                                width={48}
-                                height={48}
-                            />
-                            <Image
-                                className='h-12 w-12 my-auto object-cover rounded-full ring-0 ring-gray-500 -ml-2'
-                                src="/user_4.jpg"
-                                alt="Happy user 4"
-                                width={48}
-                                height={48}
-                            />
-                            <Image
-                                className='h-12 w-12 my-auto object-cover rounded-full ring-0 ring-gray-500 -ml-2'
-                                src="/user_5.jpg"
-                                alt="Happy user 5"
-                                width={48}
-                                height={48}
-                            />
-
-                            <p className='ml-4 my-auto text-sm text-gray-600'>Loved by 1,000+ happy users</p>
+                    <div className="mt-8">
+                        {InstallNodeDiv()}
+                        <div suppressHydrationWarning className="w-full max-w-2xl mt-4 px-4 sm:px-0">
+                            <div className="overflow-x-auto">
+                                <CodeBlock
+                                    code={codeSnippet}
+                                    lang="bash"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {InstallNodeDiv()}
-                <div suppressHydrationWarning className="w-full max-w-2xl mx-auto mt-4 px-4 sm:px-0">
-                    <div className="overflow-x-auto">
-                        <CodeBlock code={codeSnippet} lang="bash" theme="github-dark" />
-                    </div>
+                {/* Right Column - Hero Image */}
+                <div className="flex items-center justify-center">
+                    <Image
+                        src="/hero.png"
+                        alt="Hero illustration showing Claude Code features and capabilities"
+                        width={600}
+                        height={400}
+                        className="w-full h-auto max-w-lg md:max-w-xl object-contain"
+                        priority
+                    />
                 </div>
-
             </div>
         </div>
     );

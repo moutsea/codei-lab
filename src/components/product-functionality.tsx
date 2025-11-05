@@ -21,8 +21,8 @@ export default async function ProductFunctionality() {
   ];
 
   return (
-    <section className="py-20 bg-[#faf9f5]">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+      <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left: Content */}
           <div className="order-2 lg:order-1 space-y-8">

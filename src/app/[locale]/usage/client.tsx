@@ -36,7 +36,7 @@ export function UsagePageClient() {
         isExpiring: false,
         status: 'active',
         text: t('apiKeyInfo.active'),
-        color: 'text-green-600 bg-green-50 border-green-200',
+        color: 'text-green-700 bg-green-100 border-green-300 dark:text-green-300 dark:bg-green-900/30 dark:border-green-700',
         icon: CheckCircle
       };
     }
@@ -55,7 +55,7 @@ export function UsagePageClient() {
         isExpiring: false,
         status: 'expired',
         text: t('apiKeyInfo.expired'),
-        color: 'text-red-600 bg-red-50 border-red-200',
+        color: 'text-red-700 bg-red-100 border-red-300 dark:text-red-300 dark:bg-red-900/30 dark:border-red-700',
         icon: XCircle
       };
     }
@@ -66,7 +66,7 @@ export function UsagePageClient() {
         isExpiring: true,
         status: 'expiring',
         text: t('apiKeyInfo.expiring'),
-        color: 'text-orange-600 bg-orange-50 border-orange-200',
+        color: 'text-orange-700 bg-orange-100 border-orange-300 dark:text-orange-300 dark:bg-orange-900/30 dark:border-orange-700',
         icon: AlertCircle
       };
     }
@@ -76,7 +76,7 @@ export function UsagePageClient() {
       isExpiring: false,
       status: 'active',
       text: t('apiKeyInfo.active'),
-      color: 'text-green-600 bg-green-50 border-green-200',
+      color: 'text-green-700 bg-green-100 border-green-300 dark:text-green-300 dark:bg-green-900/30 dark:border-green-700',
       icon: CheckCircle
     };
   };
@@ -136,17 +136,17 @@ export function UsagePageClient() {
 
   const getQuotaColor = () => {
     const percentage = getQuotaUsagePercentage();
-    if (percentage >= 100) return 'bg-red-500';
-    if (percentage >= 80) return 'bg-orange-500';
-    return 'bg-green-500';
+    if (percentage >= 100) return 'bg-destructive';
+    if (percentage >= 80) return 'bg-orange-600';
+    return 'bg-green-600';
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('title')}</h1>
-          <p className="text-lg text-gray-600">{t('description')}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-4">{t('title')}</h1>
+          <p className="text-lg text-muted-foreground">{t('description')}</p>
         </div>
 
         {/* API Key Input Section */}
@@ -195,8 +195,8 @@ export function UsagePageClient() {
             </div>
 
             {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                <p className="text-red-600 text-sm">{error}</p>
+              <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-md">
+                <p className="text-destructive text-sm">{error}</p>
               </div>
             )}
           </CardContent>
@@ -219,13 +219,13 @@ export function UsagePageClient() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.name')}</label>
-                      <p className="text-lg font-semibold text-gray-900">{apiKeyInfo.name}</p>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.name')}</label>
+                      <p className="text-lg font-semibold text-foreground">{apiKeyInfo.name}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyLabel')}</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyLabel')}</label>
                       <div className="flex items-center space-x-2 mt-1">
-                        <p className="font-mono text-sm bg-gray-100 px-3 py-1 rounded">
+                        <p className="font-mono text-sm bg-muted px-3 py-1 rounded">
                           {showApiKey ? apiKeyInfo.key : `${apiKeyInfo.key.slice(0, 8)}${'*'.repeat(24)}`}
                         </p>
                         <Button
@@ -245,36 +245,36 @@ export function UsagePageClient() {
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.createdAt')}</label>
-                      <p className="text-gray-900">{formatDate(apiKeyInfo.createdAt)}</p>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.createdAt')}</label>
+                      <p className="text-foreground">{formatDate(apiKeyInfo.createdAt)}</p>
                     </div>
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.requestLimit')}</label>
-                      <p className="text-gray-900">
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.requestLimit')}</label>
+                      <p className="text-foreground">
                         {apiKeyInfo.requestLimit === null ? t('apiKeyInfo.unlimited') : formatTokens(apiKeyInfo.requestLimit)}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.tokensUsed')}</label>
-                      <p className="text-gray-900">{formatTokens(apiKeyInfo.tokensUsed)}</p>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.tokensUsed')}</label>
+                      <p className="text-foreground">{formatTokens(apiKeyInfo.tokensUsed)}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.remainingQuota')}</label>
-                      <p className="text-gray-900">
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.remainingQuota')}</label>
+                      <p className="text-foreground">
                         {apiKeyInfo.remainingQuota === null ? t('apiKeyInfo.unlimited') : formatTokens(apiKeyInfo.remainingQuota)}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.lastUsedAt')}</label>
-                      <p className="text-gray-900">
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.lastUsedAt')}</label>
+                      <p className="text-foreground">
                         {apiKeyInfo.lastUsedAt ? formatDate(apiKeyInfo.lastUsedAt) : t('apiKeyInfo.neverUsed')}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-500">{t('apiKeyInfo.expiredAt')}</label>
-                      <p className="text-gray-900">
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.expiredAt')}</label>
+                      <p className="text-foreground">
                         {apiKeyInfo.expiredAt ? formatDate(apiKeyInfo.expiredAt) : t('apiKeyInfo.noExpiration')}
                       </p>
                     </div>
@@ -293,23 +293,23 @@ export function UsagePageClient() {
                 {apiKeyInfo.requestLimit ? (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-gray-700">{t('usageDetails.quotaUsage')}</span>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm font-medium text-foreground">{t('usageDetails.quotaUsage')}</span>
+                      <span className="text-sm text-muted-foreground">
                         {formatTokens(apiKeyInfo.tokensUsed)} / {formatTokens(apiKeyInfo.requestLimit)}
                       </span>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+                    <div className="w-full bg-muted rounded-full h-3">
                       <div
                         className={`h-3 rounded-full transition-all duration-300 ${getQuotaColor()}`}
                         style={{ width: `${getQuotaUsagePercentage()}%` }}
                       ></div>
                     </div>
-                    <div className="text-center text-sm text-gray-600">
+                    <div className="text-center text-sm text-muted-foreground">
                       {Math.round(getQuotaUsagePercentage())}% {t('usageDetails.quotaUsage')}
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-gray-500">
+                  <div className="text-center py-8 text-muted-foreground">
                     <p>{t('apiKeyInfo.unlimited')}</p>
                   </div>
                 )}

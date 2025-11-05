@@ -89,7 +89,7 @@ export default async function DocPage({ params }: PageProps) {
     const allDocuments = getAllMarkdownFiles(locale);
 
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="min-h-screen bg-background">
         <Header />
         <div className="min-h-screen">
           <DocsSidebarLayout
@@ -97,22 +97,22 @@ export default async function DocPage({ params }: PageProps) {
             currentCategory={category}
             currentSlug={slug}
           >
-            <div className="max-w-6xl">
+            <div className="max-w-6xl bg-card p-6 rounded-lg">
               {/* Breadcrumb Navigation */}
-              <nav className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-8">
-                <Link href="/" className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
+              <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
+                <Link href="/" className="flex items-center gap-1 hover:text-foreground">
                   <Home className="w-4 h-4" />
                   {t('home')}
                 </Link>
                 <ChevronRight className="w-4 h-4" />
-                <Link href="/docs" className="flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-300">
+                <Link href="/docs" className="flex items-center gap-1 hover:text-foreground">
                   <FileText className="w-4 h-4" />
                   {t('document')}
                 </Link>
                 <ChevronRight className="w-4 h-4" />
                 <span className="capitalize">{category.replace('-', ' ')}</span>
                 <ChevronRight className="w-4 h-4" />
-                <span className="text-gray-900 dark:text-gray-100">{title}</span>
+                <span className="text-foreground">{title}</span>
               </nav>
 
               {/* Document Content */}

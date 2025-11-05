@@ -27,7 +27,7 @@ export default function FAQClient({ faqData }: FAQClientProps) {
         <AccordionItem
           key={index}
           value={`item-${index}`}
-          className="bg-[#faf9f5] rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md"
+          className="bg-card rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md"
         >
           <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-foreground hover:no-underline hover:bg-background/50 transition-colors">
             {item.question}

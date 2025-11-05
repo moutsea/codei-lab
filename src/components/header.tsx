@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useUser } from "@auth0/nextjs-auth0";
 import UserMenu from "@/components/user-menu";
+import { StyleToggle } from "@/components/theme-toggle";
+import { useTheme } from "@/contexts/theme-context";
 
 interface NavigationItem {
   key: string;
@@ -28,6 +30,7 @@ export default function Header() {
   const t = useTranslations("navigation");
   const pathname = usePathname();
   const locale = useLocale();
+  const { theme } = useTheme();
 
   const handleClick = () => {
     const returnTo = window.location.pathname
@@ -65,10 +68,15 @@ export default function Header() {
     >
       <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
         {/* <span className="text-white font-bold text-lg">TL</span> */}
-        <Image src="/logo.png" width={40} height={40} alt="Claude-IDE Logo" />
+        <Image
+          src={theme === 'dark' ? "/logo_black.png" : "/logo.png"}
+          width={40}
+          height={40}
+          alt="Code I Lab Logo"
+        />
       </div>
       <span className="text-xl font-bold text-foreground">
-        Claude IDE
+        Code I Lab
       </span>
     </Link>
   );
@@ -99,7 +107,7 @@ export default function Header() {
   const { user, isLoading } = useUser();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-0 bg-[#faf9f5]/85 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-0 bg-background">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center">
@@ -107,39 +115,43 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center justify-end flex-1">
-          <nav className="mr-4">
+        <div className="hidden md:flex items-center justify-center flex-1">
+          <nav>
             <NavigationLinks />
           </nav>
-
-          {/* Right side actions */}
-          <div className="hidden md:flex items-center gap-4">
-            <LocaleToggle />
-          </div>
-
-          {
-            user ? (
-              <div className="ml-4">
-                <UserMenu />
-              </div>
-            ) : (
-              <Button variant="black" className="ml-2" disabled={isLoading} onClick={handleClick}>
-                {
-                  isLoading ? (
-                    <Loader2 className="h-5 w-5 text-white/80 animate-spin" style={{ strokeWidth: "3" }} />
-                  ) : (
-                    `Login`
-                  )
-                }
-              </Button>
-            )
-          }
         </div>
 
+        {/* Right side actions */}
+        <div className="hidden md:flex items-center gap-4">
+          <LocaleToggle />
+          <StyleToggle />
+          {user ? (
+            <div className="ml-2">
+              <UserMenu />
+            </div>
+          ) : (
+            <Button
+              variant="black"
+              className="ml-2 transition-colors duration-200 button-themed"
+              disabled={isLoading}
+              onClick={handleClick}
+            >
+              {isLoading ? (
+                <Loader2
+                  className="h-5 w-5 animate-spin spinner-themed"
+                  style={{ strokeWidth: "3" }}
+                />
+              ) : (
+                `Login`
+              )}
+            </Button>
+          )}
+        </div>
 
         {/* Mobile Navigation */}
         <div className="md:hidden flex items-center gap-2">
           <LocaleToggle />
+          <StyleToggle />
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -169,12 +181,15 @@ export default function Header() {
                     ) : (
                       <Button
                         variant="black"
-                        className="w-full"
+                        className="w-full transition-colors duration-200 button-themed"
                         disabled={isLoading}
                         onClick={handleClick}
                       >
                         {isLoading ? (
-                          <Loader2 className="h-5 w-5 text-white/80 animate-spin" style={{ strokeWidth: "3" }} />
+                          <Loader2
+                            className="h-5 w-5 animate-spin spinner-themed"
+                            style={{ strokeWidth: "3" }}
+                          />
                         ) : (
                           `Login`
                         )}

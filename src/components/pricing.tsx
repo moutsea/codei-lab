@@ -260,8 +260,8 @@ export default function Pricing() {
 
   if (userDataLoading || plansLoading) {
     return (
-      <section className="py-20 bg-[#faf9f5]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <Skeleton className="h-12 w-64 mx-auto mb-4" />
             <Skeleton className="h-6 w-96 mx-auto" />
@@ -292,8 +292,8 @@ export default function Pricing() {
 
   if (error) {
     return (
-      <section className="py-20 bg-[#faf9f5]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <Alert className="max-w-md mx-auto">
               <AlertDescription>
@@ -314,8 +314,8 @@ export default function Pricing() {
 
   if (plans.length === 0) {
     return (
-      <section className="py-20 bg-[#faf9f5]">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+        <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               {t('noPlansTitle')}
@@ -330,8 +330,8 @@ export default function Pricing() {
   }
 
   return (
-    <section className="py-20 bg-[#faf9f5]">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -396,7 +396,7 @@ export default function Pricing() {
                 key={plan.id}
                 className={`relative transition-all duration-300 hover:shadow-xl ${featured
                   ? 'ring-4 ring-primary/20 scale-105 bg-primary text-primary-foreground'
-                  : 'bg-[#faf9f5] border border-gray-200'
+                  : 'bg-card border border-border'
                   }`}
               >
                 {/* Featured Badge */}
@@ -438,14 +438,14 @@ export default function Pricing() {
 
                     {/* Discount Badge */}
                     {discount > 0 && (
-                      <div className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${featured ? 'bg-white text-slate-900' : 'bg-slate-900 text-white'}`}>
+                      <div className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${featured ? 'bg-background text-foreground' : 'bg-foreground text-background'}`}>
                         {discount}% OFF
                       </div>
                     )}
                   </div>
 
                   {/* Request Limit */}
-                  <div className={`text-center p-4 rounded-lg ${featured ? 'bg-primary-foreground/10' : 'bg-gray-100'}`}>
+                  <div className={`text-center p-4 rounded-lg ${featured ? 'bg-primary-foreground/10' : 'bg-muted'}`}>
                     <div className={`text-sm font-medium mb-1 ${featured ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                       {t('includesRequests')}
                     </div>

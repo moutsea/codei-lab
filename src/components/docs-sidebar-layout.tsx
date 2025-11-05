@@ -62,20 +62,20 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
     <Sidebar
       variant="inset"
       collapsible="offcanvas"
-      className="bg-[#fbfaf7] border-r border-gray-200 pl-8 pt-18"
+      className="bg-card border-r border-border pl-8 pt-18"
     >
-      <SidebarContent className="bg-[#fbfaf7]">
+      <SidebarContent className="bg-card">
         {Object.entries(groupedDocs).map(([category, docs]) => (
           <SidebarGroup key={category}>
-            <SidebarGroupLabel className="px-3 py-3 text-gray-700">
+            <SidebarGroupLabel className="px-3 py-3 text-foreground">
               <div className="flex items-center gap-2">
-                <FolderOpen className="w-4 h-4 text-amber-600" />
+                <FolderOpen className="w-4 h-4 text-primary" />
                 <span className="text-sm font-semibold">
                   {formatCategoryName(category)}
                 </span>
               </div>
             </SidebarGroupLabel>
-            <SidebarGroupContent className="bg-[#fbfaf7]">
+            <SidebarGroupContent className="bg-card">
               <SidebarMenu>
                 {docs.map((doc) => {
                   const isActive = currentCategory === doc.category && currentSlug === doc.slug;
@@ -85,7 +85,7 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
                         asChild
                         isActive={isActive}
                         className={cn(
-                          "hover:bg-gray-100 text-gray-600 data-[active=true]:bg-blue-50 data-[active=true]:text-blue-700 data-[active=true]:border-l-2 data-[active=true]:border-blue-500 rounded-none",
+                          "hover:bg-muted text-muted-foreground data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:border-l-2 data-[active=true]:border-primary rounded-none",
                           "my-1 mx-3 py-3 px-4 text-sm"
                         )}
                       >
@@ -94,8 +94,8 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
                           params: { category: doc.category, slug: doc.slug }
                         }}>
                           <FileText className={cn(
-                            "w-4 h-4 text-gray-500 ml-1",
-                            isActive && "text-blue-600"
+                            "w-4 h-4 text-muted-foreground ml-1",
+                            isActive && "text-primary"
                           )} />
                           <span className="truncate ml-2">{doc.title}</span>
                         </Link>

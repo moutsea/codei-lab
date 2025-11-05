@@ -133,40 +133,40 @@ function CodeBlockWithLineNumbers({ language, children }: CodeBlockWithLineNumbe
 export function MarkdownContent({ content, className }: MarkdownContentProps) {
   const renderers = {
     h1: ({ children }) => (
-      <h1 className="text-4xl font-bold mb-8 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-6">
+      <h1 className="text-4xl font-bold mb-8 text-foreground border-b border-border pb-6">
         {children}
       </h1>
     ),
     h2: ({ children }) => (
-      <h2 className="text-3xl font-semibold mb-6 pb-4 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pt-6 mt-8 first:border-t-0 first:pt-0">
+      <h2 className="text-3xl font-semibold mb-6 pb-4 text-foreground border-b border-border pt-6 mt-8 first:border-t-0 first:pt-0">
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="text-2xl font-semibold mb-4 text-gray-900 dark:text-gray-100 mt-6">{children}</h3>
+      <h3 className="text-2xl font-semibold mb-4 text-foreground mt-6">{children}</h3>
     ),
     h4: ({ children }) => (
-      <h4 className="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100 mt-4">{children}</h4>
+      <h4 className="text-xl font-semibold mb-3 text-foreground mt-4">{children}</h4>
     ),
     p: ({ children }) => (
-      <p className="mb-4 leading-7 text-gray-700 dark:text-gray-300 text-base">{children}</p>
+      <p className="mb-4 leading-7 text-foreground text-base">{children}</p>
     ),
     ul: ({ children }) => (
-      <ul className="mb-4 pl-8 list-disc space-y-2 text-gray-700 dark:text-gray-300">{children}</ul>
+      <ul className="mb-4 pl-8 list-disc space-y-2 text-foreground">{children}</ul>
     ),
     ol: ({ children }) => (
-      <ol className="mb-4 pl-8 list-decimal space-y-2 text-gray-700 dark:text-gray-300">{children}</ol>
+      <ol className="mb-4 pl-8 list-decimal space-y-2 text-foreground">{children}</ol>
     ),
     li: ({ children }) => <li className="leading-7 pl-1">{children}</li>,
     blockquote: ({ children }) => (
-      <blockquote className="mb-4 pl-6 ml-2 border-l-4 border-blue-500 italic text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 py-3 rounded-r-lg">
+      <blockquote className="mb-4 pl-6 ml-2 border-l-4 border-primary italic text-muted-foreground bg-primary/10 py-3 rounded-r-lg">
         {children}
       </blockquote>
     ),
     a: ({ href, children }) => (
       <a
         href={href}
-        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 underline transition-colors duration-200"
+        className="text-primary hover:text-primary/80 underline transition-colors duration-200"
         target="_blank"
         rel="noopener noreferrer"
       >
@@ -174,24 +174,24 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
       </a>
     ),
     strong: ({ children }) => (
-      <strong className="font-bold text-gray-900 dark:text-gray-100">{children}</strong>
+      <strong className="font-bold text-foreground">{children}</strong>
     ),
-    em: ({ children }) => <em className="italic text-gray-900 dark:text-gray-100">{children}</em>,
-    hr: () => <hr className="my-8 border-gray-200 dark:border-gray-700" />,
+    em: ({ children }) => <em className="italic text-foreground">{children}</em>,
+    hr: () => <hr className="my-8 border-border" />,
     table: ({ children }) => (
       <div className="mb-4 overflow-x-auto ml-2">
-        <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600">
+        <table className="min-w-full border-collapse border border-border">
           {children}
         </table>
       </div>
     ),
     th: ({ children }) => (
-      <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 bg-gray-50 dark:bg-gray-800 font-semibold text-left">
+      <th className="border border-border px-4 py-2 bg-muted font-semibold text-left">
         {children}
       </th>
     ),
     td: ({ children }) => (
-      <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">{children}</td>
+      <td className="border border-border px-4 py-2">{children}</td>
     ),
     // img: ({ src, alt, ...props }) => (
     //   <span className="my-6 flex justify-center">
@@ -229,7 +229,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
   } satisfies Components; // ← 关键：这里做类型校验+推断
 
   return (
-    <div className={`max-w-none space-y-6 text-gray-900 dark:text-gray-100 pl-4 pr-4 ${className}`}>
+    <div className={`max-w-none space-y-6 text-foreground pl-4 pr-4 ${className}`}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={renderers}>
         {content}
       </ReactMarkdown>

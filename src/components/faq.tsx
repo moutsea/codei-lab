@@ -13,8 +13,8 @@ export default async function FAQ() {
   const faqData: FAQItem[] = t.raw("faq.items") as FAQItem[];
 
   return (
-    <section className="py-20 bg-[#faf9f5]">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="flex justify-center mb-4">

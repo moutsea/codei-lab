@@ -76,10 +76,22 @@
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
   --sidebar-border: oklch(0.929 0.013 255.508);
   --sidebar-ring: oklch(0.704 0.04 256.788);
+
+  /* Button specific colors */
+  --button-primary-bg: oklch(0 0 0);
+  --button-primary-text: oklch(0.984 0.003 247.858);
+  --button-primary-hover: oklch(0.196 0.007 247.896);
+  --button-spinner: oklch(0.984 0.003 247.858 / 0.8);
+
+  /* Image rings */
+  --image-ring: oklch(0.929 0.013 255.508);
+
+  /* Section backgrounds */
+  --section-bg: oklch(1 0 0);
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
+  --background: #212121;
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
@@ -110,6 +122,18 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+
+  /* Button specific colors - dark mode */
+  --button-primary-bg: oklch(0.984 0.003 247.858);
+  --button-primary-text: oklch(0 0 0);
+  --button-primary-hover: oklch(0.902 0.013 255.508);
+  --button-spinner: oklch(0 0 0 / 0.8);
+
+  /* Image rings - dark mode */
+  --image-ring: oklch(0.549 0.029 265.755);
+
+  /* Section backgrounds - dark mode */
+  --section-bg: #212121;
 }
 
 @layer base {
@@ -118,5 +142,28 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .spinner-themed {
+    color: var(--button-spinner);
+  }
+
+  .button-themed {
+    background-color: var(--button-primary-bg);
+    color: var(--button-primary-text);
+  }
+
+  .button-themed:hover {
+    background-color: var(--button-primary-hover);
+  }
+
+  .image-ring-themed {
+    border-color: var(--image-ring);
+  }
+
+  .section-themed {
+    background-color: var(--section-bg);
   }
 }

@@ -65,8 +65,8 @@ export default function UserComments() {
   const handleMouseLeave = () => setIsAutoPlaying(true);
 
   return (
-    <section className="py-20 bg-[#faf9f5]" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
             {t("title")}
@@ -76,7 +76,7 @@ export default function UserComments() {
         {/* Testimonial Carousel */}
         <div className="max-w-4xl mx-auto relative">
           {/* Main Testimonial Display */}
-          <div className="relative bg-[#faf9f5] rounded-2xl shadow-lg p-8 lg:p-12">
+          <div className="relative bg-card rounded-2xl shadow-lg p-8 lg:p-12">
             {/* Quote Icon */}
             <div className="absolute top-6 left-6 text-primary/20">
               <Quote className="w-12 h-12 lg:w-16 lg:h-16" />

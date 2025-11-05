@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function UsagePage() {
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
       <div className="mt-16">
         <UsagePageClient />
