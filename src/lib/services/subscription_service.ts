@@ -2,7 +2,6 @@ import {
     createSubscription as createSubscriptionDB,
     updateSubscriptionByStripeId as updateSubscriptionByStripeIdDB,
     updateSubscriptionById as updateSubscriptionByIdDB,
-    getSubscriptionByAuth0UserId,
     getSubscriptionByStripeSubscriptionId,
     getSubscriptionByUserId
 } from '@/db/queries';
@@ -58,23 +57,9 @@ export const updateSubscriptionByStripeId = async (
 };
 
 /**
- * Get user's subscription by auth0UserId
+ * Get user's subscription by userId
  */
-export const getUserSubscriptionByAuth0Id = async (auth0UserId: string): Promise<SubscriptionSelect | null> => {
-    try {
-        const subscription = await getSubscriptionByAuth0UserId(auth0UserId);
-        return subscription || null;
-
-    } catch (error) {
-        console.error('Database GET user subscription error:', error);
-        return null;
-    }
-};
-
-/**
- * Get user's subscription by auth0UserId
- */
-export const getUserSubscriptionByUserId = async (userId: number): Promise<SubscriptionSelect | null> => {
+export const getUserSubscriptionByUserId = async (userId: string): Promise<SubscriptionSelect | null> => {
     try {
         const subscription = await getSubscriptionByUserId(userId);
         return subscription || null;
@@ -111,7 +96,7 @@ export const getUserSubscriptionByStripeSubscriptionId = async (stripeSubscripti
  * Update subscription by user ID
  */
 export const updateSubscriptionByUserId = async (
-    userId: number,
+    userId: string,
     data: Partial<Omit<Parameters<typeof updateSubscriptionByIdDB>[1], 'createdAt'>>
 ): Promise<SubscriptionSelect | null> => {
     try {

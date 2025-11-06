@@ -1,5 +1,5 @@
 import { db } from "../index";
-import { subscriptions, users } from "../schema";
+import { subscriptions } from "../schema";
 import { eq, and, desc, asc, sql, isNull, gt, or, gte } from "drizzle-orm";
 import type { SubscriptionInsert, SubscriptionSelect } from "../schema";
 
@@ -30,7 +30,7 @@ export async function getSubscriptionById(id: number): Promise<SubscriptionSelec
 /**
  * Get subscription by user ID
  */
-export async function getSubscriptionByUserId(userId: number): Promise<SubscriptionSelect | null> {
+export async function getSubscriptionByUserId(userId: string): Promise<SubscriptionSelect | null> {
   const [subscription] = await db()
     .select()
     .from(subscriptions)
@@ -56,7 +56,7 @@ export async function getSubscriptionByStripeSubscriptionId(stripeSubscriptionId
 /**
  * Get active subscriptions for a user
  */
-export async function getActiveSubscriptionsByUserId(userId: number): Promise<SubscriptionSelect[]> {
+export async function getActiveSubscriptionsByUserId(userId: string): Promise<SubscriptionSelect[]> {
   return await db()
     .select()
     .from(subscriptions)
@@ -76,7 +76,7 @@ export async function getActiveSubscriptionsByUserId(userId: number): Promise<Su
 /**
  * Get all subscriptions for a user
  */
-export async function getAllSubscriptionsByUserId(userId: number): Promise<SubscriptionSelect[]> {
+export async function getAllSubscriptionsByUserId(userId: string): Promise<SubscriptionSelect[]> {
   return await db()
     .select()
     .from(subscriptions)
@@ -101,7 +101,7 @@ export async function getSubscriptionsByStatus(status: string): Promise<Subscrip
 export async function getSubscriptions(options: {
   page?: number;
   limit?: number;
-  userId?: number;
+  userId?: string;
   status?: string;
   sortBy?: 'createdAt' | 'startDate' | 'currentPeriodEnd';
   sortOrder?: 'asc' | 'desc';
@@ -362,7 +362,7 @@ export async function subscriptionExistsByStripeId(stripeSubscriptionId: string)
 /**
  * Check if user has active subscription
  */
-export async function userHasActiveSubscription(userId: number): Promise<boolean> {
+export async function userHasActiveSubscription(userId: string): Promise<boolean> {
   const [result] = await db()
     .select({ exists: sql<boolean>`true` })
     .from(subscriptions)
@@ -385,7 +385,7 @@ export async function userHasActiveSubscription(userId: number): Promise<boolean
 /**
  * Get user's current active subscription with details
  */
-export async function getUserActiveSubscription(userId: number): Promise<SubscriptionSelect | null> {
+export async function getUserActiveSubscription(userId: string): Promise<SubscriptionSelect | null> {
   const [subscription] = await db()
     .select()
     .from(subscriptions)
@@ -429,7 +429,7 @@ export async function getExpiringSoonSubscriptions(days: number = 3): Promise<Su
 /**
  * Get latest subscription for user
  */
-export async function getLatestSubscriptionForUser(userId: number): Promise<SubscriptionSelect | null> {
+export async function getLatestSubscriptionForUser(userId: string): Promise<SubscriptionSelect | null> {
   const [subscription] = await db()
     .select()
     .from(subscriptions)
@@ -439,34 +439,6 @@ export async function getLatestSubscriptionForUser(userId: number): Promise<Subs
   return subscription || null;
 }
 
-/**
- * Get subscription by Auth0 user ID (joins with users table)
- */
-export async function getSubscriptionByAuth0UserId(auth0UserId: string): Promise<SubscriptionSelect | null> {
-  const [subscription] = await db()
-    .select({
-      id: subscriptions.id,
-      userId: subscriptions.userId,
-      planId: subscriptions.planId,
-      status: subscriptions.status,
-      startDate: subscriptions.startDate,
-      currentPeriodEnd: subscriptions.currentPeriodEnd,
-      cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
-      cancelAt: subscriptions.cancelAt,
-      renewsAt: subscriptions.renewsAt,
-      stripeSubscriptionId: subscriptions.stripeSubscriptionId,
-      stripeCustomerId: subscriptions.stripeCustomerId,
-      createdAt: subscriptions.createdAt,
-      updatedAt: subscriptions.updatedAt,
-    })
-    .from(subscriptions)
-    .innerJoin(users, eq(subscriptions.userId, users.id))
-    .where(eq(users.auth0UserId, auth0UserId))
-    .orderBy(desc(subscriptions.createdAt))
-    .limit(1);
-
-  return subscription || null;
-}
 
 /**
  * Get subscription statistics (active and total counts)

@@ -12,23 +12,23 @@ interface UsageData {
 
 // 新的 UserDetail 接口，与后端保持一致
 export interface UserDetail {
-  userId: number;
-  name: string;
-  email: string;
-  auth0UserId: string;
+  userId: string;
+  name?: string | null;
+  email?: string | null;
   stripeSubscriptionId?: string;
   stripeCustomerId: string;
+  startDate?: Date | null;
   planId?: string;
   membershipLevel?: string;
   active?: boolean;
-  currentEndAt?: Date;
-  requestLimit?: number;
+  currentEndAt?: Date | null;
+  requestLimit: number;
   tokenMonthlyUsed?: number;
 }
 
 interface UsageApiResponse {
   usage: UsageData;
-  userId: number;
+  userId: string;
   auth0Id: string;
 }
 
@@ -56,7 +56,8 @@ export function useUserData(options: UseUserDataOptions = {}) {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/user/${user.id}${forceRefresh ? '?refresh=true' : ''}`);
+      const encodedEmail = encodeURIComponent(user.email);
+      const response = await fetch(`/api/user/${encodedEmail}${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -66,13 +67,12 @@ export function useUserData(options: UseUserDataOptions = {}) {
       const userDetailData = data.user as UserDetail;
 
       if (!userDetailData) {
-        const res = await fetch(`/api/user/${user.id}`, {
+        const res = await fetch(`/api/user/${encodedEmail}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            email: user.email,
             nickname: user.name,
             name: user.name,
             avatarUrl: user.image
@@ -118,13 +118,14 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 获取使用数据
   const fetchUsageData = useCallback(async (forceRefresh = false) => {
-    if (!user?.id) return;
+    if (!user?.email) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/user/${user.id}/usage${forceRefresh ? '?refresh=true' : ''}`);
+      const encodedEmail = encodeURIComponent(user.email);
+      const response = await fetch(`/api/user/${encodedEmail}/usage${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

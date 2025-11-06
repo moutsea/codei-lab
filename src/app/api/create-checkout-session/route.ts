@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { getUserFromDBByAuth0, updateUserStripeCustomerIdService, getUserDetailByAuth0IdWithCache } from '@/lib/services/user_service'
+import { getUserFromDBById, updateUserStripeCustomerIdService, getUserDetailByIdWithCache } from '@/lib/services/user_service'
 import { getPlanFromDBById } from '@/lib/services/plan_service'
 import { PlanSelect, UserDetail } from '@/db/queries';
 
@@ -72,11 +72,11 @@ async function getPriceDiff(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { planId, priceId, interval, auth0Id, requestLimit } = body;
+    const { planId, priceId, interval, userId, requestLimit } = body;
 
-    if (!planId || !priceId || !interval || !auth0Id || !requestLimit) {
+    if (!planId || !priceId || !interval || !userId || !requestLimit) {
       return NextResponse.json(
-        { error: 'Missing required fields: planId, priceId, interval, auth0Id' },
+        { error: 'Missing required fields: planId, priceId, interval, userId' },
         { status: 400 }
       );
     }
@@ -92,8 +92,8 @@ export async function POST(request: NextRequest) {
     }
 
     const [user, userDetail, plan] = await Promise.all([
-      getUserFromDBByAuth0(auth0Id),
-      getUserDetailByAuth0IdWithCache(auth0Id),
+      getUserFromDBById(userId),
+      getUserDetailByIdWithCache(userId),
       getPlanFromDBById(planId)
     ]);
 
@@ -113,8 +113,7 @@ export async function POST(request: NextRequest) {
         email: user.email,
         name: user.nickname || user.email,
         metadata: {
-          userId: user.id.toString(),
-          auth0UserId: user.auth0UserId,
+          userId: user.id,
         },
       });
       customerId = customer.id;
@@ -137,7 +136,6 @@ export async function POST(request: NextRequest) {
       planId: planId,
       interval: interval,
       userId: user.id,
-      auth0Id: user.auth0UserId,
       stripeCustomerId: customerId,
       currentEndAt: endDate.toISOString(),
       requestLimit
@@ -164,7 +162,7 @@ export async function POST(request: NextRequest) {
 
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
-        client_reference_id: user.id.toString(),
+        client_reference_id: user.id,
         payment_method_types: ['alipay', 'wechat_pay'],
         line_items: [{
           price_data: {
@@ -196,7 +194,7 @@ export async function POST(request: NextRequest) {
       // 创建checkout session
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
-        client_reference_id: user.id.toString(), // 设置client_reference_id为用户ID
+        client_reference_id: user.id, // 设置client_reference_id为用户ID
         payment_method_types: plan.isRecurring ? ['link', 'card'] : ['alipay', 'wechat_pay'],
         line_items: [{
           price: priceId,

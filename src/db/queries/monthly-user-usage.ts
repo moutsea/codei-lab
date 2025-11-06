@@ -20,7 +20,7 @@ export async function createMonthlyUserUsage(data: Omit<MonthlyUserUsageInsert, 
  * Create or update monthly user usage (upsert operation)
  */
 export async function upsertMonthlyUserUsage(
-  userId: number,
+  userId: string,
   month: string,
   tokens: number
 ): Promise<MonthlyUserUsageSelect> {
@@ -46,7 +46,7 @@ export async function upsertMonthlyUserUsage(
  * Get monthly user usage by user ID and month
  */
 export async function getMonthlyUserUsageByUserAndMonth(
-  userId: number,
+  userId: string,
   month: string
 ): Promise<MonthlyUserUsageSelect | null> {
   const [usage] = await db()
@@ -67,7 +67,7 @@ export async function getMonthlyUserUsageByUserAndMonth(
 export async function getMonthlyUserUsageByMonthRange(
   startMonth: string,
   endMonth: string,
-  userId?: number
+  userId?: string
 ): Promise<MonthlyUserUsageSelect[]> {
   const whereConditions = [
     gte(monthlyUserUsage.month, startMonth),
@@ -89,7 +89,7 @@ export async function getMonthlyUserUsageByMonthRange(
  * Get recent monthly user usage records
  */
 export async function getRecentMonthlyUserUsage(
-  userId?: number,
+  userId?: string,
   limit: number = 12
 ): Promise<MonthlyUserUsageSelect[]> {
   const whereConditions = userId ? [eq(monthlyUserUsage.userId, userId)] : [];
@@ -106,7 +106,7 @@ export async function getRecentMonthlyUserUsage(
  * Get monthly usage count for a user
  */
 export async function getMonthlyUserUsageCount(
-  userId: number,
+  userId: string,
   startMonth?: string,
   endMonth?: string
 ): Promise<number> {
@@ -165,7 +165,7 @@ export async function updateMonthlyUserUsageTokens(
  * Add tokens to a monthly user usage record
  */
 export async function addTokensToMonthlyUserUsage(
-  userId: number,
+  userId: string,
   month: string,
   tokens: number,
   dbInstance: DbClient = db()
@@ -200,7 +200,7 @@ export async function addTokensToMonthlyUserUsage(
 /**
  * Delete all monthly usage records for a user
  */
-export async function deleteAllMonthlyUserUsageByUserId(userId: number): Promise<MonthlyUserUsageSelect[]> {
+export async function deleteAllMonthlyUserUsageByUserId(userId: string): Promise<MonthlyUserUsageSelect[]> {
   return await db()
     .delete(monthlyUserUsage)
     .where(eq(monthlyUserUsage.userId, userId))

@@ -23,7 +23,7 @@ export async function createPayment(data: Omit<PaymentInsert, 'id' | 'createdAt'
  * Create payment from Stripe payment intent
  */
 export async function createPaymentFromStripe(data: {
-    userId: number;
+    userId: string;
     subscriptionId: string | null;
     stripePaymentIntentId: string;
     amount: string;
@@ -70,7 +70,7 @@ export async function getPaymentByStripePaymentIntentId(stripePaymentIntentId: s
 /**
  * Get payments by user ID
  */
-export async function getPaymentsByUserId(userId: number): Promise<PaymentSelect[]> {
+export async function getPaymentsByUserId(userId: string): Promise<PaymentSelect[]> {
     return await db()
         .select()
         .from(payments)
@@ -106,7 +106,7 @@ export async function getPaymentsByStatus(status: string): Promise<PaymentSelect
 export async function getPayments(options: {
     page?: number;
     limit?: number;
-    userId?: number;
+    userId?: string;
     status?: string;
     sortBy?: 'createdAt' | 'amount' | 'status';
     sortOrder?: 'asc' | 'desc';
@@ -153,7 +153,7 @@ export async function getPayments(options: {
 /**
  * Get successful payments for a user
  */
-export async function getSuccessfulPaymentsByUserId(userId: number): Promise<PaymentSelect[]> {
+export async function getSuccessfulPaymentsByUserId(userId: string): Promise<PaymentSelect[]> {
     return await db()
         .select()
         .from(payments)
@@ -169,7 +169,7 @@ export async function getSuccessfulPaymentsByUserId(userId: number): Promise<Pay
 /**
  * Get failed payments for a user
  */
-export async function getFailedPaymentsByUserId(userId: number): Promise<PaymentSelect[]> {
+export async function getFailedPaymentsByUserId(userId: string): Promise<PaymentSelect[]> {
     return await db()
         .select()
         .from(payments)
@@ -204,7 +204,7 @@ export async function getPaymentsByDateRange(startDate: Date, endDate: Date): Pr
 export async function getPaymentsWithDetails(options: {
     page?: number;
     limit?: number;
-    userId?: number;
+    userId?: string;
     status?: string;
 } = {}) {
     const {
@@ -231,8 +231,8 @@ export async function getPaymentsWithDetails(options: {
         .select({
             id: payments.id,
             userId: payments.userId,
-            userAuth0Id: users.auth0UserId,
             userEmail: users.email,
+            userName: users.nickname,
             subscriptionId: payments.subscriptionId,
             stripePaymentIntentId: payments.stripePaymentIntentId,
             amount: payments.amount,
@@ -284,7 +284,7 @@ export async function getPaymentsCount(status?: string): Promise<number> {
 export async function getTotalRevenue(options: {
     startDate?: Date;
     endDate?: Date;
-    userId?: number;
+    userId?: string;
     currency?: string; // If specified, returns total for specific currency
 } = {}): Promise<number> {
     const { startDate, endDate, userId, currency } = options;
@@ -320,7 +320,7 @@ export async function getTotalRevenue(options: {
 export async function getTotalRevenueByCurrency(options: {
     startDate?: Date;
     endDate?: Date;
-    userId?: number;
+    userId?: string;
 } = {}): Promise<{
     total: number;
     currencies: {
@@ -479,7 +479,7 @@ export async function deletePaymentByStripePaymentIntentId(stripePaymentIntentId
 /**
  * Delete payments by user ID (bulk delete)
  */
-export async function deletePaymentsByUserId(userId: number): Promise<PaymentSelect[]> {
+export async function deletePaymentsByUserId(userId: string): Promise<PaymentSelect[]> {
     return await db()
         .delete(payments)
         .where(eq(payments.userId, userId))
@@ -504,7 +504,7 @@ export async function paymentExistsByStripePaymentIntentId(stripePaymentIntentId
 /**
  * Get payment statistics for a user
  */
-export async function getUserPaymentStats(userId: number): Promise<{
+export async function getUserPaymentStats(userId: string): Promise<{
     totalPayments: number;
     successfulPayments: number;
     failedPayments: number;
@@ -554,7 +554,7 @@ export async function getUserPaymentStats(userId: number): Promise<{
 /**
  * Get recent payments for a user
  */
-export async function getRecentPaymentsByUserId(userId: number, limit: number = 10): Promise<PaymentSelect[]> {
+export async function getRecentPaymentsByUserId(userId: string, limit: number = 10): Promise<PaymentSelect[]> {
     return await db()
         .select()
         .from(payments)

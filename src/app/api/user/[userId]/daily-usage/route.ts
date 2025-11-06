@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserIdByAuth0UserId } from '@/lib/services/user_service';
 import {
   getDailyUserUsageByUserAndDateService,
   getDailyUserUsageByDateRangeService,
@@ -8,19 +7,16 @@ import {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
     const { searchParams } = new URL(request.url);
-
-    // Get user ID using service
-    const userId = await getUserIdByAuth0UserId(auth0Id);
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
 
@@ -105,7 +101,7 @@ export async function GET(
         );
     }
 
-    return NextResponse.json({ data, type, userId, auth0Id });
+    return NextResponse.json({ data, type, userId });
   } catch (error) {
     console.error('Error fetching daily usage:', error);
     return NextResponse.json(
@@ -117,19 +113,16 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
     const body = await request.json();
-
-    // Get user ID using service
-    const userId = await getUserIdByAuth0UserId(auth0Id);
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
+        { error: 'User ID is required' },
+        { status: 400 }
       );
     }
 

@@ -14,9 +14,8 @@ import {
 export const users = pgTable(
     "users",
     {
-        id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-        auth0UserId: text("auth0_user_id").notNull().unique(), // auth0|xxxxxx
-        email: varchar("email", { length: 255 }).notNull(),
+        id: varchar("id", { length: 100 }).primaryKey(),
+        email: varchar("email", { length: 255 }).notNull().unique(),
         nickname: varchar("nickname", { length: 255 }),
         avatarUrl: text("avatar_url"),
         stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
@@ -49,7 +48,7 @@ export const subscriptions = pgTable("subscriptions", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
     // 关联
-    userId: integer("user_id").references(() => users.id),
+    userId: varchar("user_id", { length: 100 }).references(() => users.id),
     planId: text("plan_id").references(() => plans.id),
 
     // 状态
@@ -76,7 +75,7 @@ export const payments = pgTable("payments", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
 
     // 关联
-    userId: integer("user_id").references(() => users.id),
+    userId: varchar("user_id", { length: 100 }).references(() => users.id),
     subscriptionId: varchar("subscription_id", { length: 255 }),
 
     // Stripe 支付对象
@@ -97,7 +96,7 @@ export const payments = pgTable("payments", {
 // ========== API Keys ==========
 export const apiKeys = pgTable("api_keys", {
     id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id").references(() => users.id),
+    userId: varchar("user_id", { length: 100 }).references(() => users.id),
     name: varchar("name", { length: 255 }).notNull(),
     key: varchar("key", { length: 255 }).notNull().unique(),
     requestLimit: integer("request_limit"),
@@ -110,7 +109,7 @@ export const dailyUserUsage = pgTable(
     "daily_user_usage",
     {
         id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-        userId: integer("user_id").references(() => users.id),
+        userId: varchar("user_id", { length: 100 }).references(() => users.id),
         date: varchar("date", { length: 30 }),
         totalTokens: integer("total_tokens").notNull().default(0),
         updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
@@ -138,7 +137,7 @@ export const monthlyUserUsage = pgTable(
     "monthly_user_usage",
     {
         id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-        userId: integer("user_id").references(() => users.id),
+        userId: varchar("user_id", { length: 100 }).references(() => users.id),
         month: varchar("month", { length: 30 }),
         totalTokens: integer("total_tokens").notNull().default(0),
         updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),

@@ -1,23 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserIdByAuth0UserId, getUserFromDBByAuth0, getUserDetailByAuth0IdWithCache } from '@/lib/services/user_service'
+import { getUserFromDBById, getUserDetailByIdWithCache } from '@/lib/services/user_service'
 import { deleteApiKey, generateApiKey, getUserApiKeys, updateApiKey } from '@/lib/services/api_key_service'
 import { currentMonth, currentSubscription } from '@/lib/utils'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
 
-    if (!auth0Id) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Auth0 ID is required' },
+        { error: 'User ID is required' },
         { status: 400 }
       );
     }
 
-    const userData = await getUserDetailByAuth0IdWithCache(auth0Id);
+    const userData = await getUserDetailByIdWithCache(userId);
     if (!userData) {
       return NextResponse.json(
         { error: 'User not found' },
@@ -25,7 +25,6 @@ export async function GET(
       );
     }
 
-    const userId = userData.userId;
     const subscriptionCycle = currentSubscription(new Date(userData.startDate!));
     const apiKeys = await getUserApiKeys(userId, subscriptionCycle);
 
@@ -58,16 +57,16 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
     const body = await request.json();
     const { name, requestLimit, expiredAt } = body;
 
-    if (!auth0Id) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Auth0 ID is required' },
+        { error: 'User ID is required' },
         { status: 400 }
       );
     }
@@ -80,7 +79,7 @@ export async function POST(
     }
 
     // 获取用户信息
-    const user = await getUserFromDBByAuth0(auth0Id);
+    const user = await getUserFromDBById(userId);
 
     if (!user) {
       return NextResponse.json(
@@ -90,7 +89,7 @@ export async function POST(
     }
 
     // 创建新的 API Key
-    const newApiKey = await generateApiKey(user.id, name.trim(), requestLimit, expiredAt ? new Date(expiredAt) : null);
+    const newApiKey = await generateApiKey(userId, name.trim(), requestLimit, expiredAt ? new Date(expiredAt) : null);
 
     if (!newApiKey) {
       return NextResponse.json(
@@ -122,10 +121,10 @@ export async function POST(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
     const { searchParams } = new URL(request.url);
     const keyId = searchParams.get('id');
 
@@ -146,8 +145,8 @@ export async function PATCH(
       );
     }
 
-    // 获取用户信息
-    const user = await getUserFromDBByAuth0(auth0Id);
+    // 获取用户信息 - we still need to validate the user exists
+    const user = await getUserFromDBById(userId);
 
     if (!user) {
       return NextResponse.json(

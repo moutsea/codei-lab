@@ -54,7 +54,7 @@ export const createPayment = async (
  */
 export const createPaymentFromStripeIntent = async (
     data: {
-        userId: number;
+        userId: string;
         subscriptionId: string | null;
         stripePaymentIntentId: string;
         amount: string;
@@ -108,7 +108,7 @@ export const getPaymentByStripeId = async (stripePaymentIntentId: string): Promi
 /**
  * Get all payments for a user
  */
-export const getUserPayments = async (userId: number): Promise<PaymentSelect[]> => {
+export const getUserPayments = async (userId: string): Promise<PaymentSelect[]> => {
     try {
         return await getPaymentsByUserId(userId);
     } catch (error) {
@@ -147,7 +147,7 @@ export const getPaymentsByStatusFilter = async (status: string): Promise<Payment
 export const getPaymentList = async (options: {
     page?: number;
     limit?: number;
-    userId?: number;
+    userId?: string;
     status?: string;
     sortBy?: 'createdAt' | 'amount' | 'status';
     sortOrder?: 'asc' | 'desc';
@@ -171,7 +171,7 @@ export const getPaymentList = async (options: {
 /**
  * Get successful payments for a user
  */
-export const getUserSuccessfulPayments = async (userId: number): Promise<PaymentSelect[]> => {
+export const getUserSuccessfulPayments = async (userId: string): Promise<PaymentSelect[]> => {
     try {
         return await getSuccessfulPaymentsByUserId(userId);
     } catch (error) {
@@ -183,7 +183,7 @@ export const getUserSuccessfulPayments = async (userId: number): Promise<Payment
 /**
  * Get failed payments for a user
  */
-export const getUserFailedPayments = async (userId: number): Promise<PaymentSelect[]> => {
+export const getUserFailedPayments = async (userId: string): Promise<PaymentSelect[]> => {
     try {
         return await getFailedPaymentsByUserId(userId);
     } catch (error) {
@@ -210,7 +210,7 @@ export const getPaymentsInDateRange = async (startDate: Date, endDate: Date): Pr
 export const getPaymentListWithDetails = async (options: {
     page?: number;
     limit?: number;
-    userId?: number;
+    userId?: string;
     status?: string;
 } = {}): Promise<any[]> => {
     try {
@@ -224,7 +224,7 @@ export const getPaymentListWithDetails = async (options: {
 /**
  * Get recent payments for a user
  */
-export const getRecentUserPayments = async (userId: number, limit: number = 10): Promise<PaymentSelect[]> => {
+export const getRecentUserPayments = async (userId: string, limit: number = 10): Promise<PaymentSelect[]> => {
     try {
         return await getRecentPaymentsByUserId(userId, limit);
     } catch (error) {
@@ -386,7 +386,7 @@ export const deletePaymentByStripeId = async (stripePaymentIntentId: string): Pr
 /**
  * Delete all payments for a user (use with caution)
  */
-export const deleteUserPayments = async (userId: number): Promise<PaymentSelect[]> => {
+export const deleteUserPayments = async (userId: string): Promise<PaymentSelect[]> => {
     try {
         const payments = await deletePaymentsByUserId(userId);
         console.log(`✅ Deleted ${payments.length} payments for user ${userId}`);
@@ -414,7 +414,7 @@ export const checkPaymentExistsByStripeId = async (stripePaymentIntentId: string
 /**
  * Get payment statistics for a user
  */
-export const getUserPaymentAnalytics = async (userId: number): Promise<{
+export const getUserPaymentAnalytics = async (userId: string): Promise<{
     totalPayments: number;
     successfulPayments: number;
     failedPayments: number;
@@ -451,12 +451,12 @@ export const getUserPaymentAnalytics = async (userId: number): Promise<{
 export const getRevenueAnalytics = async (options: {
     startDate?: Date;
     endDate?: Date;
-    userId?: number;
+    userId?: string;
 } = {}): Promise<{
     totalRevenue: number;
     startDate?: Date;
     endDate?: Date;
-    userId?: number;
+    userId?: string;
 }> => {
     try {
         const totalRevenue = await getTotalRevenue(options);
@@ -501,7 +501,7 @@ export const getPaymentAnalytics = async (status?: string): Promise<{
 export const processStripeWebhookPayment = async (
     stripePaymentIntentId: string,
     data: {
-        userId: number;
+        userId: string;
         subscriptionId: string | null;
         amount: string;
         currency?: string;

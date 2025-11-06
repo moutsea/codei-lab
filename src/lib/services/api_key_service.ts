@@ -32,7 +32,7 @@ const API_KEY_CACHE_KEYS = {
 };
 
 export interface ApiDetail {
-    userId: number | null;
+    userId: string | null;
     apiMonthlyUsed: number;
     requestLimit: number | null;
     expiredAt: Date | null;
@@ -67,7 +67,7 @@ export const createApiKey = async (
  * Generate and create a new API key with default request limit
  */
 export const generateApiKey = async (
-    userId: number,
+    userId: string,
     name: string,
     requestLimit: number | null = 100000,
     expiredAt: Date | null
@@ -88,7 +88,7 @@ export const generateApiKey = async (
  * Create API key with custom name, key, and request limit
  */
 export const createApiKeyWithCustomName = async (
-    userId: number,
+    userId: string,
     name: string,
     key?: string,
     requestLimit: number = 100000
@@ -134,7 +134,7 @@ export const getApiKeyByValue = async (key: string): Promise<ApiKeySelect | null
 /**
  * Get all API keys for a user
  */
-export const getUserApiKeys = async (userId: number, month: string): Promise<ApiKeyWithUsage[]> => {
+export const getUserApiKeys = async (userId: string, month: string): Promise<ApiKeyWithUsage[]> => {
     try {
         return await getApiKeysByUserId(userId, month);
     } catch (error) {
@@ -146,7 +146,7 @@ export const getUserApiKeys = async (userId: number, month: string): Promise<Api
 /**
  * Get API keys by name for a user
  */
-export const getUserApiKeysByName = async (userId: number, name: string): Promise<ApiKeySelect[]> => {
+export const getUserApiKeysByName = async (userId: string, name: string): Promise<ApiKeySelect[]> => {
     try {
         return await getApiKeysByName(userId, name);
     } catch (error) {
@@ -158,7 +158,7 @@ export const getUserApiKeysByName = async (userId: number, name: string): Promis
 /**
  * Search API keys by name pattern for a user
  */
-export const searchUserApiKeysByName = async (userId: number, namePattern: string): Promise<ApiKeySelect[]> => {
+export const searchUserApiKeysByName = async (userId: string, namePattern: string): Promise<ApiKeySelect[]> => {
     try {
         return await searchApiKeysByName(userId, namePattern);
     } catch (error) {
@@ -173,7 +173,7 @@ export const searchUserApiKeysByName = async (userId: number, namePattern: strin
 export const getApiKeyList = async (options: {
     page?: number;
     limit?: number;
-    userId?: number;
+    userId?: string;
     sortBy?: 'createdAt' | 'lastUsedAt';
     sortOrder?: 'asc' | 'desc';
     nameSearch?: string;
@@ -209,7 +209,7 @@ export const getRecentlyUsedApiKeysList = async (limit: number = 10): Promise<Ap
 /**
  * Get most recent API key for a user
  */
-export const getMostRecentApiKey = async (userId: number): Promise<ApiKeySelect | null> => {
+export const getMostRecentApiKey = async (userId: string): Promise<ApiKeySelect | null> => {
     try {
         const userApiKeys = await getApiKeysByUserId(userId);
         return userApiKeys[0] || null;
@@ -464,7 +464,7 @@ export const deleteApiKeyUsageCache = async (apiKey: string): Promise<void> => {
  * Get API key usage from cache only (skip database)
  */
 export const getApiKeyUsageFromCache = async (apiKey: string): Promise<{
-    userId: number | null;
+    userId: string | null;
     apiMonthlyUsed: number;
     requestLimit: number | null;
     expiredAt: Date | null;
@@ -476,7 +476,7 @@ export const getApiKeyUsageFromCache = async (apiKey: string): Promise<{
     try {
         const cacheKey = API_KEY_CACHE_KEYS.apiKeyUsage(apiKey);
         const cachedUsage = await cache.get(cacheKey) as {
-            userId: number | null;
+            userId: string | null;
             apiMonthlyUsed: number;
             requestLimit: number | null;
             expiredAt: Date | null;

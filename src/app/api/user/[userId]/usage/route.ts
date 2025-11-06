@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserIdByAuth0UserId } from '@/lib/services/user_service';
 import {
   getDailyUserUsageByDateRangeService,
   getRecentMonthlyUserUsageService
@@ -7,14 +6,11 @@ import {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
     const { searchParams } = new URL(request.url);
-
-    // Get user ID using service
-    const userId = await getUserIdByAuth0UserId(auth0Id);
 
     if (!userId) {
       return NextResponse.json(
@@ -77,8 +73,7 @@ export async function GET(
 
     const responseData = {
       usage: usageData,
-      userId,
-      auth0Id
+      userId
     };
 
     return NextResponse.json(responseData);

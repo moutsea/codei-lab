@@ -218,17 +218,17 @@ export const cache = new RedisCache();
 
 // 缓存键生成器
 export const cacheKeys = {
-  userData: (auth0Id: string) => `${REDIS_KEYS.USER_DATA}${auth0Id}`,
-  userSubscriptions: (auth0Id: string) => `${REDIS_KEYS.USER_SUBSCRIPTIONS}${auth0Id}`,
-  userUsage: (auth0Id: string, period?: string) => `${REDIS_KEYS.USER_USAGE}${auth0Id}:${period || 'current'}`,
-  activeSubscription: (auth0Id: string) => `${REDIS_KEYS.ACTIVE_SUBSCRIPTION}${auth0Id}`,
+  userData: (userId: string) => `${REDIS_KEYS.USER_DATA}${userId}`,
+  userSubscriptions: (userId: string) => `${REDIS_KEYS.USER_SUBSCRIPTIONS}${userId}`,
+  userUsage: (userId: string, period?: string) => `${REDIS_KEYS.USER_USAGE}${userId}:${period || 'current'}`,
+  activeSubscription: (userId: string) => `${REDIS_KEYS.ACTIVE_SUBSCRIPTION}${userId}`,
   processedPlans: () => `${REDIS_KEYS.API_RESPONSE}processed_plans`,
   activeNonRecurringPlans: () => `${REDIS_KEYS.API_RESPONSE}active_non_recurring_plans`,
   allActivePlans: () => `${REDIS_KEYS.API_RESPONSE}all_active_plans`,
-  customerId: (auth0Id: string) => `${REDIS_KEYS.USER_DATA}customer_id:${auth0Id}`,
-  userApiKeys: (auth0Id: string) => `${REDIS_KEYS.USER_DATA}api_keys:${auth0Id}`,
+  customerId: (userId: string) => `${REDIS_KEYS.USER_DATA}customer_id:${userId}`,
+  userApiKeys: (userId: string) => `${REDIS_KEYS.USER_DATA}api_keys:${userId}`,
   plan: (planId: string) => `${REDIS_KEYS.USER_DATA}plan:${planId}`,
-  userCache: (auth0Id: string) => `${REDIS_KEYS.USER_CACHE}${auth0Id}`, // 用户缓存键
+  userCache: (userId: string) => `${REDIS_KEYS.USER_CACHE}${userId}`, // 用户缓存键
   apiKeyCache: (apiKey: string) => `${REDIS_KEYS.API_KEY_CACHE}${apiKey}`, // API Key缓存键
 };
 

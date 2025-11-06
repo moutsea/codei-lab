@@ -105,7 +105,7 @@ async function apiTokenUsageUpdate(
   apiData: ApiDetail,
   userData: UserDetail,
   apiKey: string,
-  userId: number
+  userId: string
 ) {
   const totalTokens = calculateTotalTokens(res, discount);
   await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentMonth(), userData, totalTokens);

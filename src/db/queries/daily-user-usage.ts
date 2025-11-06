@@ -20,7 +20,7 @@ export async function createDailyUserUsage(data: Omit<DailyUserUsageInsert, 'id'
  * Create or update daily user usage (upsert operation)
  */
 export async function upsertDailyUserUsage(
-  userId: number,
+  userId: string,
   date: string,
   tokens: number
 ): Promise<DailyUserUsageSelect> {
@@ -54,7 +54,7 @@ export async function getDailyUserUsageById(id: number): Promise<DailyUserUsageS
  * Get daily user usage by user ID and date
  */
 export async function getDailyUserUsageByUserAndDate(
-  userId: number,
+  userId: string,
   date: string
 ): Promise<DailyUserUsageSelect | null> {
   const [usage] = await db()
@@ -75,7 +75,7 @@ export async function getDailyUserUsageByUserAndDate(
 export async function getDailyUserUsageByDateRange(
   startDate: string,
   endDate: string,
-  userId?: number
+  userId?: string
 ): Promise<DailyUserUsageSelect[]> {
   const whereConditions = [
     gte(dailyUserUsage.date, startDate),
@@ -140,7 +140,7 @@ export async function updateDailyUserUsageTokens(
  * @returns 更新或创建后的每日使用记录
  */
 export async function addTokensToDailyUsage(
-  userId: number,
+  userId: string,
   date: string,
   tokens: number,
   dbInstance: DbClient = db()
@@ -188,7 +188,7 @@ export async function deleteDailyUserUsageById(id: number): Promise<DailyUserUsa
  * Delete daily user usage for a specific date range
  */
 export async function deleteDailyUserUsageByDateRange(
-  userId: number,
+  userId: string,
   startDate: string,
   endDate: string
 ): Promise<DailyUserUsageSelect[]> {
@@ -205,7 +205,7 @@ export async function deleteDailyUserUsageByDateRange(
 /**
  * Delete all daily usage records for a user
  */
-export async function deleteAllDailyUserUsageByUserId(userId: number): Promise<DailyUserUsageSelect[]> {
+export async function deleteAllDailyUserUsageByUserId(userId: string): Promise<DailyUserUsageSelect[]> {
   return await db()
     .delete(dailyUserUsage)
     .where(eq(dailyUserUsage.userId, userId))

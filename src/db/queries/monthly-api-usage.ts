@@ -79,7 +79,7 @@ export async function getMonthlyApiUsageByKeyAndMonth(
  */
 export async function getApiKeysUsageByMonth(
   month: string,
-  userId?: number
+  userId?: string
 ): Promise<MonthlyApiUsageWithName[]> {
   const whereConditions = [eq(monthlyApiUsage.month, month)];
 
@@ -223,7 +223,7 @@ export async function deleteAllMonthlyApiUsageByApiKey(apiKey: string): Promise<
 /**
  * Delete all monthly usage records for a user
  */
-export async function deleteAllMonthlyApiUsageByUserId(userId: number): Promise<MonthlyApiUsageSelect[]> {
+export async function deleteAllMonthlyApiUsageByUserId(userId: string): Promise<MonthlyApiUsageSelect[]> {
   return await db()
     .delete(monthlyApiUsage)
     .where(sql`${monthlyApiUsage.apikey} IN (

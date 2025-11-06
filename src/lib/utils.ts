@@ -33,13 +33,9 @@ export function currentDate() {
 export function currentSubscription(startDate: Date) {
   const today = new Date();
   const diffMs = today.getTime() - startDate.getTime();
-
   const oneDayMs = 1000 * 60 * 60 * 24;
-
   const diffDays = Math.floor(diffMs / oneDayMs);
-
   const cycles = Math.floor(diffDays / 30) + 1;
-
   const startMonth = startDate.toISOString().slice(0, 7);
   return `${startMonth}-${cycles}`
 }

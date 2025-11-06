@@ -1,27 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateBillingLink } from '@/lib/stripe';
-import { getStripeCustomerIdByAuth0Id, getUserDetailByAuth0IdWithCache } from '@/lib/services/user_service'
+import { getUserFromDBById, getUserDetailByIdWithCache } from '@/lib/services/user_service'
 
 export async function POST(request: NextRequest) {
   try {
     const requestData = await request.json();
     let { stripeCustomerId } = requestData;
-    const { auth0UserId } = requestData;
+    const { userId } = requestData;
 
     if (!stripeCustomerId) {
-      if (!auth0UserId) {
+      if (!userId) {
         return NextResponse.json(
-          { error: 'Missing stripeCustomerId' },
+          { error: 'Missing userId or stripeCustomerId' },
           { status: 400 }
         );
       }
 
-      const [fetchedStripeCustomerId, fetchedUserDetail] = await Promise.all([
-        getStripeCustomerIdByAuth0Id(auth0UserId),
-        getUserDetailByAuth0IdWithCache(auth0UserId),
+      const [user, fetchedUserDetail] = await Promise.all([
+        getUserFromDBById(userId),
+        getUserDetailByIdWithCache(userId),
       ]);
 
-      if (!fetchedStripeCustomerId || !fetchedUserDetail) {
+      if (!user || !fetchedUserDetail) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      if (!user.stripeCustomerId) {
         return NextResponse.json({ error: "Missing stripeCustomerId" }, { status: 400 });
       }
 
@@ -29,7 +33,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ billingUrl: "/#pricing" });
       }
 
-      stripeCustomerId = fetchedStripeCustomerId;
+      stripeCustomerId = user.stripeCustomerId;
     }
     const billingUrl = await generateBillingLink(stripeCustomerId);
 

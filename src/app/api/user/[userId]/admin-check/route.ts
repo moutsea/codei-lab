@@ -1,26 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserByAuth0Id } from '@/db/queries';
+import { getUserById } from '@/db/queries';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ auth0Id: string }> }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
-    const { auth0Id } = await params;
+    const { userId } = await params;
 
-    if (!auth0Id) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Auth0 ID is required' },
+        { error: 'User ID is required' },
         { status: 400 }
       );
     }
 
     // Get user from database
-    const user = await getUserByAuth0Id(auth0Id);
+    const user = await getUserById(userId);
 
     if (!user) {
       return NextResponse.json({
-        isAmin: false
+        isAdmin: false
       });
     }
 

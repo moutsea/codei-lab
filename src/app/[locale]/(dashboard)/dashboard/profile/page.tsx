@@ -216,7 +216,7 @@ ${user.name || user.email}
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-sm font-medium text-gray-600">{pt("userId")}</span>
                   <span className="text-gray-900 font-mono text-xs break-all" style={{ wordBreak: 'break-all', maxWidth: '300px' }}>
-                    {userDetail?.auth0UserId || user?.id || "N/A"}
+                    {userDetail?.userId || user?.id || "N/A"}
                   </span>
                 </div>
               </CardContent>

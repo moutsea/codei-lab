@@ -92,7 +92,7 @@ export const getDailyUserUsageByIdService = async (id: number): Promise<DailyUse
  * Get daily user usage by user ID and date
  */
 export const getDailyUserUsageByUserAndDateService = async (
-    userId: number,
+    userId: string,
     date: string
 ): Promise<DailyUserUsageSelect | null> => {
     try {
@@ -110,7 +110,7 @@ export const getDailyUserUsageByUserAndDateService = async (
 export const getDailyUserUsageByDateRangeService = async (
     startDate: string,
     endDate: string,
-    userId?: number
+    userId?: string
 ): Promise<DailyUserUsageSelect[]> => {
     try {
         const usage = await getDailyUserUsageByDateRange(startDate, endDate, userId);
@@ -144,7 +144,7 @@ export const updateDailyUserUsageByIdService = async (
  * Add tokens to daily usage (create if doesn't exist)
  */
 export const addTokensToDailyUsageService = async (
-    userId: number,
+    userId: string,
     date: string,
     tokens: number
 ): Promise<DailyUserUsageSelect | null> => {
@@ -164,7 +164,7 @@ export const addTokensToDailyUsageService = async (
  * Upsert daily user usage (create or update)
  */
 export const upsertDailyUserUsageService = async (
-    userId: number,
+    userId: string,
     date: string,
     tokens: number
 ): Promise<DailyUserUsageSelect | null> => {
@@ -198,7 +198,7 @@ export const deleteDailyUserUsageByIdService = async (id: number): Promise<Daily
  * Delete daily user usage for a date range
  */
 export const deleteDailyUserUsageByDateRangeService = async (
-    userId: number,
+    userId: string,
     startDate: string,
     endDate: string
 ): Promise<DailyUserUsageSelect[]> => {
@@ -215,7 +215,7 @@ export const deleteDailyUserUsageByDateRangeService = async (
 /**
  * Delete all daily usage records for a user
  */
-export const deleteAllDailyUserUsageByUserIdService = async (userId: number): Promise<DailyUserUsageSelect[]> => {
+export const deleteAllDailyUserUsageByUserIdService = async (userId: string): Promise<DailyUserUsageSelect[]> => {
     try {
         const usage = await deleteAllDailyUserUsageByUserId(userId);
         console.log(`✅ Deleted ${usage.length} daily user usage records for user ${userId}`);
@@ -278,7 +278,7 @@ export const getMonthlyApiUsageByKeyAndMonthService = async (
  */
 export const getApiKeysUsageByMonthService = async (
     month: string,
-    userId?: number
+    userId?: string
 ): Promise<MonthlyApiUsageWithName[]> => {
     try {
         const usage = await getApiKeysUsageByMonth(month, userId);
@@ -415,7 +415,7 @@ export const deleteAllMonthlyApiUsageByApiKeyService = async (apiKey: string): P
 /**
  * Delete all monthly usage records for a user
  */
-export const deleteAllMonthlyApiUsageByUserIdService = async (userId: number): Promise<MonthlyApiUsageSelect[]> => {
+export const deleteAllMonthlyApiUsageByUserIdService = async (userId: string): Promise<MonthlyApiUsageSelect[]> => {
     try {
         const usage = await deleteAllMonthlyApiUsageByUserId(userId);
         console.log(`✅ Deleted ${usage.length} monthly API usage records for user ${userId}`);
@@ -448,7 +448,7 @@ export const createMonthlyUserUsageService = async (
  * Get monthly user usage by user ID and month
  */
 export const getMonthlyUserUsageByUserAndMonthService = async (
-    userId: number,
+    userId: string,
     month: string
 ): Promise<MonthlyUserUsageSelect | null> => {
     try {
@@ -466,7 +466,7 @@ export const getMonthlyUserUsageByUserAndMonthService = async (
 export const getMonthlyUserUsageByMonthRangeService = async (
     startMonth: string,
     endMonth: string,
-    userId?: number
+    userId?: string
 ): Promise<MonthlyUserUsageSelect[]> => {
     try {
         const usage = await getMonthlyUserUsageByMonthRange(startMonth, endMonth, userId);
@@ -481,7 +481,7 @@ export const getMonthlyUserUsageByMonthRangeService = async (
  * Get recent monthly user usage records
  */
 export const getRecentMonthlyUserUsageService = async (
-    userId?: number,
+    userId?: string,
     limit: number = 12
 ): Promise<MonthlyUserUsageSelect[]> => {
     try {
@@ -510,7 +510,7 @@ export const getUsersUsageByMonthService = async (month: string): Promise<Monthl
  * Get monthly usage count for a user
  */
 export const getMonthlyUserUsageCountService = async (
-    userId: number,
+    userId: string,
     startMonth?: string,
     endMonth?: string
 ): Promise<number> => {
@@ -538,7 +538,7 @@ export const getMonthlyUserUsageCountService = async (
 export const addTokensToUsageService = async (
     apiKey: string,
     apiData: ApiDetail,
-    userId: number,
+    userId: string,
     date: string,
     month: string,
     userData: UserDetail,
@@ -605,7 +605,7 @@ export const addTokensToUsageService = async (
  * Upsert monthly user usage (create or update)
  */
 export const upsertMonthlyUserUsageService = async (
-    userId: number,
+    userId: string,
     month: string,
     tokens: number
 ): Promise<MonthlyUserUsageSelect | null> => {
@@ -622,7 +622,7 @@ export const upsertMonthlyUserUsageService = async (
 /**
  * Delete all monthly usage records for a user
  */
-export const deleteAllMonthlyUserUsageByUserIdService = async (userId: number): Promise<MonthlyUserUsageSelect[]> => {
+export const deleteAllMonthlyUserUsageByUserIdService = async (userId: string): Promise<MonthlyUserUsageSelect[]> => {
     try {
         const usage = await deleteAllMonthlyUserUsageByUserId(userId);
         console.log(`✅ Deleted ${usage.length} monthly user usage records for user ${userId}`);

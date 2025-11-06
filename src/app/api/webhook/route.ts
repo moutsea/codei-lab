@@ -5,7 +5,7 @@ import { UserDetail } from '@/db/queries/users'
 
 import { createSubscription, getUserSubscriptionByStripeSubscriptionId, getUserSubscriptionByUserId, updateSubscriptionByStripeId, updateSubscriptionByUserId } from '@/lib/services/subscription_service';
 import { createPaymentFromStripeIntent } from '@/lib/services/payment_service';
-import { createOrUpdateUserDetailCacheByAuth0Id, deleteUserDetailCache, getStripeCustomerIdByAuth0Id, getUserFromDBById, updateUserStripeCustomerIdService } from '@/lib/services/user_service';
+import { createOrUpdateUserDetailCache, deleteUserDetailCache, getUserFromDBById, updateUserStripeCustomerIdService } from '@/lib/services/user_service';
 import { getPlanFromDBById } from '@/lib/services/plan_service'
 export const runtime = 'nodejs';
 
@@ -47,7 +47,7 @@ async function verifyWebhookSignature(
 }
 
 async function createSubscriptionFromPlan(
-  userId: number,
+  userId: string,
   planId: string,
   status: string,
   stripeCustomerId: string,
@@ -107,7 +107,7 @@ async function createSubscriptionFromPlan(
 
 // 创建订阅记录
 async function createSubscriptionRecord(
-  userId: number,
+  userId: string,
   planId: string,
   stripeSubscription: Stripe.Subscription
 ) {
@@ -134,7 +134,7 @@ async function createSubscriptionRecord(
 
 
 async function createPayment(
-  userId: number,
+  userId: string,
   subscriptionId: string | null,
   paymentIntentId: string,
   amountTotal: number,
@@ -167,7 +167,7 @@ async function createPayment(
 }
 
 async function createPaymentRecord(
-  userId: number,
+  userId: string,
   stripeSubscription: Stripe.Subscription
 ) {
   const subscription = stripeSubscription;
@@ -240,7 +240,7 @@ async function updateUserCustomerId(
   userId: string,
   customerId: string
 ) {
-  const user = await getUserFromDBById(parseInt(userId));
+  const user = await getUserFromDBById(userId);
 
   if (user && customerId && !user.stripeCustomerId) {
     // 使用 user_service 更新用户的 Stripe 客户 ID
@@ -289,8 +289,8 @@ export async function POST(request: NextRequest) {
 
           await Promise.all([
             updateUserCustomerId(userId, stripeCustomerId),
-            createPayment(parseInt(userId), planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status),
-            createSubscriptionFromPlan(parseInt(userId), planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
+            createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status),
+            createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
           ]);
 
 
@@ -311,13 +311,15 @@ export async function POST(request: NextRequest) {
           await updateUserCustomerId(userId, stripeCustomerId)
 
           const userdetail: UserDetail = {
-            userId: parseInt(userId),
-            auth0UserId: auth0Id,
+            userId: userId,
+            name: null,
+            email: null,
             stripeCustomerId,
-            requestLimit
+            requestLimit,
+            tokenMonthlyUsed: 0
           }
 
-          await createOrUpdateUserDetailCacheByAuth0Id(auth0Id, userdetail);
+          await createOrUpdateUserDetailCache(userId, userdetail);
         } else {
           console.log("Unknow session mode");
         }
@@ -339,20 +341,22 @@ export async function POST(request: NextRequest) {
           return new Response('Missing metadata', { status: 400 });
         }
 
-        await createSubscriptionRecord(parseInt(userId), planId, subscription);
-        await createPaymentRecord(parseInt(userId), subscription);
+        await createSubscriptionRecord(userId, planId, subscription);
+        await createPaymentRecord(userId, subscription);
 
         const userdetail: UserDetail = {
-          userId: parseInt(userId),
-          auth0UserId: auth0Id,
+          userId: userId,
+          name: null,
+          email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId,
           requestLimit,
           stripeCustomerId,
-          membershipLevel
+          membershipLevel,
+          tokenMonthlyUsed: 0
         }
 
-        await createOrUpdateUserDetailCacheByAuth0Id(auth0Id, userdetail);
+        await createOrUpdateUserDetailCache(userId, userdetail);
 
         console.log(`Subscription created for user ${auth0Id}, planId ${planId}`);
         break;
@@ -362,14 +366,13 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
 
         const userId = subscription.metadata?.userId;
-        const auth0Id = subscription.metadata?.auth0Id;
-        const stripeCustomerId = await getStripeCustomerIdByAuth0Id(auth0Id);
+        const stripeCustomerId = subscription.customer as string;
         const planId = subscription.items.data[0]?.price?.id || null;
         const plan = planId ? await getPlanFromDBById(planId) : null;
         const membershipLevel = plan?.membershipLevel || null;
         const requestLimit = plan?.requestLimit || null;
 
-        if (!userId || !auth0Id || !plan || !membershipLevel || !stripeCustomerId || !requestLimit) {
+        if (!userId || !plan || !membershipLevel || !stripeCustomerId || !requestLimit) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
         }
@@ -398,19 +401,21 @@ export async function POST(request: NextRequest) {
         };
 
         await updateSubscriptionByStripeId(subscription.id, updates);
-        await createPaymentRecord(parseInt(userId), subscription);
+        await createPaymentRecord(userId, subscription);
 
         const userdetail: UserDetail = {
-          userId: parseInt(userId),
-          auth0UserId: auth0Id,
+          userId: userId,
+          name: null,
+          email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId!,
           requestLimit,
           stripeCustomerId,
-          membershipLevel
+          membershipLevel,
+          tokenMonthlyUsed: 0
         }
 
-        await createOrUpdateUserDetailCacheByAuth0Id(auth0Id, userdetail);
+        await createOrUpdateUserDetailCache(userId, userdetail);
 
         console.log(`Subscription updated: ${subscription.id}`);
         break;
@@ -428,7 +433,7 @@ export async function POST(request: NextRequest) {
           cancelAtPeriodEnd: true,
         });
 
-        await deleteUserDetailCache(parseInt(userId));
+        await deleteUserDetailCache(userId);
 
         console.log(`Subscription deleted: ${subscription.id}`);
         break;

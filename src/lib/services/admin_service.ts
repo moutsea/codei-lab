@@ -1,7 +1,7 @@
 import { getTotalRevenue, getMonthlyRevenue, getTotalRevenueByCurrency, getMonthlyRevenueByCurrency } from '@/db/queries/payments';
 import { getTotalTokensUsed, getTokensUsedThisMonth } from '@/db/queries/monthly-api-usage';
 import { getSubscriptionStats, getSubscriptionsThisMonth } from '@/db/queries/subscriptions';
-import { getUsersCount, getNewUsersThisMonth } from '@/db/queries/users';
+import { getUsersCount, getNewUsersThisMonth, getUserById } from '@/db/queries/users';
 import type { UserSelect } from '@/db/schema';
 
 export interface AdminServiceError {
@@ -57,10 +57,9 @@ type AdminStatsResult = AdminServiceError | AdminStatsSuccess;
 
 
 // Admin authentication service
-export async function authenticateAdmin(auth0Id: string): Promise<AdminAuthResult> {
+export async function authenticateAdmin(userId: string): Promise<AdminAuthResult> {
   try {
-    const { getUserByAuth0Id } = await import('@/db/queries');
-    const user = await getUserByAuth0Id(auth0Id);
+    const user = await getUserById(userId);
 
     if (!user) {
       return { success: false, error: 'User not found', status: 404 };
@@ -78,10 +77,10 @@ export async function authenticateAdmin(auth0Id: string): Promise<AdminAuthResul
 }
 
 // Get all admin statistics in one service call
-export async function getAdminStatistics(auth0Id: string): Promise<AdminStatsResult> {
+export async function getAdminStatistics(userId: string): Promise<AdminStatsResult> {
   try {
     // First authenticate the admin
-    const authResult = await authenticateAdmin(auth0Id);
+    const authResult = await authenticateAdmin(userId);
     if (!authResult.success) {
       return authResult;
     }

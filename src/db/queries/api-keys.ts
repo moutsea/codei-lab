@@ -25,7 +25,7 @@ export async function createApiKey(data: Omit<ApiKeyInsert, 'id' | 'createdAt' |
 /**
  * Generate and create a new API key with default request limit and optional expiration
  */
-export async function generateApiKey(userId: number, name: string, requestLimit: number | null = 100000, expiredAt?: Date | null): Promise<ApiKeySelect> {
+export async function generateApiKey(userId: string, name: string, requestLimit: number | null = 100000, expiredAt?: Date | null): Promise<ApiKeySelect> {
   const key = generateRandomApiKey();
   return await createApiKey({ userId, name, key, requestLimit, expiredAt });
 }
@@ -55,7 +55,7 @@ export async function getApiKeyByKey(key: string): Promise<ApiKeySelect | null> 
 /**
  * Get API keys by name for a user
  */
-export async function getApiKeysByName(userId: number, name: string): Promise<ApiKeySelect[]> {
+export async function getApiKeysByName(userId: string, name: string): Promise<ApiKeySelect[]> {
   return await db()
     .select()
     .from(apiKeys)
@@ -69,7 +69,7 @@ export async function getApiKeysByName(userId: number, name: string): Promise<Ap
 /**
  * Search API keys by name pattern for a user
  */
-export async function searchApiKeysByName(userId: number, namePattern: string): Promise<ApiKeySelect[]> {
+export async function searchApiKeysByName(userId: string, namePattern: string): Promise<ApiKeySelect[]> {
   return await db()
     .select()
     .from(apiKeys)
@@ -83,7 +83,7 @@ export async function searchApiKeysByName(userId: number, namePattern: string): 
 /**
  * Get all API keys for a user with current month usage
  */
-export async function getApiKeysByUserId(userId: number, currentMonth?: string): Promise<ApiKeyWithUsage[]> {
+export async function getApiKeysByUserId(userId: string, currentMonth?: string): Promise<ApiKeyWithUsage[]> {
   const month = currentMonth || new Date().toISOString().slice(0, 7); // YYYY-MM format
 
   return await db()
@@ -114,7 +114,7 @@ export async function getApiKeysByUserId(userId: number, currentMonth?: string):
 export async function getApiKeys(options: {
   page?: number;
   limit?: number;
-  userId?: number;
+  userId?: string;
   sortBy?: 'createdAt' | 'lastUsedAt';
   sortOrder?: 'asc' | 'desc';
   nameSearch?: string;
@@ -173,7 +173,7 @@ export async function getRecentlyUsedApiKeys(limit: number = 10): Promise<ApiKey
 /**
  * Get API keys count
  */
-export async function getApiKeysCount(userId?: number): Promise<number> {
+export async function getApiKeysCount(userId?: string): Promise<number> {
   const whereConditions = [];
 
   // Add user filter
@@ -276,7 +276,7 @@ export async function updateApiKeyLastUsedByKey(key: string): Promise<ApiKeySele
  * Create API key with custom name, key, request limit, and optional expiration
  */
 export async function createApiKeyWithName(
-  userId: number,
+  userId: string,
   name: string,
   key?: string,
   requestLimit: number = 100000,
@@ -381,7 +381,7 @@ function generateRandomApiKey(length: number = 32): string {
  * Returns userId, apiMonthlyUsed, and requestLimit for a given api-key
  */
 export async function getApiKeyUsageByApiKey(apiKey: string): Promise<{
-  userId: number | null;
+  userId: string | null;
   apiMonthlyUsed: number;
   requestLimit: number | null;
   expiredAt: Date | null;
