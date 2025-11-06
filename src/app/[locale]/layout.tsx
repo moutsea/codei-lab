@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { locales } from "@/i18n/config";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { SessionProvider } from "next-auth/react";
 
 import type { Metadata } from 'next'
 import {
@@ -110,12 +111,14 @@ export default async function LocaleLayout({
 
 
   return (
-    <ThemeProvider>
-      <NextIntlClientProvider locale={locale} messages={messages}>
-        <main>
-          {children}
-        </main>
-      </NextIntlClientProvider>
-    </ThemeProvider>
+    <SessionProvider>
+      <ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <main>
+            {children}
+          </main>
+        </NextIntlClientProvider>
+      </ThemeProvider>
+    </SessionProvider>
   );
 }

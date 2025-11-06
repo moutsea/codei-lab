@@ -37,6 +37,7 @@ export async function generateStaticParams() {
   return params;
 }
 
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, category, slug } = await params;
@@ -53,14 +54,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const content = getMarkdownContent(fileData.filePath, locale);
     const titleMatch = content.match(/^# (.+)$/m);
     const title = titleMatch ? titleMatch[1] : slug;
+    const localCom = locale === 'en' ? '' : `/${encodeURIComponent(locale)}`
 
-    const canonicalPath = `/${encodeURIComponent(locale)}/docs/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`;
+    const canonicalPath = `${localCom}/docs/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`;
 
     return {
       title: `${title} - Documentation`,
       description: `Documentation for ${title}`,
       alternates: {
         canonical: canonicalPath,
+        languages: {
+          'en': `/docs/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
+          'zh': `/zh/docs/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`
+        }
       },
     };
   } catch {
@@ -69,6 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 }
+
 
 export default async function DocPage({ params }: PageProps) {
   const { locale, category, slug } = await params;

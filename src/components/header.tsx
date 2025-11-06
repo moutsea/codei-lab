@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useUser } from "@auth0/nextjs-auth0";
+import { useSession, signIn } from "next-auth/react";
 import UserMenu from "@/components/user-menu";
 import { StyleToggle } from "@/components/theme-toggle";
 import { useTheme } from "@/contexts/theme-context";
@@ -33,8 +33,7 @@ export default function Header() {
   const { theme } = useTheme();
 
   const handleClick = () => {
-    const returnTo = window.location.pathname
-    window.location.assign(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`)
+    signIn(undefined, { callbackUrl: window.location.pathname });
   };
 
   const navigationItems: NavigationItem[] = [
@@ -104,7 +103,9 @@ export default function Header() {
     </div>
   );
 
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const isLoading = status === 'loading';
+  const user = session?.user;
 
   return (
     <header className="sticky top-0 z-50 w-full border-0 bg-background">

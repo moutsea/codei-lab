@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useUser } from "@auth0/nextjs-auth0";
+import { useSession, signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,7 +17,8 @@ import { CreditCard, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { useLocale } from "next-intl";
 
 export default function UserMenu() {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const t = useTranslations("userMenu");
   const router = useRouter();
   const locale = useLocale();
@@ -25,12 +26,12 @@ export default function UserMenu() {
 
   React.useEffect(() => {
     // Check if user is admin
-    if (user?.sub) {
-      fetch(`/api/user/${user.sub}/admin-check`)
+    if (user?.email) {
+      fetch(`/api/user/${user.email}/admin-check`)
         .then(response => response.json())
         .then(data => setIsAdmin(data.isAdmin))
     }
-  }, [user?.sub]);
+  }, [user?.email]);
 
   if (!user) {
     return null;
@@ -51,7 +52,7 @@ export default function UserMenu() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ auth0UserId: user.sub }),
+        body: JSON.stringify({ email: user.email }),
       });
 
       // 如果响应不是成功的状态码（200），抛出错误
@@ -72,7 +73,7 @@ export default function UserMenu() {
   };
 
   const handleLogout = () => {
-    window.location.assign(`/auth/logout`)
+    signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -81,7 +82,7 @@ export default function UserMenu() {
         <div className="relative group">
           <div className="relative overflow-hidden rounded-full w-10 h-10 transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25 cursor-pointer">
             <Image
-              src={user.picture || "/default-avatar.png"}
+              src={user.image || "/default_avatar.png"}
               alt="Profile"
               width={40}
               height={40}

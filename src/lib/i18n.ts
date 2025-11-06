@@ -14,9 +14,9 @@ export const OG_LOCALE_MAP: Record<AppLocale, string> = {
 export function getSiteUrl() {
     const prod = process.env.NODE_ENV === 'production';
     const base =
-        prod && process.env.NEXT_PUBLIC_SITE_URL
-            ? process.env.NEXT_PUBLIC_SITE_URL
-            : 'http://localhost:3001';
+        prod && process.env.NEXT_PUBLIC_WEB_URL
+            ? process.env.NEXT_PUBLIC_WEB_URL
+            : 'https://www.claudeide.net';
     return base.replace(/\/$/, ''); // 去掉末尾斜杠，便于拼接
 }
 

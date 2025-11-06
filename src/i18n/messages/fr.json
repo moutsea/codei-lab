@@ -434,5 +434,12 @@
       "community": "Forum Communautaire"
     },
     "markAllComplete": "Marquer Tout comme Terminé"
+  },
+  "auth": {
+    "welcomeBack": "Bon Retour",
+    "signInDescription": "Choisissez votre méthode de connexion préférée pour continuer",
+    "signInWith": "Se connecter avec {{provider}}",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire"
   }
 }

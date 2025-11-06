@@ -427,5 +427,12 @@
       "community": "Community Forum"
     },
     "markAllComplete": "Mark All as Complete"
+  },
+  "auth": {
+    "welcomeBack": "Welcome Back",
+    "signInDescription": "Choose your preferred sign-in method to continue",
+    "signInWith": "Sign in with {{provider}}",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
   }
 }

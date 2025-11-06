@@ -434,5 +434,12 @@
       "community": "社区论坛"
     },
     "markAllComplete": "标记全部完成"
+  },
+  "auth": {
+    "welcomeBack": "欢迎回来",
+    "signInDescription": "选择您偏好的登录方式继续",
+    "signInWith": "使用 {{provider}} 登录",
+    "noAccount": "还没有账户？",
+    "signUp": "注册"
   }
 }

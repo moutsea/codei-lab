@@ -6,7 +6,7 @@ import { routing } from "./i18n/routing";
 
 // next-intl middleware
 const intlMiddleware = createMiddleware(routing);
-const protectedRoutes = ["/auth"];
+// const protectedRoutes = ["/auth"];
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
@@ -25,12 +25,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // 2. 针对需要保护的路径，跑 auth0
-  const needsAuth = protectedRoutes.some((prefix) => path.startsWith(prefix));
+  // const needsAuth = protectedRoutes.some((prefix) => path.startsWith(prefix));
 
-  if (needsAuth) {
-    const authResponse = await auth0.middleware(req);
-    if (authResponse) return authResponse;
-  }
+  // if (needsAuth) {
+  //   const authResponse = await auth0.middleware(req);
+  //   if (authResponse) return authResponse;
+  // }
 
   // 3. 默认继续
   return intlResponse ?? NextResponse.next();
