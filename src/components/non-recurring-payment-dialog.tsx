@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@auth0/nextjs-auth0';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
@@ -64,7 +64,8 @@ export function NonRecurringPaymentDialog({
   loading: externalLoading = false,
   hideTrigger = false,
 }: NonRecurringPaymentDialogProps) {
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
 
   // Use controlled mode if open prop is provided, otherwise use internal state
@@ -93,8 +94,8 @@ export function NonRecurringPaymentDialog({
 
   const handlePurchase = async () => {
     try {
-      if (!user?.sub) {
-        window.location.assign("/auth/login");
+      if (!user?.id) {
+        window.location.assign("/login");
         return;
       }
 
@@ -118,7 +119,7 @@ export function NonRecurringPaymentDialog({
           requestLimit: selectedPlanData.requestLimit,
           interval: selectedPlanData.interval,
           membershipLevel: selectedPlanData.membershipLevel,
-          auth0Id: user.sub,
+          auth0Id: user.id,
         }),
       });
 

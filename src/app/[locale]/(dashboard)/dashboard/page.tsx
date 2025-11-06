@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, Calendar, BarChart3 } from "lucide-react";
-import { useUser } from "@auth0/nextjs-auth0";
+import { useSession } from "next-auth/react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DailyUsageChart } from "@/components/ui/daily-usage-chart";
 import { MonthPicker } from "@/components/ui/month-picker";
@@ -30,7 +30,9 @@ interface DailyUsageItem {
 
 
 export default function Dashboard() {
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isLoading = status === 'loading';
   const {
     userDetail,
     usageData,
@@ -78,7 +80,7 @@ export default function Dashboard() {
 
   // 获取特定月份的每日使用数据
   const fetchDailyUsageData = useCallback(async (date: Date) => {
-    if (!user?.sub) return;
+    if (!user?.id) return;
 
     try {
       setLoadingDailyUsage(true);
@@ -103,7 +105,7 @@ export default function Dashboard() {
       const { startDate, endDate } = getMonthRange(year, month);
 
       const response = await fetch(
-        `/api/user/${user.sub}/usage?startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}`
+        `/api/user/${user.id}/usage?startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}`
       );
 
       if (response.ok) {
@@ -127,14 +129,14 @@ export default function Dashboard() {
     } finally {
       setLoadingDailyUsage(false);
     }
-  }, [user?.sub]);
+  }, [user?.id]);
 
   // 当选择的月份变化时，获取对应的每日使用数据
   useEffect(() => {
-    if (user?.sub && isActive) {
+    if (user?.id && isActive) {
       fetchDailyUsageData(selectedMonth);
     }
-  }, [selectedMonth, user?.sub, isActive, fetchDailyUsageData]);
+  }, [selectedMonth, user?.id, isActive, fetchDailyUsageData]);
 
   const formatTokens = (tokens: number | undefined) => {
     if (typeof tokens !== 'number' || isNaN(tokens)) {
@@ -209,7 +211,7 @@ export default function Dashboard() {
   // Redirect to login if not authenticated
   if (!user) {
     const returnTo = window.location.pathname;
-    window.location.assign(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`)
+    window.location.assign(`/login?returnTo=${encodeURIComponent(returnTo)}`)
   }
 
   // 如果用户没有订阅，显示 tutorial

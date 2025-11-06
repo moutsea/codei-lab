@@ -1,7 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { auth0 } from "./lib/auth0";
 import { routing } from "./i18n/routing";
 
 // next-intl middleware

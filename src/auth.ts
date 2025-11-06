@@ -4,6 +4,14 @@ import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
 
+// Extend the built-in session types
+declare module "next-auth" {
+    interface Session {
+        provider?: string;
+        accessToken?: string;
+    }
+}
+
 export const {
     auth,
     signIn,
@@ -30,4 +38,16 @@ export const {
             issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID || "common"}/v2.0`
         }),
     ],
+
+    events: {
+        /**
+         * @param  {object}  message      Message object
+         * @param  {object}  session      Session object
+         */
+        async signIn(message) {
+            console.log('=== NEXTAUTH SIGN IN EVENT ===');
+            console.log('Message:', JSON.stringify(message.user, null, 2));
+            console.log('=== END SIGN IN EVENT ===\n');
+        },
+    },
 });

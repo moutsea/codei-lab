@@ -10,14 +10,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { NonRecurringPaymentDialog } from '@/components/non-recurring-payment-dialog';
 import { usePlans, type PlanWithPricing } from '@/hooks/usePlans';
 import { I18nBillingIntervalSelector } from '@/components/billing-interval-selector';
-import { useUser } from '@auth0/nextjs-auth0';
+import { useSession } from 'next-auth/react';
 import React, { useState } from 'react';
 import { useUserData } from '@/hooks/useUserData';
 
 export default function Pricing() {
   const t = useTranslations('pricingSection');
   const currentLocale = useLocale();
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const [showNonRecurringDialog, setShowNonRecurringDialog] = useState(false);
   const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
 
@@ -206,8 +207,8 @@ export default function Pricing() {
         return;
       }
 
-      if (!user?.sub) {
-        window.location.assign("/auth/login");
+      if (!user?.email) {
+        window.location.assign("/login");
         return;
       }
 
@@ -238,7 +239,7 @@ export default function Pricing() {
           requestLimit: plan.requestLimit,
           interval: selectedInterval,
           membershipLevel: plan.membershipLevel,
-          auth0Id: user.sub,
+          auth0Id: user.id,
         }),
       });
 

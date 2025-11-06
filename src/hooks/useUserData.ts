@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useUser } from '@auth0/nextjs-auth0';
+import { useSession } from 'next-auth/react';
 
 
 interface UsageData {
@@ -40,7 +40,8 @@ type UseUserDataOptions = {
 export function useUserData(options: UseUserDataOptions = {}) {
   const { enabled = true } = options;
 
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null); // 主要 UserDetail 数据
@@ -49,13 +50,13 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 获取用户信息和订阅数据
   const fetchUserData = useCallback(async (forceRefresh = false) => {
-    if (!user?.sub) return;
+    if (!user?.email) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/user/${user.sub}${forceRefresh ? '?refresh=true' : ''}`);
+      const response = await fetch(`/api/user/${user.id}${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -65,16 +66,16 @@ export function useUserData(options: UseUserDataOptions = {}) {
       const userDetailData = data.user as UserDetail;
 
       if (!userDetailData) {
-        const res = await fetch(`/api/user/${user.sub}`, {
+        const res = await fetch(`/api/user/${user.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             email: user.email,
-            nickname: user.nickname,
+            nickname: user.name,
             name: user.name,
-            avatarUrl: user.picture
+            avatarUrl: user.image
           }),
         });
 
@@ -113,17 +114,17 @@ export function useUserData(options: UseUserDataOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [user?.sub]);
+  }, [user?.email]);
 
   // 获取使用数据
   const fetchUsageData = useCallback(async (forceRefresh = false) => {
-    if (!user?.sub) return;
+    if (!user?.id) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/user/${user.sub}/usage${forceRefresh ? '?refresh=true' : ''}`);
+      const response = await fetch(`/api/user/${user.id}/usage${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -139,7 +140,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [user?.sub]);
+  }, [user?.email]);
 
   // 获取所有数据
   const fetchAllData = useCallback(async (forceRefresh = false) => {
@@ -151,10 +152,10 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 用户登录时自动获取数据
   useEffect(() => {
-    if (user?.sub && enabled) {
+    if (user?.email && enabled) {
       fetchAllData();
     }
-  }, [user?.sub, fetchAllData, enabled]);
+  }, [user?.email, fetchAllData, enabled]);
 
   // 计算属性：方便使用的数据
   const isActive = userDetail?.active;

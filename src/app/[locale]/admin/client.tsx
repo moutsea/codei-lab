@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { useUser } from '@auth0/nextjs-auth0';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Users, DollarSign, Activity, CreditCard, TrendingUp, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,7 +59,8 @@ interface MonthlyMetrics {
 
 export function AdminDashboardClient() {
   const t = useTranslations('admin');
-  const { user } = useUser();
+  const { data: session } = useSession();
+  const user = session?.user;
   const router = useRouter();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [monthlyMetrics, setMonthlyMetrics] = useState<MonthlyMetrics[]>([]);
@@ -90,11 +91,11 @@ export function AdminDashboardClient() {
   const fetchMonthlyMetrics = useCallback(async () => {
     try {
       const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
-      console.log('Fetching monthly metrics for user:', user?.sub, 'Current month should be:', currentMonth);
+      console.log('Fetching monthly metrics for user:', user?.id, 'Current month should be:', currentMonth);
 
       const response = await fetch('/api/admin/monthly-metrics?months=12', {
         headers: {
-          'x-user-id': user?.sub || '',
+          'x-user-id': user?.id || '',
         },
       });
 

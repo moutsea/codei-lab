@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { useUser } from "@auth0/nextjs-auth0";
+import { useSession } from "next-auth/react";
 import { useUserData } from "@/hooks/useUserData";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import { User, Mail, Calendar, CheckCircle, RefreshCw, Edit, Save, X } from "luc
 export default function ProfilePage() {
   const t = useTranslations("sidebar");
   const pt = useTranslations("dashboard.profile");
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isLoading = status === 'loading';
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -42,14 +44,14 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = async () => {
-    if (!user?.sub) {
+    if (!user?.id) {
       alert('User not authenticated');
       return;
     }
 
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/user/${user.sub}`, {
+      const response = await fetch(`/api/user/${user.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +94,7 @@ I would like to request a refund for my subscription.
 User Information:
 - Name: ${user.name || 'Not provided'}
 - Email: ${user.email}
-- User ID: ${user.sub || 'Not provided'}
+- User ID: ${user.id || 'Not provided'}
 - Subscription Type: ${userDetail?.membershipLevel || 'Standard'}
 
 Reason for refund request:
@@ -156,7 +158,7 @@ ${user.name || user.email}
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
                   <img
-                    src={user.picture}
+                    src={user.image || '/default_avatar.png'}
                     alt={userDetail.name || user.name || "Profile"}
                     className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                   />
@@ -214,7 +216,7 @@ ${user.name || user.email}
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-sm font-medium text-gray-600">{pt("userId")}</span>
                   <span className="text-gray-900 font-mono text-xs break-all" style={{ wordBreak: 'break-all', maxWidth: '300px' }}>
-                    {userDetail?.auth0UserId || user?.sub || "N/A"}
+                    {userDetail?.auth0UserId || user?.id || "N/A"}
                   </span>
                 </div>
               </CardContent>
@@ -284,21 +286,6 @@ ${user.name || user.email}
               </CardContent>
             </Card>
           </div>
-
-          {/* Additional Information */}
-          {user.locale && (
-            <Card>
-              <CardHeader>
-                <CardTitle>{pt("preferences")}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-sm font-medium text-gray-600">{pt("language")}</span>
-                  <span className="text-sm text-gray-900">{user.locale.toUpperCase()}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       )}
 

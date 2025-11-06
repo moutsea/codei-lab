@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Key, Copy, Eye, EyeOff, Trash2, Clock, AlertCircle, CheckCircle, BarChart3, TrendingUp, Edit, Save, X } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { useUser } from "@auth0/nextjs-auth0";
+import { useSession } from "next-auth/react";
 import { useUserData } from "@/hooks/useUserData";
 
 interface ApiKey {
@@ -22,7 +22,9 @@ interface ApiKey {
 }
 
 export default function ApiKeysPage() {
-  const { user, isLoading } = useUser();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const isLoading = status === 'loading';
   const {
     userDetail,
     isActive,
@@ -46,7 +48,7 @@ export default function ApiKeysPage() {
 
   // 获取用户订阅的计划信息
   const getUserPlanInfo = async () => {
-    if (!user?.sub || !isActive || !userDetail?.planId) {
+    if (!user?.id || !isActive || !userDetail?.planId) {
       return null;
     }
 
@@ -78,13 +80,13 @@ export default function ApiKeysPage() {
 
   // 获取 API Keys 数据
   const fetchApiKeys = async () => {
-    if (!user?.sub) return;
+    if (!user?.id) return;
 
     try {
       setLoadingApiKeys(true);
       setError(null);
 
-      const response = await fetch(`/api/user/${user.sub}/api-keys`);
+      const response = await fetch(`/api/user/${user.id}/api-keys`);
 
       if (!response.ok) {
         throw new Error('Failed to fetch API keys');
@@ -102,7 +104,7 @@ export default function ApiKeysPage() {
 
   // 获取计划信息
   const fetchPlanInfo = async () => {
-    if (!user?.sub || !isActive || !userDetail?.planId) {
+    if (!user?.id || !isActive || !userDetail?.planId) {
       setPlanInfo(null);
       return;
     }
@@ -160,7 +162,7 @@ export default function ApiKeysPage() {
   };
 
   const createNewApiKey = async () => {
-    if (!user?.sub || !newKeyName.trim()) return;
+    if (!user?.id || !newKeyName.trim()) return;
 
     // 检查计划限制
     if (planInfo) {
@@ -187,7 +189,7 @@ export default function ApiKeysPage() {
       setError(null);
       setCreatingApiKey(true);
 
-      const response = await fetch(`/api/user/${user.sub}/api-keys`, {
+      const response = await fetch(`/api/user/${user.id}/api-keys`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,14 +224,14 @@ export default function ApiKeysPage() {
   };
 
   const deleteApiKey = async (keyId: number) => {
-    if (!user?.sub) return;
+    if (!user?.id) return;
 
     // 立即关闭弹窗并设置删除状态
     setDeleteConfirm(null);
     setDeletingKeyId(keyId);
 
     try {
-      const response = await fetch(`/api/user/${user.sub}/api-keys?id=${keyId}`, {
+      const response = await fetch(`/api/user/${user.id}/api-keys?id=${keyId}`, {
         method: 'DELETE',
       });
 
@@ -417,7 +419,7 @@ export default function ApiKeysPage() {
 
       const expiredAt = getExpirationDateFromPeriod(editKeyExpirationPeriod);
 
-      const response = await fetch(`/api/user/${user?.sub}/api-keys?id=${apiKeyId}`, {
+      const response = await fetch(`/api/user/${user?.id}/api-keys?id=${apiKeyId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -474,7 +476,7 @@ export default function ApiKeysPage() {
 
   // Redirect to login if not authenticated
   if (!user) {
-    window.location.href = "/auth/login";
+    window.location.href = "/login";
     return null;
   }
 
