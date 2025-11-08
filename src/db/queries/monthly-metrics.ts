@@ -1,20 +1,7 @@
 import { db } from "../index";
 import { users, payments, monthlyApiUsage, subscriptions } from "../schema";
 import { eq, and, sql, gte, lte } from "drizzle-orm";
-
-export interface MonthlyMetricsData {
-  month: string;
-  users: number;
-  revenue: number;
-  revenueByCurrency: {
-    [currency: string]: {
-      amount: number;
-      currency: string;
-    };
-  };
-  tokens: number;
-  subscriptions: number;
-}
+import type { MonthlyMetricsData } from "@/types/db";
 
 /**
  * Get monthly metrics for the past N months
@@ -61,7 +48,9 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
     const tokensQuery = db()
       .select({
         month: sql<string>`SUBSTRING(${monthlyApiUsage.month}, 1, 7)`.as('month'),
-        total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)`
+        inputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.inputTokens}), 0)`,
+        cachedTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.cachedTokens}), 0)`,
+        outputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.outputTokens}), 0)`
       })
       .from(monthlyApiUsage)
       .where(gte(monthlyApiUsage.month, firstDayOfMonth))
@@ -118,7 +107,15 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
       revenueMap.set(row.month, currentTotal + Number(row.currencyTotal));
     });
 
-    const tokensMap = new Map(tokensResult.map(row => [row.month, row.total]));
+    const tokensMap = new Map(tokensResult.map(row => [
+      row.month,
+      {
+        inputTokens: row.inputTokens,
+        cachedTokens: row.cachedTokens,
+        outputTokens: row.outputTokens,
+        totalTokens: row.inputTokens + row.cachedTokens + row.outputTokens
+      }
+    ]));
     const subscriptionsMap = new Map(subscriptionsResult.map(row => [row.month, row.count]));
 
     // Generate all months in the range
@@ -130,12 +127,22 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
     for (let i = 0; i < months; i++) {
       const monthStr = currentMonth.toISOString().slice(0, 7); // YYYY-MM format
 
+      const tokenData = tokensMap.get(monthStr) || {
+        inputTokens: 0,
+        cachedTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0
+      };
+
       result.push({
         month: monthStr,
         users: usersMap.get(monthStr) || 0,
         revenue: Number(revenueMap.get(monthStr) || 0),
         revenueByCurrency: revenueByCurrencyMap.get(monthStr) || {},
-        tokens: tokensMap.get(monthStr) || 0,
+        inputTokens: tokenData.inputTokens,
+        cachedTokens: tokenData.cachedTokens,
+        outputTokens: tokenData.outputTokens,
+        totalTokens: tokenData.totalTokens,
         subscriptions: subscriptionsMap.get(monthStr) || 0,
       });
 
@@ -193,7 +200,9 @@ export async function getMonthlyMetricsForYear(year: number): Promise<MonthlyMet
     const tokensQuery = db()
       .select({
         month: monthlyApiUsage.month,
-        total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)`
+        inputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.inputTokens}), 0)`,
+        cachedTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.cachedTokens}), 0)`,
+        outputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.outputTokens}), 0)`
       })
       .from(monthlyApiUsage)
       .where(sql`${monthlyApiUsage.month} LIKE ${year + '-'}`)
@@ -249,7 +258,15 @@ export async function getMonthlyMetricsForYear(year: number): Promise<MonthlyMet
       revenueMap.set(row.month, currentTotal + Number(row.currencyTotal));
     });
 
-    const tokensMap = new Map(tokensResult.map(row => [row.month, row.total]));
+    const tokensMap = new Map(tokensResult.map(row => [
+      row.month,
+      {
+        inputTokens: row.inputTokens,
+        cachedTokens: row.cachedTokens,
+        outputTokens: row.outputTokens,
+        totalTokens: row.inputTokens + row.cachedTokens + row.outputTokens
+      }
+    ]));
     const subscriptionsMap = new Map(subscriptionsResult.map(row => [row.month, row.count]));
 
     // Generate all 12 months for the year
@@ -257,12 +274,22 @@ export async function getMonthlyMetricsForYear(year: number): Promise<MonthlyMet
     for (let month = 0; month < 12; month++) {
       const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
 
+      const tokenData = tokensMap.get(monthStr) || {
+        inputTokens: 0,
+        cachedTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0
+      };
+
       result.push({
         month: monthStr,
         users: usersMap.get(monthStr) || 0,
         revenue: Number(revenueMap.get(monthStr) || 0),
         revenueByCurrency: revenueByCurrencyMap.get(monthStr) || {},
-        tokens: tokensMap.get(monthStr) || 0,
+        inputTokens: tokenData.inputTokens,
+        cachedTokens: tokenData.cachedTokens,
+        outputTokens: tokenData.outputTokens,
+        totalTokens: tokenData.totalTokens,
         subscriptions: subscriptionsMap.get(monthStr) || 0,
       });
     }

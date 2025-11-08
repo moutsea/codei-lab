@@ -35,10 +35,10 @@ export async function GET(
         key: key.key,
         createdAt: key.createdAt,
         lastUsedAt: key.lastUsedAt,
-        month: currentMonth(),
-        requestLimit: key.requestLimit,
+        month: subscriptionCycle,
+        quota: key.quota,
         tokensUsed: key.currentMonthUsage || 0,
-        remainingQuota: key.requestLimit ? Math.max(0, key.requestLimit - (key.currentMonthUsage || 0)) : null,
+        remainingQuota: key.quota ? Math.max(0, parseInt(key.quota) - (key.currentMonthUsage || 0)) : null,
         expiredAt: key.expiredAt
       })),
       userId: userId
@@ -62,7 +62,7 @@ export async function POST(
   try {
     const { userId } = await params;
     const body = await request.json();
-    const { name, requestLimit, expiredAt } = body;
+    const { name, quota, expiredAt } = body;
 
     if (!userId) {
       return NextResponse.json(
@@ -89,7 +89,7 @@ export async function POST(
     }
 
     // 创建新的 API Key
-    const newApiKey = await generateApiKey(userId, name.trim(), requestLimit, expiredAt ? new Date(expiredAt) : null);
+    const newApiKey = await generateApiKey(userId, name.trim(), quota, expiredAt ? new Date(expiredAt) : null);
 
     if (!newApiKey) {
       return NextResponse.json(
@@ -104,7 +104,7 @@ export async function POST(
       key: newApiKey.key,
       createdAt: newApiKey.createdAt!.toISOString(),
       lastUsedAt: newApiKey.lastUsedAt ? newApiKey.lastUsedAt.toISOString() : null,
-      requestLimit: newApiKey.requestLimit,
+      quota: newApiKey.quota,
       tokensUsed: 0,
     };
 
@@ -136,7 +136,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { name, requestLimit, expiredAt } = body;
+    const { name, quota, expiredAt } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json(
@@ -158,7 +158,7 @@ export async function PATCH(
     // 更新 API Key
     const updatedApiKey = await updateApiKey(parseInt(keyId), {
       name: name.trim(),
-      requestLimit,
+      quota,
       expiredAt: expiredAt ? new Date(expiredAt) : null,
     });
 
@@ -175,7 +175,7 @@ export async function PATCH(
         id: updatedApiKey.id,
         name: updatedApiKey.name,
         key: updatedApiKey.key,
-        requestLimit: updatedApiKey.requestLimit,
+        quota: updatedApiKey.quota,
         expiredAt: updatedApiKey.expiredAt,
         createdAt: updatedApiKey.createdAt,
         lastUsedAt: updatedApiKey.lastUsedAt

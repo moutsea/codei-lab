@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Use the plan service to get processed plans with cache-first logic
-    const processedPlans = await getProcessedPlans(forceRefresh);
+    const processedPlans = await getProcessedPlans();
 
     if (!processedPlans) {
       return NextResponse.json(

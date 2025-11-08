@@ -27,7 +27,7 @@ import {
     getRecentPaymentsByUserId,
     searchPayments
 } from '@/db/queries/payments';
-import type { PaymentSelect } from '@/db/schema';
+import type { PaymentSelect } from '@/types/schema';
 
 // ========== Payment Creation ==========
 

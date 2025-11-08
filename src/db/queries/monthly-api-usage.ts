@@ -1,13 +1,9 @@
 import { db, DbClient } from "../index";
 import { monthlyApiUsage, apiKeys } from "../schema";
 import { eq, and, desc, sql, gte, lte } from "drizzle-orm";
-import type { MonthlyApiUsageInsert, MonthlyApiUsageSelect } from "../schema";
-
-export interface MonthlyApiUsageWithName extends Omit<MonthlyApiUsageSelect, 'id'> {
-  apiKeyId: number;
-  apiKeyName: string;
-  requestLimit: number | null;
-}
+import type { MonthlyApiUsageInsert, MonthlyApiUsageSelect } from "@/types";
+import { currentCycle } from "@/lib/utils";
+import type { MonthlyApiUsageWithName } from "@/types/db";
 
 // ========== Create Operations ==========
 
@@ -20,30 +16,6 @@ export async function createMonthlyApiUsage(data: Omit<MonthlyApiUsageInsert, 'i
     updatedAt: new Date(),
   }).returning();
   return usage;
-}
-
-/**
- * Create or update monthly API usage (upsert operation)
- */
-export async function upsertMonthlyApiUsage(
-  apiKey: string,
-  month: string,
-  tokens: number
-): Promise<MonthlyApiUsageSelect> {
-  // First try to find existing record
-  const existing = await getMonthlyApiUsageByKeyAndMonth(apiKey, month);
-
-  if (existing) {
-    // Update existing record
-    return await updateMonthlyApiUsageTokens(existing.id, existing.totalTokens + tokens) as MonthlyApiUsageSelect;
-  } else {
-    // Create new record
-    return await createMonthlyApiUsage({
-      apikey: apiKey,
-      month,
-      totalTokens: tokens,
-    }) as MonthlyApiUsageSelect;
-  }
 }
 
 // ========== Read Operations ==========
@@ -88,31 +60,37 @@ export async function getApiKeysUsageByMonth(
       .select({
         apikey: monthlyApiUsage.apikey,
         month: monthlyApiUsage.month,
-        totalTokens: monthlyApiUsage.totalTokens,
+        inputTokens: monthlyApiUsage.inputTokens,
+        cachedTokens: monthlyApiUsage.cachedTokens,
+        outputTokens: monthlyApiUsage.outputTokens,
+        quotaUsed: monthlyApiUsage.quotaUsed,
         updatedAt: monthlyApiUsage.updatedAt,
         apiKeyId: apiKeys.id,
         apiKeyName: apiKeys.name,
-        requestLimit: apiKeys.requestLimit
+        quotaLimit: apiKeys.quota
       })
       .from(monthlyApiUsage)
       .innerJoin(apiKeys, eq(monthlyApiUsage.apikey, apiKeys.key))
       .where(and(...whereConditions, eq(apiKeys.userId, userId)))
-      .orderBy(desc(monthlyApiUsage.totalTokens));
+      .orderBy(desc(sql`(inputTokens + cachedTokens + outputTokens)`));
   } else {
     return await db()
       .select({
         apikey: monthlyApiUsage.apikey,
         month: monthlyApiUsage.month,
-        totalTokens: monthlyApiUsage.totalTokens,
+        inputTokens: monthlyApiUsage.inputTokens,
+        cachedTokens: monthlyApiUsage.cachedTokens,
+        outputTokens: monthlyApiUsage.outputTokens,
+        quotaUsed: monthlyApiUsage.quotaUsed,
         updatedAt: monthlyApiUsage.updatedAt,
         apiKeyId: apiKeys.id,
         apiKeyName: apiKeys.name,
-        requestLimit: apiKeys.requestLimit
+        quotaLimit: apiKeys.quota
       })
       .from(monthlyApiUsage)
       .innerJoin(apiKeys, eq(monthlyApiUsage.apikey, apiKeys.key))
       .where(and(...whereConditions))
-      .orderBy(desc(monthlyApiUsage.totalTokens));
+      .orderBy(desc(sql`(inputTokens + cachedTokens + outputTokens)`));
   }
 }
 
@@ -138,12 +116,16 @@ export async function updateMonthlyApiUsageById(
  */
 export async function updateMonthlyApiUsageTokens(
   id: number,
-  totalTokens: number
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0
 ): Promise<MonthlyApiUsageSelect | null> {
   const [usage] = await db()
     .update(monthlyApiUsage)
     .set({
-      totalTokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
       updatedAt: new Date()
     })
     .where(eq(monthlyApiUsage.id, id))
@@ -157,7 +139,10 @@ export async function updateMonthlyApiUsageTokens(
 export async function addTokensToMonthlyApiUsage(
   apiKey: string,
   month: string,
-  tokens: number,
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0,
+  quotaUsed: number = 0,
   dbInstance: DbClient = db()
 ): Promise<MonthlyApiUsageSelect | null> {
   // 1. 在数据库中原子性地执行 Upsert 操作
@@ -166,12 +151,18 @@ export async function addTokensToMonthlyApiUsage(
     .values({
       apikey: apiKey,
       month: month,
-      totalTokens: tokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
+      quotaUsed: String(quotaUsed),
     })
     .onConflictDoUpdate({
       target: [monthlyApiUsage.apikey, monthlyApiUsage.month],
       set: {
-        totalTokens: sql`${monthlyApiUsage.totalTokens} + ${tokens}`,
+        inputTokens: sql`${monthlyApiUsage.inputTokens} + ${inputTokens}`,
+        cachedTokens: sql`${monthlyApiUsage.cachedTokens} + ${cachedTokens}`,
+        outputTokens: sql`${monthlyApiUsage.outputTokens} + ${outputTokens}`,
+        quotaUsed: sql`${monthlyApiUsage.quotaUsed} + ${quotaUsed}`,
       },
     })
     .returning();
@@ -232,53 +223,65 @@ export async function deleteAllMonthlyApiUsageByUserId(userId: string): Promise<
     .returning();
 }
 
-
-/**
- * Get top monthly usage months for an API key
- */
-export async function getTopMonthlyUsageMonths(
-  apiKey: string,
-  limit: number = 12,
-  startMonth?: string,
-  endMonth?: string
-): Promise<MonthlyApiUsageSelect[]> {
-  const whereConditions = [eq(monthlyApiUsage.apikey, apiKey)];
-
-  if (startMonth) {
-    whereConditions.push(gte(monthlyApiUsage.month, startMonth));
-  }
-  if (endMonth) {
-    whereConditions.push(lte(monthlyApiUsage.month, endMonth));
-  }
-
-  return await db()
-    .select()
-    .from(monthlyApiUsage)
-    .where(and(...whereConditions))
-    .orderBy(desc(monthlyApiUsage.totalTokens))
-    .limit(limit);
-}
-
 /**
  * Get total tokens used across all API keys
  */
-export async function getTotalTokensUsed(): Promise<number> {
+export async function getTotalTokensUsed(): Promise<{
+  inputTokens: number;
+  cachedTokens: number;
+  outputTokens: number;
+}> {
   const [result] = await db()
-    .select({ total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)` })
+    .select({
+      inputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.inputTokens}), 0)`,
+      cachedTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.cachedTokens}), 0)`,
+      outputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.outputTokens}), 0)`
+    })
     .from(monthlyApiUsage);
 
-  return Number(result.total) || 0;
+  return {
+    inputTokens: Number(result.inputTokens) || 0,
+    cachedTokens: Number(result.cachedTokens) || 0,
+    outputTokens: Number(result.outputTokens) || 0
+  };
 }
 
 /**
  * Get tokens used in current month
  */
 export async function getTokensUsedThisMonth(): Promise<number> {
-  const now = new Date();
-  const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-1`;
-
+  const currentMonth = currentCycle();
   const [result] = await db()
-    .select({ total: sql<number>`COALESCE(SUM(${monthlyApiUsage.totalTokens}), 0)` })
+    .select({
+      total: sql<number>`COALESCE(SUM(${monthlyApiUsage.inputTokens} + ${monthlyApiUsage.cachedTokens} + ${monthlyApiUsage.outputTokens}), 0)`
+    })
+    .from(monthlyApiUsage)
+    .where(gte(monthlyApiUsage.month, currentMonth));
+  return Number(result.total) || 0;
+}
+
+/**
+ * Get total quota used across all API keys
+ */
+export async function getTotalQuotaUsed(): Promise<number> {
+  const [result] = await db()
+    .select({
+      total: sql<number>`COALESCE(SUM(${monthlyApiUsage.quotaUsed}), 0)`
+    })
+    .from(monthlyApiUsage);
+
+  return Number(result.total) || 0;
+}
+
+/**
+ * Get quota used in current month
+ */
+export async function getQuotaUsedThisMonth(): Promise<number> {
+  const currentMonth = currentCycle();
+  const [result] = await db()
+    .select({
+      total: sql<number>`COALESCE(SUM(${monthlyApiUsage.quotaUsed}), 0)`
+    })
     .from(monthlyApiUsage)
     .where(gte(monthlyApiUsage.month, currentMonth));
 

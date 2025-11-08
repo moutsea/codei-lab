@@ -1,59 +1,11 @@
 import { getTotalRevenue, getMonthlyRevenue, getTotalRevenueByCurrency, getMonthlyRevenueByCurrency } from '@/db/queries/payments';
-import { getTotalTokensUsed, getTokensUsedThisMonth } from '@/db/queries/monthly-api-usage';
+import { getQuotaUsedThisMonth, getTotalQuotaUsed } from '@/db/queries/monthly-api-usage';
 import { getSubscriptionStats, getSubscriptionsThisMonth } from '@/db/queries/subscriptions';
 import { getUsersCount, getNewUsersThisMonth, getUserById } from '@/db/queries/users';
-import type { UserSelect } from '@/db/schema';
-
-export interface AdminServiceError {
-  success: false;
-  error: string;
-  status: number;
-}
-
-export interface AdminAuthSuccess {
-  success: true;
-  user: UserSelect;
-}
-
-export interface AdminStatsSuccess {
-  success: true;
-  data: {
-    users: {
-      total: number;
-      growth: string;
-    };
-    revenue: {
-      total: number;
-      monthly: number;
-      totalByCurrency: {
-        [currency: string]: {
-          amount: number;
-          currency: string;
-          count: number;
-        };
-      };
-      monthlyByCurrency: {
-        [currency: string]: {
-          amount: number;
-          currency: string;
-          count: number;
-        };
-      };
-    };
-    usage: {
-      totalTokens: number;
-      monthlyTokens: number;
-    };
-    subscriptions: {
-      active: number;
-      total: number;
-      monthlySubscriptions: number;
-    };
-  };
-}
-
-type AdminAuthResult = AdminServiceError | AdminAuthSuccess;
-type AdminStatsResult = AdminServiceError | AdminStatsSuccess;
+import type {
+  AdminAuthResult,
+  AdminStatsResult
+} from '@/types/admin';
 
 
 // Admin authentication service
@@ -93,8 +45,8 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
       monthlyRevenue,
       totalRevenueBreakdown,
       monthlyRevenueBreakdown,
-      totalTokens,
-      tokensThisMonth,
+      totalQuotaUsed,
+      quotaUsedThisMonth,
       subscriptionStats,
       subscriptionsThisMonth
     ] = await Promise.all([
@@ -104,12 +56,11 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
       getMonthlyRevenue(),
       getTotalRevenueByCurrency(),
       getMonthlyRevenueByCurrency(),
-      getTotalTokensUsed(),
-      getTokensUsedThisMonth(),
+      getTotalQuotaUsed(),
+      getQuotaUsedThisMonth(),
       getSubscriptionStats(),
       getSubscriptionsThisMonth()
     ]);
-
     return {
       success: true,
       data: {
@@ -124,8 +75,8 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
           monthlyByCurrency: monthlyRevenueBreakdown.currencies
         },
         usage: {
-          totalTokens: totalTokens,
-          monthlyTokens: tokensThisMonth, // Show tokens used this month instead of active users
+          totalQuotaUsed: totalQuotaUsed,
+          monthlyQuotaUsed: quotaUsedThisMonth, // Show tokens used this month instead of active users
         },
         subscriptions: {
           active: subscriptionStats.active,

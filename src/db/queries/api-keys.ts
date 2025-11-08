@@ -1,13 +1,9 @@
 import { db, DbClient } from "../index";
 import { apiKeys, monthlyApiUsage } from "../schema";
 import { eq, and, desc, sql } from "drizzle-orm";
-import type { ApiKeyInsert, ApiKeySelect } from "../schema";
+import type { ApiKeyInsert, ApiKeySelect } from "@/types";
 import { randomBytes } from 'crypto';
-
-// Enhanced API Key interface with current month usage
-export interface ApiKeyWithUsage extends Omit<ApiKeySelect, never> {
-  currentMonthUsage: number;
-}
+import type { ApiKeyWithUsage, ApiDetail } from "@/types/db";
 // ========== Create Operations ==========
 
 /**
@@ -23,11 +19,11 @@ export async function createApiKey(data: Omit<ApiKeyInsert, 'id' | 'createdAt' |
 }
 
 /**
- * Generate and create a new API key with default request limit and optional expiration
+ * Generate and create a new API key with default quota and optional expiration
  */
-export async function generateApiKey(userId: string, name: string, requestLimit: number | null = 100000, expiredAt?: Date | null): Promise<ApiKeySelect> {
+export async function generateApiKey(userId: string, name: string, quota: string | null = "100000", expiredAt?: Date | null): Promise<ApiKeySelect> {
   const key = generateRandomApiKey();
-  return await createApiKey({ userId, name, key, requestLimit, expiredAt });
+  return await createApiKey({ userId, name, key, quota, expiredAt });
 }
 
 // ========== Read Operations ==========
@@ -92,12 +88,12 @@ export async function getApiKeysByUserId(userId: string, currentMonth?: string):
       userId: apiKeys.userId,
       name: apiKeys.name,
       key: apiKeys.key,
-      requestLimit: apiKeys.requestLimit,
+      quota: apiKeys.quota,
       createdAt: apiKeys.createdAt,
       lastUsedAt: apiKeys.lastUsedAt,
       expiredAt: apiKeys.expiredAt,
       // Add current month usage as a calculated field
-      currentMonthUsage: sql<number>`COALESCE(${monthlyApiUsage.totalTokens}, 0)`.mapWith(Number)
+      currentMonthUsage: sql<number>`COALESCE(${monthlyApiUsage.inputTokens} + ${monthlyApiUsage.cachedTokens} + ${monthlyApiUsage.outputTokens}, 0)`.mapWith(Number)
     })
     .from(apiKeys)
     .leftJoin(monthlyApiUsage, and(
@@ -225,12 +221,12 @@ export async function updateApiKeyByKey(
 }
 
 /**
- * Update API key request limit
+ * Update API key quota
  */
-export async function updateApiKeyRequestLimit(id: number, requestLimit: number): Promise<ApiKeySelect | null> {
+export async function updateApiKeyQuota(id: number, quota: string): Promise<ApiKeySelect | null> {
   const [apiKey] = await db()
     .update(apiKeys)
-    .set({ requestLimit })
+    .set({ quota })
     .where(eq(apiKeys.id, id))
     .returning();
   return apiKey || null;
@@ -273,17 +269,17 @@ export async function updateApiKeyLastUsedByKey(key: string): Promise<ApiKeySele
 }
 
 /**
- * Create API key with custom name, key, request limit, and optional expiration
+ * Create API key with custom name, key, quota, and optional expiration
  */
 export async function createApiKeyWithName(
   userId: string,
   name: string,
   key?: string,
-  requestLimit: number = 100000,
+  quota: string = "100000",
   expiredAt?: Date | null
 ): Promise<ApiKeySelect> {
   const finalKey = key || generateRandomApiKey();
-  return await createApiKey({ userId, name, key: finalKey, requestLimit, expiredAt });
+  return await createApiKey({ userId, name, key: finalKey, quota, expiredAt });
 }
 
 // ========== Delete Operations ==========
@@ -378,21 +374,19 @@ function generateRandomApiKey(length: number = 32): string {
 
 /**
  * Get API key usage and limit details by api-key
- * Returns userId, apiMonthlyUsed, and requestLimit for a given api-key
+ * Returns userId, apiMonthlyUsed, quota, and quotaUsed for a given api-key
  */
-export async function getApiKeyUsageByApiKey(apiKey: string): Promise<{
-  userId: string | null;
-  apiMonthlyUsed: number;
-  requestLimit: number | null;
-  expiredAt: Date | null;
-} | null> {
+export async function getApiKeyUsageByApiKey(apiKey: string): Promise<ApiDetail | null> {
   try {
 
     const apiLastUsage = db()
       .select({
         apiKey: monthlyApiUsage.apikey,
         month: monthlyApiUsage.month,
-        totalTokens: monthlyApiUsage.totalTokens,
+        inputTokens: monthlyApiUsage.inputTokens,
+        cachedTokens: monthlyApiUsage.cachedTokens,
+        outputTokens: monthlyApiUsage.outputTokens,
+        quotaUsed: monthlyApiUsage.quotaUsed,
       })
       .from(monthlyApiUsage)
       .where(eq(monthlyApiUsage.apikey, apiKey))
@@ -403,8 +397,10 @@ export async function getApiKeyUsageByApiKey(apiKey: string): Promise<{
     const result = await db()
       .select({
         userId: apiKeys.userId,
-        requestLimit: apiKeys.requestLimit,
-        apiMonthlyUsed: apiLastUsage.totalTokens || 0,
+        quota: apiKeys.quota,
+        apiMonthlyUsed: sql<number>`COALESCE(${apiLastUsage.inputTokens}, 0) + COALESCE(${apiLastUsage.cachedTokens}, 0) + COALESCE(${apiLastUsage.outputTokens}, 0)`,
+        quotaUsed: sql<string>`COALESCE(${apiLastUsage.quotaUsed}, '0')`,
+        month: apiLastUsage.month,
         expiredAt: apiKeys.expiredAt
       })
       .from(apiKeys)
@@ -422,7 +418,9 @@ export async function getApiKeyUsageByApiKey(apiKey: string): Promise<{
     return {
       userId: row.userId || null,
       apiMonthlyUsed: row.apiMonthlyUsed || 0,
-      requestLimit: row.requestLimit || null,
+      quota: row.quota || null,
+      quotaUsed: row.quotaUsed,
+      month: row.month || null,
       expiredAt: row.expiredAt || null
     };
 

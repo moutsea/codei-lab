@@ -1,7 +1,7 @@
 import { db, DbClient } from "../index";
 import { dailyUserUsage } from "../schema";
 import { eq, and, gte, lte, sql } from "drizzle-orm";
-import type { DailyUserUsageInsert, DailyUserUsageSelect } from "../schema";
+import type { DailyUserUsageInsert, DailyUserUsageSelect } from "@/types";
 
 // ========== Create Operations ==========
 
@@ -15,31 +15,6 @@ export async function createDailyUserUsage(data: Omit<DailyUserUsageInsert, 'id'
   }).returning();
   return usage;
 }
-
-/**
- * Create or update daily user usage (upsert operation)
- */
-export async function upsertDailyUserUsage(
-  userId: string,
-  date: string,
-  tokens: number
-): Promise<DailyUserUsageSelect> {
-  // First try to find existing record
-  const existing = await getDailyUserUsageByUserAndDate(userId, date);
-
-  if (existing) {
-    // Update existing record
-    return await updateDailyUserUsageTokens(existing.id, existing.totalTokens + tokens) as DailyUserUsageSelect;
-  } else {
-    // Create new record
-    return await createDailyUserUsage({
-      userId,
-      date,
-      totalTokens: tokens,
-    }) as DailyUserUsageSelect;
-  }
-}
-
 // ========== Read Operations ==========
 
 /**
@@ -117,12 +92,16 @@ export async function updateDailyUserUsageById(
  */
 export async function updateDailyUserUsageTokens(
   id: number,
-  totalTokens: number
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0
 ): Promise<DailyUserUsageSelect | null> {
   const [usage] = await db()
     .update(dailyUserUsage)
     .set({
-      totalTokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
       updatedAt: new Date()
     })
     .where(eq(dailyUserUsage.id, id))
@@ -142,7 +121,10 @@ export async function updateDailyUserUsageTokens(
 export async function addTokensToDailyUsage(
   userId: string,
   date: string,
-  tokens: number,
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0,
+  quotaUsed: number = 0,
   dbInstance: DbClient = db()
 ): Promise<DailyUserUsageSelect> {
   const [usage] = await dbInstance
@@ -150,7 +132,10 @@ export async function addTokensToDailyUsage(
     .values({
       userId,
       date,
-      totalTokens: tokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
+      quotaUsed: String(quotaUsed),
       // `updatedAt` 也会在插入时设置
       updatedAt: new Date(),
     })
@@ -161,7 +146,10 @@ export async function addTokensToDailyUsage(
       // 定义冲突时要更新的字段
       set: {
         // 使用 sql`` 模板字符串来执行数据库层面的计算，避免竞态条件
-        totalTokens: sql`${dailyUserUsage.totalTokens} + ${tokens}`,
+        inputTokens: sql`${dailyUserUsage.inputTokens} + ${inputTokens}`,
+        cachedTokens: sql`${dailyUserUsage.cachedTokens} + ${cachedTokens}`,
+        outputTokens: sql`${dailyUserUsage.outputTokens} + ${outputTokens}`,
+        quotaUsed: sql`${dailyUserUsage.quotaUsed} + ${quotaUsed}`,
         updatedAt: new Date(),
       },
     })

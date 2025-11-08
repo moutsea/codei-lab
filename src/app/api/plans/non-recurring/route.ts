@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getActiveNonRecurringPlansFromCache } from '@/lib/services/plan_service';
+import { getActiveNonRecurringPlansService } from '@/lib/services/plan_service';
 
 export async function GET(request: NextRequest) {
   try {
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const forceRefresh = searchParams.get('forceRefresh') === 'true';
-
     // Fetch non-recurring plans
-    const plans = await getActiveNonRecurringPlansFromCache(forceRefresh);
+    const plans = await getActiveNonRecurringPlansService();
 
     if (!plans) {
       return NextResponse.json({

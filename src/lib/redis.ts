@@ -174,14 +174,14 @@ export async function checkRedisHealth(): Promise<boolean> {
 
 // 缓存的键前缀
 export const REDIS_KEYS = {
-  USER_DATA: 'user:data:',
-  USER_SUBSCRIPTIONS: 'user:subscriptions:',
-  USER_USAGE: 'user:usage:',
-  ACTIVE_SUBSCRIPTION: 'user:active_subscription:',
-  API_RESPONSE: 'api:response:',
-  SESSION: 'session:',
-  USER_CACHE: 'user:cache:', // 用户缓存键
-  API_KEY_CACHE: 'apikey:cache:', // API Key缓存键
+  USER_DATA: 'codei:user:data:',
+  USER_SUBSCRIPTIONS: 'codei:user:subscriptions:',
+  USER_USAGE: 'codei:user:usage:',
+  ACTIVE_SUBSCRIPTION: 'codei:user:active_subscription:',
+  API_RESPONSE: 'codei:api:response:',
+  SESSION: 'codei:session:',
+  USER_CACHE: 'codei:user:cache:', // 用户缓存键
+  API_KEY_CACHE: 'codei:apikey:cache:', // API Key缓存键
 };
 
 // 缓存TTL常量（秒）

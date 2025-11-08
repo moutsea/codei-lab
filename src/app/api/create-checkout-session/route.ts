@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getUserFromDBById, updateUserStripeCustomerIdService, getUserDetailByIdWithCache } from '@/lib/services/user_service'
 import { getPlanFromDBById } from '@/lib/services/plan_service'
-import { PlanSelect, UserDetail } from '@/db/queries';
+
+import { PlanSelect, UserDetail } from '@/types';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-09-30.clover',

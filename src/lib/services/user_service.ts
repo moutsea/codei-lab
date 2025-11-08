@@ -1,7 +1,7 @@
 import { cache, cacheTTL } from '@/lib/cache';
 import { getUserByStripeCustomerId, getUserById, getUserDetailById, updateUserById, updateUserStripeCustomerId } from '@/db/queries';
-import type { UserSelect } from '@/db/schema';
-import type { UserDetail } from '@/db/queries/users';
+import type { UserSelect } from '@/types/schema';
+import type { UserDetail } from '@/types/db';
 import Stripe from 'stripe';
 
 // ========== User Cache Keys (Only for UserDetail) ==========
@@ -150,8 +150,8 @@ export const createOrUpdateUserDetailCache = async (userId: string, userDetail: 
                 membershipLevel: userDetail.membershipLevel !== undefined ? userDetail.membershipLevel : existingDetail.membershipLevel,
                 active: userDetail.active !== undefined ? userDetail.active : existingDetail.active,
                 currentEndAt: userDetail.currentEndAt !== undefined ? userDetail.currentEndAt : existingDetail.currentEndAt,
-                requestLimit: userDetail.requestLimit !== undefined ? userDetail.requestLimit : existingDetail.requestLimit,
-                tokenMonthlyUsed: userDetail.tokenMonthlyUsed !== undefined ? userDetail.tokenMonthlyUsed : existingDetail.tokenMonthlyUsed,
+                quota: userDetail.quota !== undefined ? userDetail.quota : existingDetail.quota,
+                quotaMonthlyUsed: userDetail.quotaMonthlyUsed !== undefined ? userDetail.quotaMonthlyUsed : existingDetail.quotaMonthlyUsed,
             };
             console.log(`✅ Merged and updated user detail cache for userId: ${userId}`);
         } else {
@@ -167,8 +167,8 @@ export const createOrUpdateUserDetailCache = async (userId: string, userDetail: 
                 membershipLevel: userDetail.membershipLevel || undefined,
                 active: userDetail.active || false,
                 currentEndAt: userDetail.currentEndAt !== undefined ? userDetail.currentEndAt : null,
-                requestLimit: userDetail.requestLimit!,
-                tokenMonthlyUsed: userDetail.tokenMonthlyUsed!,
+                quota: userDetail.quota!,
+                quotaMonthlyUsed: userDetail.quotaMonthlyUsed!,
             };
             console.log(`✅ Created new user detail cache for userId: ${userId}`);
         }

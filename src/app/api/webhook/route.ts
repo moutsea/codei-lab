@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import Stripe from 'stripe';
-import { UserDetail } from '@/db/queries/users'
+import { UserDetail } from '@/types';
 
 import { createSubscription, getUserSubscriptionByStripeSubscriptionId, getUserSubscriptionByUserId, updateSubscriptionByStripeId, updateSubscriptionByUserId } from '@/lib/services/subscription_service';
 import { createPaymentFromStripeIntent } from '@/lib/services/payment_service';
@@ -90,10 +89,6 @@ async function createSubscriptionFromPlan(
   } else {
     // 场景: 延长现有订阅
     console.log("Extending existing subscription period.");
-
-    // 从现有订阅的结束日期开始计算
-    // const baseDate = existingSubscription.currentPeriodEnd;
-    // const newEndDate = add(baseDate!, { days: daysToAdd });
 
     const updateData = {
       currentPeriodEnd: currentEndAt,
@@ -185,7 +180,6 @@ async function createPaymentRecord(
 
   if (invoice.payments && invoice.payments.data.length > 0) {
     const inpay = invoice.payments.data[0]; // invoice_payment
-    // console.log("=====invoice_payment=====", inpay);
 
     // 仅当 type 为 payment_intent 时才有 PaymentIntent
     if (inpay.payment?.type === 'payment_intent') {
@@ -297,10 +291,10 @@ export async function POST(request: NextRequest) {
         } else if (session.mode === 'subscription') {
           const userId = session.metadata?.userId;
           const auth0Id = session.metadata?.auth0Id;
-          const requestLimit = Number(session.metadata?.requestLimit);
+          const quota = session.metadata?.quota;
           const stripeCustomerId = session.metadata?.stripeCustomerId;
 
-          if (!userId || !auth0Id || !stripeCustomerId) {
+          if (!userId || !auth0Id || !stripeCustomerId || !quota) {
             console.error(`User not found for userId: ${userId}, auth0Id: ${auth0Id}`);
             return NextResponse.json(
               { error: 'User not found' },
@@ -315,8 +309,8 @@ export async function POST(request: NextRequest) {
             name: null,
             email: null,
             stripeCustomerId,
-            requestLimit,
-            tokenMonthlyUsed: 0
+            quota,
+            quotaMonthlyUsed: '0'
           }
 
           await createOrUpdateUserDetailCache(userId, userdetail);
@@ -333,10 +327,10 @@ export async function POST(request: NextRequest) {
         const auth0Id = subscription.metadata?.auth0Id;
         const planId = subscription.metadata?.planId;
         const membershipLevel = subscription.metadata?.membershipLevel;
-        const requestLimit = Number(subscription.metadata?.requestLimit);
+        const quota = subscription.metadata?.quota;
         const stripeCustomerId = subscription.metadata?.stripeCustomerId;
 
-        if (!userId || !planId || !auth0Id || !requestLimit || !stripeCustomerId) {
+        if (!userId || !planId || !auth0Id || !quota || !stripeCustomerId) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
         }
@@ -350,10 +344,10 @@ export async function POST(request: NextRequest) {
           email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId,
-          requestLimit,
+          quota,
           stripeCustomerId,
           membershipLevel,
-          tokenMonthlyUsed: 0
+          quotaMonthlyUsed: '0'
         }
 
         await createOrUpdateUserDetailCache(userId, userdetail);
@@ -370,9 +364,9 @@ export async function POST(request: NextRequest) {
         const planId = subscription.items.data[0]?.price?.id || null;
         const plan = planId ? await getPlanFromDBById(planId) : null;
         const membershipLevel = plan?.membershipLevel || null;
-        const requestLimit = plan?.requestLimit || null;
+        const quota = plan?.quota || null;
 
-        if (!userId || !plan || !membershipLevel || !stripeCustomerId || !requestLimit) {
+        if (!userId || !plan || !membershipLevel || !stripeCustomerId || !quota) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
         }
@@ -409,10 +403,9 @@ export async function POST(request: NextRequest) {
           email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId!,
-          requestLimit,
+          quota,
           stripeCustomerId,
           membershipLevel,
-          tokenMonthlyUsed: 0
         }
 
         await createOrUpdateUserDetailCache(userId, userdetail);

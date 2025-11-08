@@ -8,8 +8,7 @@ import {
     addTokensToDailyUsage,
     deleteDailyUserUsageById,
     deleteDailyUserUsageByDateRange,
-    deleteAllDailyUserUsageByUserId,
-    upsertDailyUserUsage
+    deleteAllDailyUserUsageByUserId
 } from '@/db/queries/daily-user-usage';
 import {
     createMonthlyApiUsage,
@@ -21,11 +20,9 @@ import {
     deleteMonthlyApiUsageById,
     deleteMonthlyApiUsageByMonthRange,
     deleteAllMonthlyApiUsageByApiKey,
-    deleteAllMonthlyApiUsageByUserId,
-    getTopMonthlyUsageMonths,
-    upsertMonthlyApiUsage
+    deleteAllMonthlyApiUsageByUserId
 } from '@/db/queries/monthly-api-usage';
-import type { MonthlyApiUsageWithName } from '@/db/queries/monthly-api-usage';
+import type { MonthlyApiUsageWithName } from '@/types/db';
 import {
     createMonthlyUserUsage,
     getMonthlyUserUsageByUserAndMonth,
@@ -38,12 +35,12 @@ import {
     upsertMonthlyUserUsage
 } from '@/db/queries/monthly-user-usage';
 import { getApiKeyByKey, updateApiKeyById, updateApiKeyByKey } from '@/db/queries/api-keys';
-import type { DailyUserUsageSelect, DailyUserUsageInsert } from '@/db/schema';
-import type { MonthlyApiUsageSelect, MonthlyApiUsageInsert } from '@/db/schema';
-import type { MonthlyUserUsageSelect, MonthlyUserUsageInsert } from '@/db/schema';
+import type { DailyUserUsageSelect, DailyUserUsageInsert } from '@/types/schema';
+import type { MonthlyApiUsageSelect, MonthlyApiUsageInsert } from '@/types/schema';
+import type { MonthlyUserUsageSelect, MonthlyUserUsageInsert } from '@/types/schema';
 import { currentMonth } from '@/lib/utils'
-import { ApiDetail, updateApiKey, updateApiKeyUsageCache } from './api_key_service';
-import { UserDetail } from '@/db/queries';
+import { updateApiKey, updateApiKeyUsageCache } from './api_key_service';
+import type { ApiDetail, UserDetail } from '@/types/db';
 import { createOrUpdateUserDetailCache } from './user_service';
 import { db } from '@/db';
 
@@ -149,7 +146,7 @@ export const addTokensToDailyUsageService = async (
     tokens: number
 ): Promise<DailyUserUsageSelect | null> => {
     try {
-        const usage = await addTokensToDailyUsage(userId, date, tokens);
+        const usage = await addTokensToDailyUsage(userId, date, tokens, 0, 0);
         if (usage) {
             console.log(`✅ Added ${tokens} tokens to daily usage for user ${userId}, date ${date}`);
         }
@@ -166,11 +163,14 @@ export const addTokensToDailyUsageService = async (
 export const upsertDailyUserUsageService = async (
     userId: string,
     date: string,
-    tokens: number
+    inputTokens: number,
+    cachedTokens: number,
+    outputTokens: number,
+    quota: number
 ): Promise<DailyUserUsageSelect | null> => {
     try {
-        const usage = await upsertDailyUserUsage(userId, date, tokens);
-        console.log(`✅ Upserted daily user usage for user ${userId}, date ${date}, tokens ${tokens}`);
+        const usage = await addTokensToDailyUsage(userId, date, inputTokens, cachedTokens, outputTokens, quota);
+        console.log(`✅ Upserted daily user usage for user ${userId}, date ${date}, quota ${quota}`);
         return usage;
     } catch (error) {
         console.error('Error upserting daily user usage:', error);
@@ -317,7 +317,7 @@ export const addTokensToMonthlyApiUsageService = async (
     tokens: number
 ): Promise<MonthlyApiUsageSelect | null> => {
     try {
-        const usage = await addTokensToMonthlyApiUsage(apiKey, month, tokens);
+        const usage = await addTokensToMonthlyApiUsage(apiKey, month, tokens, 0, 0);
         if (usage) {
             console.log(`✅ Added ${tokens} tokens to monthly API usage for key ${apiKey}, month ${month}`);
         }
@@ -325,42 +325,6 @@ export const addTokensToMonthlyApiUsageService = async (
     } catch (error) {
         console.error('Error adding tokens to monthly API usage:', error);
         return null;
-    }
-};
-
-/**
- * Upsert monthly API usage (create or update)
- */
-export const upsertMonthlyApiUsageService = async (
-    apiKey: string,
-    month: string,
-    tokens: number
-): Promise<MonthlyApiUsageSelect | null> => {
-    try {
-        const usage = await upsertMonthlyApiUsage(apiKey, month, tokens);
-        console.log(`✅ Upserted monthly API usage for key ${apiKey}, month ${month}, tokens ${tokens}`);
-        return usage;
-    } catch (error) {
-        console.error('Error upserting monthly API usage:', error);
-        return null;
-    }
-};
-
-/**
- * Get top monthly usage months for an API key
- */
-export const getTopMonthlyUsageMonthsService = async (
-    apiKey: string,
-    limit: number = 12,
-    startMonth?: string,
-    endMonth?: string
-): Promise<MonthlyApiUsageSelect[]> => {
-    try {
-        const usage = await getTopMonthlyUsageMonths(apiKey, limit, startMonth, endMonth);
-        return usage;
-    } catch (error) {
-        console.error('Error getting top monthly usage months:', error);
-        return [];
     }
 };
 
@@ -542,7 +506,10 @@ export const addTokensToUsageService = async (
     date: string,
     month: string,
     userData: UserDetail,
-    tokens: number
+    inputTokens: number,
+    cachedTokens: number,
+    outputTokens: number,
+    quotaUsed: number
 ): Promise<MonthlyUserUsageSelect | null> => {
     try {
         // 步骤 1: 执行数据库事务
@@ -558,9 +525,9 @@ export const addTokensToUsageService = async (
                 apiUsage,
                 // updateApiKeyByKey 的返回值我们也不关心
             ] = await Promise.all([
-                addTokensToDailyUsage(userId, date, tokens, tx),
-                addTokensToMonthlyUserUsage(userId, month, tokens, tx),
-                addTokensToMonthlyApiUsage(apiKey, month, tokens, tx),
+                addTokensToDailyUsage(userId, date, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
+                addTokensToMonthlyUserUsage(userId, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
+                addTokensToMonthlyApiUsage(apiKey, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 updateApiKeyByKey(apiKey, { lastUsedAt: new Date() })
             ]);
 
@@ -576,11 +543,11 @@ export const addTokensToUsageService = async (
         console.log(`✅ Transaction committed for user ${userId}.`);
 
         // 更新缓存对象
-        userData.tokenMonthlyUsed = committedMonthlyUsage.totalTokens;
-        apiData.apiMonthlyUsed = committedApiUsage.totalTokens;
+        userData.quotaMonthlyUsed = committedMonthlyUsage.quotaUsed?.toString() || "0";
+        apiData.apiMonthlyUsed = committedApiUsage.inputTokens + committedApiUsage.cachedTokens + committedApiUsage.outputTokens;
 
         await createOrUpdateUserDetailCache(userId, userData);
-        console.log(`✅ Cache updated for user ${userId}.`, userData.tokenMonthlyUsed);
+        console.log(`✅ Cache updated for user ${userId}.`, userData.quotaMonthlyUsed);
 
         await updateApiKeyUsageCache(apiKey, apiData);
         console.log(`✅ Cache updated for apiKey ${apiKey}.`, apiData.apiMonthlyUsed);
@@ -610,7 +577,7 @@ export const upsertMonthlyUserUsageService = async (
     tokens: number
 ): Promise<MonthlyUserUsageSelect | null> => {
     try {
-        const usage = await upsertMonthlyUserUsage(userId, month, tokens);
+        const usage = await upsertMonthlyUserUsage(userId, month, tokens, 0, 0);
         console.log(`✅ Upserted monthly user usage for user ${userId}, month ${month}, tokens ${tokens}`);
         return usage;
     } catch (error) {
@@ -690,7 +657,7 @@ export const getCurrentMonthTokenUsage = async (apiKey: string): Promise<number>
     try {
         // Get current month in YYYY-MM format
         const usage = await getMonthlyApiUsageByKeyAndMonth(apiKey, currentMonth());
-        return usage?.totalTokens || 0;
+        return usage ? (usage.inputTokens + usage.cachedTokens + usage.outputTokens) : 0;
     } catch (error) {
         console.error('Error getting current month token usage:', error);
         return 0;
@@ -713,9 +680,9 @@ export const getApiKeyUsage = async (apiKey: string): Promise<ApiKeyUsageCache> 
     try {
         const tokenUsed = await getCurrentMonthTokenUsage(apiKey);
 
-        // Get API key to fetch requestLimit
+        // Get API key to fetch quota
         const apiKeyData = await getApiKeyByKey(apiKey);
-        const quota = apiKeyData?.requestLimit || null;
+        const quota = apiKeyData?.quota ? parseInt(apiKeyData.quota) : null;
 
         const usageData: ApiKeyUsageCache = {
             token_used: tokenUsed,
@@ -746,9 +713,9 @@ export const getApiKeyUsage = async (apiKey: string): Promise<ApiKeyUsageCache> 
 export const updateApiKeyTokenUsage = async (apiKey: string, month: string, apiData: ApiDetail, tokensUsed: number) => {
     try {
         await updateApiKeyByKey(apiKey, { lastUsedAt: new Date() });
-        const usage = await addTokensToMonthlyApiUsage(apiKey, month, tokensUsed);
+        const usage = await addTokensToMonthlyApiUsage(apiKey, month, tokensUsed, 0, 0);
         if (usage) {
-            apiData.apiMonthlyUsed = usage.totalTokens;
+            apiData.apiMonthlyUsed = usage.inputTokens + usage.cachedTokens + usage.outputTokens;
             await updateApiKeyUsageCache(apiKey, apiData);
         }
     } catch (error) {

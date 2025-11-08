@@ -13,8 +13,8 @@ import {
 import {
   validateApiKey,
   getApiKeyUsageByApiKeyWithCache,
-  ApiDetail,
 } from '@/lib/services/api_key_service'
+import type { ApiDetail } from '@/types/db'
 import { getUserDetailByIdWithCache } from '@/lib/services/user_service'
 import { addTokensToUsageService, updateApiKeyTokenUsage } from '@/lib/services/token_usage_service'
 import { UserDetail } from '@/db/queries';

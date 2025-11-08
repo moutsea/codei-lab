@@ -1,22 +1,8 @@
 import { db } from "../index";
 import { users, subscriptions, plans, monthlyUserUsage, dailyUserUsage } from "../schema";
-import { eq, and, desc, sql, gt, gte, lte } from "drizzle-orm";
-import type { UserInsert, UserSelect } from "../schema";
-
-export interface UserDetail {
-  userId: string;
-  name?: string | null;
-  email?: string | null;
-  stripeSubscriptionId?: string; // from subscription
-  stripeCustomerId: string;
-  startDate?: Date | null;
-  planId?: string; // from plan
-  membershipLevel?: string; // from plan
-  active?: boolean; // from subscription
-  currentEndAt?: Date | null; // from subscription
-  requestLimit: number; // from plan
-  tokenMonthlyUsed?: number; // from monthly-user-usage table
-}
+import { eq, and, desc, sql, gt, gte } from "drizzle-orm";
+import type { UserInsert, UserSelect } from "@/types";
+import type { UserDetail } from "@/types/db";
 
 // ========== Create Operations ==========
 
@@ -187,7 +173,10 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     .select({
       userId: monthlyUserUsage.userId,
       month: monthlyUserUsage.month,
-      totalTokens: monthlyUserUsage.totalTokens,
+      inputTokens: monthlyUserUsage.inputTokens,
+      cachedTokens: monthlyUserUsage.cachedTokens,
+      outputTokens: monthlyUserUsage.outputTokens,
+      quotaUsed: monthlyUserUsage.quotaUsed,
     })
     .from(monthlyUserUsage)
     .where(eq(monthlyUserUsage.userId, userId))
@@ -207,8 +196,8 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
       membershipLevel: plans.membershipLevel,
       active: sql<boolean>`(${subscriptions.status} = 'active' AND ${subscriptions.currentPeriodEnd} > NOW())`, //sql<boolean>`CASE WHEN ${subscriptions.status} = 'active' THEN true ELSE false END`,
       currendEndAt: subscriptions.currentPeriodEnd,
-      requestLimit: plans.requestLimit,
-      tokenMonthlyUsed: userLastSubscription.totalTokens,
+      quota: plans.quota,
+      quotaMonthlyUsed: sql<string>`COALESCE(${userLastSubscription.quotaUsed}, '0')`,
     })
     .from(users)
     .leftJoin(subscriptions, and(
@@ -238,8 +227,8 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     membershipLevel: row.membershipLevel || undefined,
     active: row.active,
     currentEndAt: row.currendEndAt,
-    requestLimit: row.requestLimit!,
-    tokenMonthlyUsed: row.tokenMonthlyUsed || 0,
+    quota: row.quota || "0",
+    quotaMonthlyUsed: row.quotaMonthlyUsed || "0",
   };
 }
 

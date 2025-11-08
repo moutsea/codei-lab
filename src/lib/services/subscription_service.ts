@@ -5,7 +5,7 @@ import {
     getSubscriptionByStripeSubscriptionId,
     getSubscriptionByUserId
 } from '@/db/queries';
-import type { SubscriptionSelect } from '@/db/schema';
+import type { SubscriptionSelect } from '@/types/schema';
 
 /**
  * Create a new subscription

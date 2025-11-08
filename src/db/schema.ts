@@ -6,7 +6,6 @@ import {
     integer,
     timestamp,
     numeric,
-    jsonb,
     unique,
 } from "drizzle-orm/pg-core";
 
@@ -20,8 +19,8 @@ export const users = pgTable(
         avatarUrl: text("avatar_url"),
         stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
         isAdmin: boolean("is_admin").notNull().default(false),
-        createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-        updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+        createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
+        updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
     },
 );
 
@@ -37,10 +36,9 @@ export const plans = pgTable("plans", {
     currency: varchar("currency", { length: 10 }).default("USD"),
     isRecurring: boolean("is_recurring").default(true),
     interval: text("interval").notNull(), // 'day' | 'week' | 'month' | 'quarter' | 'year'
-    requestLimit: integer("request_limit").notNull(),
-    modelAccess: jsonb("model_access").notNull().default("[]"),
-    isActive: boolean("is_active").default(true),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    quota: numeric("quota", { precision: 10, scale: 4 }).notNull(),
+    type: varchar("type", { length: 50 }), // renew | extra | sub | pay
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
 });
 
 // ========== Subscriptions ==========
@@ -54,20 +52,30 @@ export const subscriptions = pgTable("subscriptions", {
     // 状态
     status: varchar("status", { length: 50 }).notNull(),
     // active, trialing, canceled, incomplete, past_due, unpaid
-
     // 时间字段
-    startDate: timestamp("start_date", { withTimezone: true }).defaultNow(),
-    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    startDate: timestamp("start_date", { withTimezone: false }).defaultNow(),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: false }),
     cancelAtPeriodEnd: boolean("cancel_at_period_end").notNull(),
-    cancelAt: timestamp("cancel_at", { withTimezone: true }),
-    renewsAt: timestamp("renews_at", { withTimezone: true }),
+    cancelAt: timestamp("cancel_at", { withTimezone: false }),
+    renewsAt: timestamp("renews_at", { withTimezone: false }),
 
     // Stripe 相关
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }), // sub_XXXX
     stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),         // cus_XXXX
 
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
+});
+
+export const topUpPurchases = pgTable("topup_purchases", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    userId: varchar("user_id", { length: 100 }).references(() => users.id),
+    startDate: timestamp("start_date", { withTimezone: false }).defaultNow(),
+    status: varchar("status", { length: 20 }).notNull().default("active"),
+    endDate: timestamp("end_date", { withTimezone: false }),
+    quota: numeric("quota", { precision: 10, scale: 4 }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
 });
 
 // ========== Payments ==========
@@ -82,15 +90,14 @@ export const payments = pgTable("payments", {
     stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }), // pi_XXXX
 
     // 金额信息
-    amount: numeric("amount", { precision: 10, scale: 2 }).notNull(),
+    amount: numeric("amount", { precision: 10, scale: 4 }).notNull(),
     currency: varchar("currency", { length: 10 }).default("USD"),
 
     // 状态
     status: varchar("status", { length: 50 }),
     // requires_payment_method, requires_confirmation, succeeded, failed, refunded
-
     // 通用
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
 });
 
 // ========== API Keys ==========
@@ -99,10 +106,10 @@ export const apiKeys = pgTable("api_keys", {
     userId: varchar("user_id", { length: 100 }).references(() => users.id),
     name: varchar("name", { length: 255 }).notNull(),
     key: varchar("key", { length: 255 }).notNull().unique(),
-    requestLimit: integer("request_limit"),
-    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
-    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
-    expiredAt: timestamp("expiredAt", { withTimezone: true })
+    quota: numeric("quota", { precision: 10, scale: 4 }),
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: false }),
+    expiredAt: timestamp("expiredAt", { withTimezone: false })
 });
 
 export const dailyUserUsage = pgTable(
@@ -111,8 +118,11 @@ export const dailyUserUsage = pgTable(
         id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
         userId: varchar("user_id", { length: 100 }).references(() => users.id),
         date: varchar("date", { length: 30 }),
-        totalTokens: integer("total_tokens").notNull().default(0),
-        updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+        inputTokens: integer("input_tokens").notNull().default(0),
+        cachedTokens: integer("cached_tokens").notNull().default(0),
+        outputTokens: integer("output_tokens").notNull().default(0),
+        quotaUsed: numeric("quota_used", { precision: 10, scale: 4 }).notNull().default("0"),
+        updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
     },
     (table) => [
         unique("unique_user_date").on(table.userId, table.date),
@@ -125,8 +135,11 @@ export const monthlyApiUsage = pgTable(
         id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
         apikey: varchar("api_key", { length: 255 }).references(() => apiKeys.key),
         month: varchar("month", { length: 30 }),
-        totalTokens: integer("total_tokens").notNull().default(0),
-        updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+        inputTokens: integer("input_tokens").notNull().default(0),
+        cachedTokens: integer("cached_tokens").notNull().default(0),
+        outputTokens: integer("output_tokens").notNull().default(0),
+        quotaUsed: numeric("quota_used", { precision: 10, scale: 4 }).notNull().default("0"),
+        updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
     },
     (table) => [
         unique("unique_api_date").on(table.apikey, table.month),
@@ -139,58 +152,14 @@ export const monthlyUserUsage = pgTable(
         id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
         userId: varchar("user_id", { length: 100 }).references(() => users.id),
         month: varchar("month", { length: 30 }),
-        totalTokens: integer("total_tokens").notNull().default(0),
-        updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+        inputTokens: integer("input_tokens").notNull().default(0),
+        cachedTokens: integer("cached_tokens").notNull().default(0),
+        outputTokens: integer("output_tokens").notNull().default(0),
+        quotaUsed: numeric("quota_used", { precision: 10, scale: 4 }).notNull().default("0"),
+        updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
     },
     (table) => [
         unique("unique_user_month").on(table.userId, table.month),
     ]
 );
-
-// ========== Type Exports ==========
-// Infer types from table definitions for type safety
-
-export type UserSelect = typeof users.$inferSelect;
-export type UserInsert = typeof users.$inferInsert;
-
-export type PlanSelect = typeof plans.$inferSelect;
-export type PlanInsert = typeof plans.$inferInsert;
-
-export type SubscriptionSelect = typeof subscriptions.$inferSelect;
-export type SubscriptionInsert = typeof subscriptions.$inferInsert;
-
-export type PaymentSelect = typeof payments.$inferSelect;
-export type PaymentInsert = typeof payments.$inferInsert;
-
-export type ApiKeySelect = typeof apiKeys.$inferSelect;
-export type ApiKeyInsert = typeof apiKeys.$inferInsert;
-
-export type DailyUserUsageSelect = typeof dailyUserUsage.$inferSelect;
-export type DailyUserUsageInsert = typeof dailyUserUsage.$inferInsert;
-
-export type MonthlyApiUsageSelect = typeof monthlyApiUsage.$inferSelect;
-export type MonthlyApiUsageInsert = typeof monthlyApiUsage.$inferInsert;
-
-export type MonthlyUserUsageSelect = typeof monthlyUserUsage.$inferSelect;
-export type MonthlyUserUsageInsert = typeof monthlyUserUsage.$inferInsert;
-
-// Export table types for direct reference
-export type UsersTable = typeof users;
-export type PlansTable = typeof plans;
-export type SubscriptionsTable = typeof subscriptions;
-export type PaymentsTable = typeof payments;
-export type ApiKeysTable = typeof apiKeys;
-export type DailyUserUsageTable = typeof dailyUserUsage;
-export type MonthlyApiUsageTable = typeof monthlyApiUsage;
-export type MonthlyUserUsageTable = typeof monthlyUserUsage;
-
-// Common utility types
-export type UserId = UserSelect['id'];
-export type PlanId = PlanSelect['id'];
-export type SubscriptionId = SubscriptionSelect['id'];
-export type PaymentId = PaymentSelect['id'];
-export type ApiKeyId = ApiKeySelect['id'];
-export type DailyUserUsageId = DailyUserUsageSelect['id'];
-export type MonthlyApiUsageId = MonthlyApiUsageSelect['id'];
-export type MonthlyUserUsageId = MonthlyUserUsageSelect['id'];
 

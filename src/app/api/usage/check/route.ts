@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isApiKeyValid } from '@/db/queries/api-keys';
+import { validateApiKey, getApiKeyUsageByApiKeyWithCache } from '@/lib/services/api_key_service';
+import { getApiKeyByKey } from '@/db/queries/api-keys';
 import { currentMonth } from '@/lib/utils';
-import { db } from '@/db';
-import { apiKeys, monthlyApiUsage } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,8 +15,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate API key
-    const isValid = await isApiKeyValid(apiKey.trim());
+    const trimmedApiKey = apiKey.trim();
+
+    // Validate API key using service layer
+    const isValid = await validateApiKey(trimmedApiKey);
     if (!isValid) {
       return NextResponse.json(
         { error: 'Invalid API key' },
@@ -26,39 +26,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiLastUsage = db()
-      .select({
-        apiKey: monthlyApiUsage.apikey,
-        month: monthlyApiUsage.month,
-        totalTokens: monthlyApiUsage.totalTokens,
-      })
-      .from(monthlyApiUsage)
-      .where(eq(monthlyApiUsage.apikey, apiKey))
-      .orderBy(desc(monthlyApiUsage.month))
-      .limit(1)
-      .as("apiLastUsage");
-
-
-    // Get API key information with current month usage
-    const month = currentMonth();
-    const [keyData] = await db()
-      .select({
-        id: apiKeys.id,
-        name: apiKeys.name,
-        key: apiKeys.key,
-        createdAt: apiKeys.createdAt,
-        lastUsedAt: apiKeys.lastUsedAt,
-        requestLimit: apiKeys.requestLimit,
-        expiredAt: apiKeys.expiredAt,
-        currentMonthUsage: apiLastUsage.totalTokens
-      })
-      .from(apiKeys)
-      .leftJoin(apiLastUsage,
-        eq(apiKeys.key, apiLastUsage.apiKey)
-      )
-      .where(eq(apiKeys.key, apiKey.trim()))
-      .limit(1);
-
+    // Get API key basic information
+    const keyData = await getApiKeyByKey(trimmedApiKey);
     if (!keyData) {
       return NextResponse.json(
         { error: 'API key not found' },
@@ -66,9 +35,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get usage information using service layer (with cache)
+    const usageData = await getApiKeyUsageByApiKeyWithCache(trimmedApiKey);
+
+    // Get current month usage from usage data or fallback to 0
+    const currentMonthUsage = parseFloat(usageData?.quotaUsed!) || 0;
+
     // Calculate remaining quota
-    const remainingQuota = keyData.requestLimit
-      ? Math.max(0, keyData.requestLimit - (keyData.currentMonthUsage || 0))
+    const quota = keyData.quota ? parseInt(keyData.quota) : null;
+    const remainingQuota = quota
+      ? Math.max(0, quota - currentMonthUsage)
       : null;
 
     return NextResponse.json({
@@ -77,11 +53,12 @@ export async function POST(request: NextRequest) {
       key: keyData.key,
       createdAt: keyData.createdAt ? keyData.createdAt.toISOString() : null,
       lastUsedAt: keyData.lastUsedAt ? keyData.lastUsedAt.toISOString() : null,
-      requestLimit: keyData.requestLimit,
-      tokensUsed: keyData.currentMonthUsage || 0,
+      quota: quota,
+      tokensUsed: currentMonthUsage,
       remainingQuota,
       expiredAt: keyData.expiredAt ? keyData.expiredAt.toISOString() : null,
-      month: month
+      month: usageData?.month || `${currentMonth()}-1`,
+      userId: usageData?.userId || null
     });
 
   } catch (error) {

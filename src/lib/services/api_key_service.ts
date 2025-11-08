@@ -11,7 +11,7 @@ import {
     getRecentlyUsedApiKeys,
     getApiKeysCount,
     updateApiKeyById,
-    updateApiKeyRequestLimit,
+    updateApiKeyQuota as updateApiKeyQuotaDB,
     updateApiKeyName,
     updateApiKeyLastUsed,
     updateApiKeyLastUsedByKey,
@@ -21,22 +21,14 @@ import {
     apiKeyExists,
     isApiKeyValid,
     getApiKeyUsageByApiKey,
-    ApiKeyWithUsage,
 } from '@/db/queries/api-keys';
-import type { ApiKeySelect } from '@/db/schema';
-import { currentMonth } from '../utils';
+import type { ApiKeySelect } from '@/types/schema';
+import type { ApiKeyWithUsage, ApiDetail } from '@/types/db';
 
 // ========== API Key Cache Keys ==========
 const API_KEY_CACHE_KEYS = {
-    apiKeyUsage: (apiKey: string) => `apikey:usage:${apiKey}`,
+    apiKeyUsage: (apiKey: string) => `codei:apikey:usage:${apiKey}`,
 };
-
-export interface ApiDetail {
-    userId: string | null;
-    apiMonthlyUsed: number;
-    requestLimit: number | null;
-    expiredAt: Date | null;
-}
 
 // ========== API Key Creation ==========
 
@@ -69,11 +61,11 @@ export const createApiKey = async (
 export const generateApiKey = async (
     userId: string,
     name: string,
-    requestLimit: number | null = 100000,
+    quota: number | null = 100000,
     expiredAt: Date | null
 ): Promise<ApiKeySelect | null> => {
     try {
-        const apiKey = await generateApiKeyDB(userId, name, requestLimit, expiredAt);
+        const apiKey = await generateApiKeyDB(userId, name, quota?.toString() || null, expiredAt);
 
         console.log(`✅ Generated API key: ${apiKey?.id} for user ${userId}`);
         return apiKey;
@@ -85,16 +77,16 @@ export const generateApiKey = async (
 };
 
 /**
- * Create API key with custom name, key, and request limit
+ * Create API key with custom name, key, and quota
  */
 export const createApiKeyWithCustomName = async (
     userId: string,
     name: string,
     key?: string,
-    requestLimit: number = 100000
+    quota: number = 100000
 ): Promise<ApiKeySelect | null> => {
     try {
-        const apiKey = await createApiKeyWithName(userId, name, key, requestLimit);
+        const apiKey = await createApiKeyWithName(userId, name, key, quota.toString());
 
         console.log(`✅ Created API key with custom name: ${apiKey?.id} for user ${userId}`);
         return apiKey;
@@ -245,16 +237,16 @@ export const updateApiKey = async (
 };
 
 /**
- * Update API key request limit
+ * Update API key quota
  */
-export const updateApiKeyRequest = async (id: number, requestLimit: number): Promise<ApiKeySelect | null> => {
+export const updateApiKeyQuota = async (id: number, quota: number): Promise<ApiKeySelect | null> => {
     try {
-        const apiKey = await updateApiKeyRequestLimit(id, requestLimit);
+        const apiKey = await updateApiKeyQuotaDB(id, quota.toString());
 
         if (apiKey) {
-            console.log(`✅ Updated API key ${id} request limit`);
+            console.log(`✅ Updated API key ${id} quota`);
 
-            // Invalidate cached usage data for this API key to ensure updated requestLimit is reflected
+            // Invalidate cached usage data for this API key to ensure updated quota is reflected
             if (cache.isCacheEnabled()) {
                 try {
                     const cacheKey = API_KEY_CACHE_KEYS.apiKeyUsage(apiKey.key);
@@ -269,7 +261,7 @@ export const updateApiKeyRequest = async (id: number, requestLimit: number): Pro
         return apiKey;
 
     } catch (error) {
-        console.error(`Error updating API key ${id} request limit:`, error);
+        console.error(`Error updating API key ${id} quota:`, error);
         return null;
     }
 };
@@ -463,24 +455,14 @@ export const deleteApiKeyUsageCache = async (apiKey: string): Promise<void> => {
 /**
  * Get API key usage from cache only (skip database)
  */
-export const getApiKeyUsageFromCache = async (apiKey: string): Promise<{
-    userId: string | null;
-    apiMonthlyUsed: number;
-    requestLimit: number | null;
-    expiredAt: Date | null;
-} | null> => {
+export const getApiKeyUsageFromCache = async (apiKey: string): Promise<ApiDetail | null> => {
     if (!cache.isCacheEnabled()) {
         return null;
     }
 
     try {
         const cacheKey = API_KEY_CACHE_KEYS.apiKeyUsage(apiKey);
-        const cachedUsage = await cache.get(cacheKey) as {
-            userId: string | null;
-            apiMonthlyUsed: number;
-            requestLimit: number | null;
-            expiredAt: Date | null;
-        } | null;
+        const cachedUsage = await cache.get(cacheKey) as ApiDetail | null;
         return cachedUsage;
     } catch (error) {
         console.error('Cache GET API key usage error:', error);

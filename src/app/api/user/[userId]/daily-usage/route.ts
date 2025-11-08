@@ -38,8 +38,8 @@ export async function GET(
           userId
         );
 
-        const totalTokens = currentMonthUsage.reduce((sum, usage) => sum + usage.totalTokens, 0);
-        data = { totalTokens, dailyUsage: currentMonthUsage };
+        const totalQuotaUsed = currentMonthUsage.reduce((sum, usage) => sum + parseFloat(usage.quotaUsed), 0);
+        data = { totalQuotaUsed, dailyUsage: currentMonthUsage };
         break;
 
       case 'trends':
@@ -76,8 +76,8 @@ export async function GET(
           userId
         );
 
-        const totalTokensSum = totalUsageData.reduce((sum, usage) => sum + usage.totalTokens, 0);
-        data = { totalTokens: totalTokensSum, records: totalUsageData };
+        const totalQuotaSum = totalUsageData.reduce((sum, usage) => sum + parseFloat(usage.quotaUsed), 0);
+        data = { totalQuotaSum, records: totalUsageData };
         break;
 
       case 'date':
@@ -126,9 +126,9 @@ export async function POST(
       );
     }
 
-    const { totalTokens, usageDate } = body;
+    const { totalQuota, usageDate, inputTokens, cachedTokens, outputTokens } = body;
 
-    if (!totalTokens || typeof totalTokens !== 'number' || totalTokens < 0) {
+    if (!totalQuota || typeof totalQuota !== 'number' || totalQuota < 0) {
       return NextResponse.json(
         { error: 'Invalid totalTokens value' },
         { status: 400 }
@@ -137,7 +137,7 @@ export async function POST(
 
     const date = usageDate ? new Date(usageDate).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
 
-    const usage = await upsertDailyUserUsageService(userId, date, totalTokens);
+    const usage = await upsertDailyUserUsageService(userId, date, inputTokens, cachedTokens, outputTokens, totalQuota);
 
     if (!usage) {
       return NextResponse.json(
@@ -152,7 +152,7 @@ export async function POST(
         id: usage.id,
         userId: usage.userId,
         date: usage.date,
-        totalTokens: usage.totalTokens,
+        quotaUsed: usage.quotaUsed,
         updatedAt: usage.updatedAt
       }
     });

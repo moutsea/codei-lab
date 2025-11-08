@@ -1,7 +1,7 @@
 import { db, DbClient } from "../index";
 import { monthlyUserUsage } from "../schema";
 import { eq, and, desc, sql, gte, lte } from "drizzle-orm";
-import type { MonthlyUserUsageInsert, MonthlyUserUsageSelect } from "../schema";
+import type { MonthlyUserUsageInsert, MonthlyUserUsageSelect } from "@/types";
 
 // ========== Create Operations ==========
 
@@ -22,20 +22,24 @@ export async function createMonthlyUserUsage(data: Omit<MonthlyUserUsageInsert, 
 export async function upsertMonthlyUserUsage(
   userId: string,
   month: string,
-  tokens: number
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0
 ): Promise<MonthlyUserUsageSelect> {
   // First try to find existing record
   const existing = await getMonthlyUserUsageByUserAndMonth(userId, month);
 
   if (existing) {
     // Update existing record
-    return await updateMonthlyUserUsageTokens(existing.id, existing.totalTokens + tokens) as MonthlyUserUsageSelect;
+    return await updateMonthlyUserUsageTokens(existing.id, existing.inputTokens + inputTokens, existing.cachedTokens + cachedTokens, existing.outputTokens + outputTokens) as MonthlyUserUsageSelect;
   } else {
     // Create new record
     return await createMonthlyUserUsage({
       userId,
       month,
-      totalTokens: tokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
     }) as MonthlyUserUsageSelect;
   }
 }
@@ -135,7 +139,7 @@ export async function getUsersUsageByMonth(month: string): Promise<MonthlyUserUs
     .select()
     .from(monthlyUserUsage)
     .where(eq(monthlyUserUsage.month, month))
-    .orderBy(desc(monthlyUserUsage.totalTokens));
+    .orderBy(desc(sql`${monthlyUserUsage.inputTokens} + ${monthlyUserUsage.cachedTokens} + ${monthlyUserUsage.outputTokens}`));
 }
 
 
@@ -148,12 +152,16 @@ export async function getUsersUsageByMonth(month: string): Promise<MonthlyUserUs
  */
 export async function updateMonthlyUserUsageTokens(
   id: number,
-  totalTokens: number
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0
 ): Promise<MonthlyUserUsageSelect | null> {
   const [usage] = await db()
     .update(monthlyUserUsage)
     .set({
-      totalTokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
       updatedAt: new Date()
     })
     .where(eq(monthlyUserUsage.id, id))
@@ -167,7 +175,10 @@ export async function updateMonthlyUserUsageTokens(
 export async function addTokensToMonthlyUserUsage(
   userId: string,
   month: string,
-  tokens: number,
+  inputTokens: number,
+  cachedTokens: number = 0,
+  outputTokens: number = 0,
+  quotaUsed: number = 0,
   dbInstance: DbClient = db()
 ): Promise<MonthlyUserUsageSelect> {
   const [usage] = await dbInstance
@@ -175,7 +186,10 @@ export async function addTokensToMonthlyUserUsage(
     .values({
       userId,
       month,
-      totalTokens: tokens,
+      inputTokens,
+      cachedTokens,
+      outputTokens,
+      quotaUsed: String(quotaUsed),
       updatedAt: new Date(),
     })
     // 当 `userId` 和 `month` 的组合发生冲突时，执行更新
@@ -185,7 +199,10 @@ export async function addTokensToMonthlyUserUsage(
       // 定义冲突时要更新的字段和值
       set: {
         // 在数据库层面执行原子加法，避免竞态条件
-        totalTokens: sql`${monthlyUserUsage.totalTokens} + ${tokens}`,
+        inputTokens: sql`${monthlyUserUsage.inputTokens} + ${inputTokens}`,
+        cachedTokens: sql`${monthlyUserUsage.cachedTokens} + ${cachedTokens}`,
+        outputTokens: sql`${monthlyUserUsage.outputTokens} + ${outputTokens}`,
+        quotaUsed: sql`${monthlyUserUsage.quotaUsed} + ${quotaUsed}`,
         updatedAt: new Date(),
       },
     })

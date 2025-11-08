@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminStatistics } from '@/lib/services/admin_service';
-import type { AdminServiceError, AdminStatsSuccess } from '@/lib/services/admin_service';
+import type { AdminServiceError, AdminStatsSuccess } from '@/types';
 
 export async function GET(request: NextRequest) {
   try {

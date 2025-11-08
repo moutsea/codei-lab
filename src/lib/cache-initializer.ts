@@ -1,4 +1,3 @@
-import { preloadAllPlans } from '@/lib/services/plan_service'
 import { cache } from '@/lib/cache'
 
 /**
@@ -7,9 +6,6 @@ import { cache } from '@/lib/cache'
  */
 export async function initializeCache() {
   console.log('🔧 Initializing application cache...');
-
-  // 预加载所有 plans 数据
-  await preloadAllPlans();
 
   console.log('✅ Cache initialization completed');
 }

@@ -35,15 +35,15 @@ export async function GET(
       );
 
       // Calculate aggregated statistics
-      const totalTokens = dailyUsage.reduce((sum, usage) => sum + usage.totalTokens, 0);
-      const averageDailyUsage = dailyUsage.length > 0 ? Math.round(totalTokens / dailyUsage.length) : 0;
-      const peakDailyUsage = dailyUsage.length > 0 ? Math.max(...dailyUsage.map(u => u.totalTokens)) : 0;
+      const totalQuotaUsed = dailyUsage.reduce((sum, usage) => sum + parseFloat(usage.quotaUsed), 0);
+      const averageDailyUsage = dailyUsage.length > 0 ? Math.round(totalQuotaUsed / dailyUsage.length) : 0;
+      const peakDailyUsage = dailyUsage.length > 0 ? Math.max(...dailyUsage.map(u => parseFloat(u.quotaUsed))) : 0;
 
       usageData = {
         period: 'custom',
         startDate,
         endDate,
-        totalTokens,
+        totalQuotaUsed,
         averageDailyUsage,
         peakDailyUsage,
         dailyUsage,
@@ -58,7 +58,7 @@ export async function GET(
         usageData = {
           period: 'current_month',
           month: currentMonthUsage.month,
-          totalTokens: currentMonthUsage.totalTokens,
+          totalQuotaUsed: currentMonthUsage.quotaUsed,
           updatedAt: currentMonthUsage.updatedAt
         };
       } else {
