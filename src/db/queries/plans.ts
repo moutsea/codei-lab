@@ -1,7 +1,7 @@
 import { db } from "../index";
 import { plans } from "../schema";
 import { eq, and, desc, ilike, sql, isNull, or } from "drizzle-orm";
-import type { PlanInsert, PlanSelect } from "../schema";
+import type { PlanInsert, PlanSelect } from "@/types";
 
 // ========== Create Operations ==========
 

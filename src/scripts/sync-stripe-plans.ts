@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { createPlan, getPlanByStripePriceId, updatePlanById } from '../db/queries';
-import type { PlanInsert } from '../db/schema';
+import type { PlanInsert } from '@/types';
 
 // Stripe 实例将在函数内部初始化
 let stripe: Stripe | null = null;
@@ -38,13 +38,11 @@ function stripePriceToPlanData(
   const priceMetadata = price.metadata || {};
 
   // 从 Stripe 产品中获取 token 限制和模型访问权限
-  const requestLimit = parseInt(metadata.request_limit || '10000000');
-  const modelAccess = metadata.model_access
-    ? JSON.parse(metadata.model_access)
-    : ['claude-sonnet-4.5'];
+  const quota = metadata.quota || '100';
 
   // 从产品元数据或价格元数据中获取会员等级
-  const membershipLevel = metadata.membership_level || priceMetadata.membership_level || 'lite';
+  const membershipLevel = metadata.membership_level || priceMetadata.membership_level || null;
+  const type = metadata.type || '-';
 
   let actualInterval: string;
   let intervalDisplayName: string;
@@ -79,34 +77,19 @@ function stripePriceToPlanData(
     // 生成计划描述
     const currencySymbol = currency.toUpperCase() === 'USD' ? '$' : `${currency.toUpperCase()} `;
     const priceDisplay = (amount / 100).toFixed(2);
-    planDescription = `${productName} - ${priceDisplay}${currencySymbol}/${intervalDisplayName.toLowerCase()}. ${requestLimit.toLocaleString()} tokens/month. Access to ${modelAccess.length} AI models.`;
+    planDescription = `${productName} - ${priceDisplay}${currencySymbol}/${intervalDisplayName.toLowerCase()}. ${quota.toLocaleString()} usd/month. `;
 
   } else {
     // 处理非订阅计划（一次性付费）
     // 从元数据中获取月份信息来确定等效的interval
-    const months = parseInt(priceMetadata.month || metadata.month || '1');
-
-    if (months === 1) {
-      actualInterval = 'month';
-      intervalDisplayName = 'One-time Monthly';
-    } else if (months === 3) {
-      actualInterval = 'quarter';
-      intervalDisplayName = 'One-time Quarterly';
-    } else if (months === 12) {
-      actualInterval = 'year';
-      intervalDisplayName = 'One-time Yearly';
-    } else {
-      actualInterval = 'month';
-      intervalDisplayName = `One-time ${months} months`;
-    }
-
+    actualInterval = metadata.interval || priceMetadata.interval || 'month';
     // 生成计划名称 - 使用产品名称 + 一次性标识
-    planName = `${productName} (${intervalDisplayName})`;
+    planName = productName;
 
     // 生成计划描述
     const currencySymbol = currency.toUpperCase() === 'USD' ? '$' : `${currency.toUpperCase()} `;
     const priceDisplay = (amount / 100).toFixed(2);
-    planDescription = `${productName} - One-time payment of ${priceDisplay}${currencySymbol}. ${requestLimit.toLocaleString()} tokens. Access to ${modelAccess.length} AI models.`;
+    planDescription = `${productName} - One-time payment of ${priceDisplay}${currencySymbol}. ${quota} tokens. `;
   }
 
   return {
@@ -120,9 +103,8 @@ function stripePriceToPlanData(
     currency: currency.toUpperCase(),
     isRecurring,
     interval: actualInterval,
-    requestLimit,
-    modelAccess,
-    isActive: product.active && price.active,
+    quota,
+    type
   };
 }
 
@@ -180,7 +162,6 @@ async function syncProductAndPrices(product: Stripe.Product): Promise<void> {
 
       console.log(`📋 Plan data: membership_level=${planData.membershipLevel}, name=${planData.name}`);
       console.log(`💰 Plan ID: ${planData.id} (using Stripe price ID)`);
-      console.log(`💎 Active: ${planData.isActive}, Recurring: ${planData.isRecurring}`);
       console.log(`💱 Currency: ${planData.currency}, Interval: ${planData.interval}`);
 
       // 检查是否已存在该计划（通过 stripePriceId，现在就是 plan.id）
@@ -199,9 +180,8 @@ async function syncProductAndPrices(product: Stripe.Product): Promise<void> {
           currency: planData.currency,
           isRecurring: planData.isRecurring,
           interval: planData.interval,
-          requestLimit: planData.requestLimit,
-          modelAccess: planData.modelAccess,
-          isActive: planData.isActive,
+          quota: planData.quota,
+          type: planData.type
         };
 
         // 使用 updatePlanById

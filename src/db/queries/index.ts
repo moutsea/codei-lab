@@ -10,23 +10,6 @@ export * from './daily-user-usage';
 export * from './monthly-api-usage';
 export * from './monthly-user-usage';
 
-// Re-export commonly used types for convenience
-export type {
-  UserSelect,
-  UserInsert,
-  PlanSelect,
-  PlanInsert,
-  SubscriptionSelect,
-  SubscriptionInsert,
-  ApiKeySelect,
-  ApiKeyInsert,
-  DailyUserUsageSelect,
-  DailyUserUsageInsert,
-  MonthlyApiUsageSelect,
-  MonthlyApiUsageInsert,
-  MonthlyUserUsageSelect,
-  MonthlyUserUsageInsert,
-} from '../schema';
 
 // Database query utilities
 export class DatabaseQueryError extends Error {

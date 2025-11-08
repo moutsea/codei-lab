@@ -1,7 +1,7 @@
 import { db } from "../index";
 import { subscriptions } from "../schema";
 import { eq, and, desc, asc, sql, isNull, gt, or, gte } from "drizzle-orm";
-import type { SubscriptionInsert, SubscriptionSelect } from "../schema";
+import type { SubscriptionInsert, SubscriptionSelect } from "@/types";
 
 // ========== Create Operations ==========
 

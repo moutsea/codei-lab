@@ -1,7 +1,7 @@
 import { db } from "../index";
 import { payments, users, subscriptions } from "../schema";
 import { eq, and, desc, asc, ilike, sql, or, gte, lte } from "drizzle-orm";
-import type { PaymentInsert, PaymentSelect } from "../schema";
+import type { PaymentInsert, PaymentSelect } from "@/types";
 
 // ========== Create Operations ==========
 

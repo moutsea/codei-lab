@@ -1,23 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  extractApiKeyFromHeaders,
   anthropicHelloWorldResponse,
   anthropicApikeyInvalidResponse,
   anthropicApikey401Response,
   anthropicApiLimitExceedResponse,
   anthropicUserLimitExceedResponse,
-  currentMonth,
-  currentDate,
   anthropicUserSubscriptionInvalidResponse,
-} from '@/lib/utils'
-import {
-  validateApiKey,
-  getApiKeyUsageByApiKeyWithCache,
-} from '@/lib/services/api_key_service'
+} from '@/lib/server/utils'
+import { extractApiKeyFromHeaders } from '@/lib/utils'
 import type { ApiDetail } from '@/types/db'
-import { getUserDetailByIdWithCache } from '@/lib/services/user_service'
 import { addTokensToUsageService, updateApiKeyTokenUsage } from '@/lib/services/token_usage_service'
-import { UserDetail } from '@/db/queries';
+import { UserDetail } from '@/types';
 
 export interface ProxyOptions {
   endpointName: string;
@@ -99,17 +92,17 @@ function calculateTotalTokens(responseText: string, discount: number = 1.0): num
   }
 }
 
-async function apiTokenUsageUpdate(
-  res: string,
-  discount: number,
-  apiData: ApiDetail,
-  userData: UserDetail,
-  apiKey: string,
-  userId: string
-) {
-  const totalTokens = calculateTotalTokens(res, discount);
-  await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentMonth(), userData, totalTokens);
-}
+// async function apiTokenUsageUpdate(
+//   res: string,
+//   discount: number,
+//   apiData: ApiDetail,
+//   userData: UserDetail,
+//   apiKey: string,
+//   userId: string
+// ) {
+//   const totalTokens = calculateTotalTokens(res, discount);
+//   await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentMonth(), userData, totalTokens);
+// }
 
 export async function createAnthropicProxy(
   request: NextRequest,

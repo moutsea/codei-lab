@@ -27,7 +27,7 @@ export const users = pgTable(
 // ========== Plans ==========
 export const plans = pgTable("plans", {
     id: text("id").primaryKey().notNull(),
-    membershipLevel: varchar("membership_level", { length: 50 }).notNull(),
+    membershipLevel: varchar("membership_level", { length: 50 }),
     name: varchar("name", { length: 100 }).notNull(),
     description: text("description"),
     stripeProductId: varchar("stripe_product_id", { length: 255 }),
