@@ -20,6 +20,9 @@
     "nonlogin": "Please log in to subscribe",
     "subtitle": "Flexible pricing plans for developers with different needs, from personal learning to team collaboration, there's always one that suits you",
     "featuredBadge": "Most Popular",
+    "trialSubtitle": "Weekly trial card, try it out, handle sudden needs",
+    "plusSubtitle": "Plus monthly card, covers regular R&D workload",
+    "proSubtitle": "Pro monthly card, high-frequency development / team use",
     "cta": "Get Started",
     "ctaFeatured": "Start Now",
     "mostPopular": "Most Popular",
@@ -55,7 +58,12 @@
     },
     "monthlyQuota": "Monthly Quota",
     "totalQuota": "Total Quota",
-    "forOneWeek": "for one week"
+    "forOneWeek": "for one week",
+    "validityPeriod": "Validity Period",
+    "featuresList": "Features",
+    "aiModel": "Model",
+    "sevenDays": "7 days",
+    "thirtyDays": "30 days"
   },
   "pricingModal": {
     "upgrade": "Subscribe",

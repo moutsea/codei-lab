@@ -20,6 +20,9 @@
     "nonlogin": "Veuillez vous connecter pour vous abonner",
     "subtitle": "Plans de tarification flexibles pour les développeurs avec différents besoins, de l'apprentissage personnel à la collaboration d'équipe, il y en a toujours un qui vous convient",
     "featuredBadge": "Le Plus Populaire",
+    "trialSubtitle": "Carte d'essai hebdomadaire, essayez-la, gérez les besoins soudains",
+    "plusSubtitle": "Carte mensuelle Plus, couvre la charge de travail R&D régulière",
+    "proSubtitle": "Carte mensuelle Pro, développement haute fréquence / usage d'équipe",
     "cta": "Commencer",
     "ctaFeatured": "Commencer Maintenant",
     "mostPopular": "Le Plus Populaire",
@@ -55,7 +58,12 @@
     },
     "monthlyQuota": "Quota Mensuel",
     "totalQuota": "Quota Total",
-    "forOneWeek": "pour une semaine"
+    "forOneWeek": "pour une semaine",
+    "validityPeriod": "Période de Validité",
+    "featuresList": "Caractéristiques",
+    "aiModel": "Modèle",
+    "sevenDays": "7 jours",
+    "thirtyDays": "30 jours"
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",

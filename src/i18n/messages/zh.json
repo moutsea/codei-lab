@@ -20,6 +20,9 @@
     "nonlogin": "请先登录",
     "subtitle": "为不同需求的开发者提供灵活的定价方案，从个人学习到团队协作，总有一款适合您",
     "featuredBadge": "最受欢迎",
+    "trialSubtitle": "周体验卡，体验尝试，应对突发需求",
+    "plusSubtitle": "Plus 月卡，覆盖常规研发工作量",
+    "proSubtitle": "Pro 月卡，高频开发/团队使用",
     "cta": "选择套餐",
     "ctaFeatured": "立即开始",
     "mostPopular": "最受欢迎",
@@ -55,7 +58,12 @@
     },
     "monthlyQuota": "月度配额",
     "totalQuota": "总配额",
-    "forOneWeek": "为期一周"
+    "forOneWeek": "为期一周",
+    "validityPeriod": "有效期",
+    "featuresList": "功能特性",
+    "aiModel": "模型",
+    "sevenDays": "7 天",
+    "thirtyDays": "30 天"
   },
   "pricingModal": {
     "upgrade": "升级",

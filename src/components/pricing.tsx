@@ -339,6 +339,9 @@ export default function Pricing() {
                 <CardTitle className="text-2xl font-bold text-foreground">
                   Trial
                 </CardTitle>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {t('trialSubtitle')}
+                </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
@@ -359,6 +362,27 @@ export default function Pricing() {
                   </div>
                   <div className="text-xl font-bold text-foreground">
                     ${formatTokens(trialPlan.quota)}
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    {t('featuresList')}
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('validityPeriod')}: {t('sevenDays')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('totalQuota')}: $30</span>
+                    </div>
                   </div>
                 </div>
 
@@ -397,6 +421,9 @@ export default function Pricing() {
                 <CardTitle className="text-2xl font-bold text-primary-foreground">
                   Plus
                 </CardTitle>
+                <p className="text-sm text-primary-foreground/80 mt-2">
+                  {t('plusSubtitle')}
+                </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
@@ -417,6 +444,27 @@ export default function Pricing() {
                   </div>
                   <div className="text-xl font-bold text-primary-foreground">
                     ${formatTokens(plusPlans[0].quota)}
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  <div className="text-sm font-medium text-primary-foreground/80">
+                    {t('featuresList')}
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
+                      <span>{t('validityPeriod')}: {t('thirtyDays')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
+                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
+                      <span>{t('monthlyQuota')}: $100</span>
+                    </div>
                   </div>
                 </div>
 
@@ -450,6 +498,9 @@ export default function Pricing() {
                 <CardTitle className="text-2xl font-bold text-foreground">
                   Pro
                 </CardTitle>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {t('proSubtitle')}
+                </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
@@ -470,6 +521,27 @@ export default function Pricing() {
                   </div>
                   <div className="text-xl font-bold text-foreground">
                     ${formatTokens(proPlans[0].quota)}
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    {t('featuresList')}
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('validityPeriod')}: {t('thirtyDays')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('monthlyQuota')}: $500</span>
+                    </div>
                   </div>
                 </div>
 
@@ -511,26 +583,6 @@ export default function Pricing() {
           </>
         )}
 
-        {/* Additional Info */}
-        <div className="text-center mt-12">
-          <p className="text-muted-foreground">
-            {t('allPlansInclude')}
-          </p>
-          <div className="flex justify-center gap-4 mt-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <CheckCircle className="w-4 h-4" />
-              {t('securePayment')}
-            </div>
-            <div className="flex items-center gap-1">
-              <Zap className="w-4 h-4" />
-              {t('instantAccess')}
-            </div>
-            <div className="flex items-center gap-1">
-              <CheckCircle className="w-4 h-4" />
-              {t('cancelAnytime')}
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );
