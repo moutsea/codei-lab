@@ -403,6 +403,10 @@ export default function Pricing() {
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
                       <span>{t('totalQuota')}: $30</span>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 3 })}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -500,6 +504,10 @@ export default function Pricing() {
                       <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
                       <span>{t('monthlyQuota')}: $100</span>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
+                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 10 })}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -591,6 +599,10 @@ export default function Pricing() {
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
                       <span>{t('monthlyQuota')}: $500</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className={'w-4 h-4 text-green-500'} />
+                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 50 })}</span>
                     </div>
                   </div>
                 </div>

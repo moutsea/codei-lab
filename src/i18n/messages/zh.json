@@ -63,15 +63,35 @@
     "featuresList": "功能特性",
     "aiModel": "模型",
     "sevenDays": "7 天",
-    "thirtyDays": "30 天"
+    "thirtyDays": "30 天",
+    "apiKeysQuota": "API 密钥限额",
+    "apiKeysCount": "{count} 个独立 API 密钥"
   },
   "pricingModal": {
     "upgrade": "升级",
     "title": "升级您的账户"
   },
+  "tokenPricing": {
+    "eyebrow": "价格表",
+    "title": "官方 Api 价格",
+    "description": "对比输入、缓存输入与输出 token 的百万计费。",
+    "unit": "/百万 tokens",
+    "cards": {
+      "input": {
+        "title": "输入 token"
+      },
+      "buffered": {
+        "title": "缓存输入 token",
+        "helper": "90% 折扣"
+      },
+      "output": {
+        "title": "输出 token"
+      }
+    }
+  },
   "hero": {
-    "title": "在您的 IDE 中生成代码",
-    "subtitle": "体验由 AI 驱动的编码辅助，开启软件开发的未来。更快速地编写优质代码，智能调试，将复杂项目转化为可管理的任务。您的开发工作流程，已全面升级。",
+    "title": "Code I Lab",
+    "subtitle": "为开发者提供经济实惠的 OpenAI Codex API 服务。体验强大的代码生成功能，享受物美价廉的定价方案，与您现有的开发工作流程无缝集成。",
     "cta": "开始使用",
     "learnMore": "了解更多",
     "installNodeJs": "安装",
@@ -153,7 +173,7 @@
     }
   },
   "footer": {
-    "description": "AI 驱动的编程助手，改变您的开发工作流程。通过智能建议和无缝的 IDE 集成，更快地编写更好的代码。",
+    "description": "为开发者提供经济实惠的 OpenAI Codex API 访问。Code i Lab 提供高性价比的代码生成工具，加速您的开发工作流程，提升开发效率。",
     "product": {
       "title": "产品",
       "features": "功能特性",
@@ -172,7 +192,7 @@
       "careers": "加入我们",
       "contact": "联系我们"
     },
-    "copyright": "Claude IDE",
+    "copyright": "Code i Lab",
     "allRightsReserved": "版权所有",
     "privacy": "隐私政策",
     "terms": "服务条款",
@@ -180,33 +200,33 @@
   },
   "faq": {
     "title": "常见问题",
-    "subtitle": "查找关于 Claude IDE 的常见问题答案，开始使用 AI 驱动的编程辅助。",
+    "subtitle": "查找关于 Code i 的常见问题答案，开始使用经济实惠的 OpenAI Codex API 访问。",
     "moreQuestions": "还有其他问题？",
     "contactSupport": "联系我们的支持团队",
     "items": [
       {
-        "question": "如何使用 claude ide？",
-        "answer": "在安装了 Node.js 和 Claude Code 的官方插件后，您只需在终端中进行简单的 API 密钥（api-key）和 API 基础 URL（api-base-url）设置。整个过程非常简便，仅需一分钟即可完成。我们还提供了自测接口，您可以先进行测试，确认一切正常后再进行订阅。此外，我们为用户提供了多个丰富的包月服务选项，满足不同需求。"
+        "question": "如何使用 Code i？",
+        "answer": "安装 Node.js 和 Code i CLI 工具后，只需在终端中配置您的 API 密钥即可。设置仅需一分钟。我们提供测试界面来验证连接，您可以在订阅前进行测试。我们提供灵活的订阅方案，以实惠的价格提供丰富的月度 token 配额来访问 OpenAI 的 Codex 模型。"
       },
       {
-        "question": "claude ide 使用了什么模型？",
-        "answer": "claude ide 基于 Claude Opus 4.1 模型搭建。"
+        "question": "Code i 使用什么模型？",
+        "answer": "Code i 提供对 OpenAI Codex 模型的经济实惠 API 访问，这是与 GitHub Copilot 使用的相同的强大代码生成模型。"
       },
       {
-        "question": "这个模型能做什么？",
-        "answer": "Claude-IDE 是一款高效的智能编程与自动化工具，可以与您现有的开发环境和工具（如 IDE 和命令行工具）无缝配合使用，而无需改变您的工作流程。它支持多种编程语言，帮助开发者快速生成、调试和优化代码。此外，Claude-IDE 还可以与常见的命令行工具（如 Git）和 MCP 服务器（如 GitHub）协作，扩展其功能，让开发过程更加高效。"
+        "question": "Code i 适合什么用途？",
+        "answer": "Code i 非常适合寻求经济实惠的高级 AI 代码生成访问的开发者。它与您现有的 IDE 和开发工具无缝集成，无需改变您的工作流程。它支持多种编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust 等。Code i 可以与 Git 等命令行工具和各种 MCP 服务器协作，扩展其功能，使您的开发过程更高效、更经济实惠。"
       },
       {
-        "question": "订阅的额度使用不完怎么办？",
-        "answer": "如果您的额度未使用完，您可以与朋友或团队成员共享。我们支持在一个账号下创建多个 API 密钥，并且可以为每个 API 密钥单独设置额度和失效时间。Lite 会员可以创建 3 个 API 密钥，Pro 会员可以创建 10 个，而 Team 会员则可以创建最多 50 个 API 密钥。"
+        "question": "月度 token 额度用不完怎么办？",
+        "answer": "未使用的 token 不会浪费！您可以与朋友或团队成员共享 API 访问权限。我们支持在一个账户下创建多个 API 密钥，并且可以为每个 API 密钥单独设置配额和过期时间。Plus 会员可以创建最多 10 个 API 密钥，Pro 会员最多 50 个。"
       },
       {
-        "question": "支持哪些操作系统和编程语言？",
-        "answer": "Windows/Mac/Linux 并且常见语言都支持，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust 等。"
+        "question": "支持哪些平台和编程语言？",
+        "answer": "Code i 支持 Windows/Mac/Linux 和所有主流编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust、PHP、Ruby 等等。"
       },
       {
-        "question": "是否支持 cache read？",
-        "answer": "我们支持 cache read，并且在计算消耗的 token 时，对于从 cache read 获取的 input token 会乘以一定折扣系数。此外，不同等级的会员还享有不同的 token 消耗折扣。Pro 会员的 token 消耗减少 10%，Team 会员减少 15%。"
+        "question": "Code i 的价格与其他方案相比如何？",
+        "answer": "Code i 提供比其他提供商更经济实惠的 Codex 访问。我们优化了基础设施，以更低的成本提供相同高质量的代码生成。此外，我们的缓存输入 token 享有 90% 折扣，使重复代码分析和重构极其划算。"
       }
     ]
   },

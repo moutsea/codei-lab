@@ -215,8 +215,6 @@ export async function createAnthropicProxy(
 
     const responseText = await response.text();
 
-    console.log(responseText);
-
     // calculateTotalTokens(responseText);
 
     // const discount = getDiscount(userData);

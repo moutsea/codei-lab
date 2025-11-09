@@ -19,7 +19,7 @@ const InstallNodeDiv = () => {
 export default function HeroSection() {
     const t = useTranslations();
     const locale = useLocale();
-    const codeSnippet = `npm install -g @anthropic-ai/claude-code`;
+    const codeSnippet = `npm install -g @openai/codex`;
 
     return (
         <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 section-themed">
@@ -75,7 +75,7 @@ export default function HeroSection() {
                 <div className="flex items-center justify-center">
                     <Image
                         src="/hero.png"
-                        alt="Hero illustration showing Claude Code features and capabilities"
+                        alt="Hero illustration showing Code I Lab features and capabilities"
                         width={600}
                         height={400}
                         className="w-full h-auto max-w-lg md:max-w-xl object-contain"

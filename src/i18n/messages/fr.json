@@ -63,19 +63,39 @@
     "featuresList": "Caractéristiques",
     "aiModel": "Modèle",
     "sevenDays": "7 jours",
-    "thirtyDays": "30 jours"
+    "thirtyDays": "30 jours",
+    "apiKeysQuota": "Limite de Clés API",
+    "apiKeysCount": "{count} clés API individuelles"
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",
     "title": "Mettre à niveau votre compte"
   },
+  "tokenPricing": {
+    "eyebrow": "Tableau des tarifs",
+    "title": "Tarifs des tokens en toute transparence",
+    "description": "Comparez le coût des tokens d'entrée, d'entrée mise en cache et de sortie par million de tokens.",
+    "unit": "/M tokens",
+    "cards": {
+      "input": {
+        "title": "Tokens d'entrée"
+      },
+      "buffered": {
+        "title": "Tokens d'entrée mis en cache",
+        "helper": "Remise de 90 %"
+      },
+      "output": {
+        "title": "Tokens de sortie"
+      }
+    }
+  },
   "hero": {
-    "title": "Générez du code dans votre IDE",
-    "subtitle": "Découvrez le futur du développement logiciel avec l'assistance au codage IA. Écrivez un meilleur code plus rapidement, déboguez intelligemment et transformez des projets complexes en tâches gérables. Votre flux de travail de développement, superchargé.",
+    "title": "Code I Lab",
+    "subtitle": "Accès API abordable à OpenAI Codex pour les développeurs. Découvrez une génération de code puissante avec des plans tarifaires flexibles et une intégration transparente dans votre flux de développement existant.",
     "cta": "Commencer",
     "learnMore": "En savoir plus",
     "installNodeJs": "Installer",
-    "readDoc": "document de lecture",
+    "readDoc": "Lire la Documentation",
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "ensuite exécuter"
   },
@@ -153,7 +173,7 @@
     }
   },
   "footer": {
-    "description": "Assistant de programmation alimenté par l'IA qui transforme votre flux de travail de développement. Écrivez un meilleur code plus rapidement avec des suggestions intelligentes et une intégration transparente de l'IDE.",
+    "description": "Accès API abordable à OpenAI Codex pour les développeurs. Code i Lab fournit des outils de génération de code rentables pour accélérer votre flux de travail de développement et augmenter votre productivité.",
     "product": {
       "title": "Produit",
       "features": "Fonctionnalités",
@@ -172,7 +192,7 @@
       "careers": "Carrières",
       "contact": "Contact"
     },
-    "copyright": "Claude IDE",
+    "copyright": "Code i Lab",
     "allRightsReserved": "Tous droits réservés",
     "privacy": "Politique de Confidentialité",
     "terms": "Conditions d'Utilisation",
@@ -180,33 +200,33 @@
   },
   "faq": {
     "title": "Questions Fréquemment Posées",
-    "subtitle": "Trouvez des réponses aux questions courantes sur Claude IDE et commencez avec l'assistance au codage alimentée par l'IA.",
+    "subtitle": "Trouvez des réponses aux questions courantes sur Code i et commencez avec un accès API abordable à OpenAI Codex.",
     "moreQuestions": "Encore des questions ?",
     "contactSupport": "Contactez notre équipe de support",
     "items": [
       {
-        "question": "Comment utiliser claude ide ?",
-        "answer": "Après avoir installé Node.js et le plugin officiel Claude Code, vous n'avez qu'à configurer la clé API (api-key) et l'URL de base de l'API (api-base-url) dans le terminal. Le processus est rapide et prend moins d'une minute. Nous mettons également à votre disposition une interface de test, vous permettant de tester la connexion avant de vous abonner. Nous proposons plusieurs forfaits mensuels avec des quotas généreux pour répondre à divers besoins."
+        "question": "Comment utiliser Code i ?",
+        "answer": "Après avoir installé Node.js et l'outil CLI Code i, configurez simplement votre clé API dans le terminal. L'installation ne prend qu'une minute. Nous fournissons une interface de test pour vérifier votre connexion avant de vous abonner. Nous proposons des plans d'abonnement flexibles avec des quotas mensuels de tokens généreux à des prix abordables pour accéder au modèle Codex d'OpenAI."
       },
       {
-        "question": "Quel modèle utilise claude ide ?",
-        "answer": "claude ide est construit sur Claude Opus 4.1."
+        "question": "Quel modèle Code i utilise-t-il ?",
+        "answer": "Code i fournit un accès API abordable au modèle Codex d'OpenAI, le même puissant modèle de génération de code utilisé dans GitHub Copilot."
       },
       {
-        "question": "À quoi ce modèle est-il adapté ?",
-        "answer": "Claude-IDE est un outil intelligent de développement et d’automatisation qui s’intègre parfaitement à votre environnement de développement actuel, sans nécessiter de modification de votre flux de travail. Il prend en charge plusieurs langages de programmation et aide les développeurs à générer, déboguer et optimiser leur code rapidement. De plus, Claude-IDE peut collaborer avec des outils en ligne de commande courants (comme Git) et des serveurs MCP (tels que GitHub), étendant ainsi ses fonctionnalités et rendant votre processus de développement encore plus efficace."
+        "question": "À quoi Code i est-il adapté ?",
+        "answer": "Code i est parfait pour les développeurs cherchant un accès abordable à la génération de code IA avancée. Il s'intègre parfaitement à votre IDE et outils de développement existants sans changer votre flux de travail. Il prend en charge plusieurs langages de programmation dont Python, JavaScript/TypeScript, Java, C++, Go, Rust, et plus encore. Code i peut collaborer avec des outils en ligne de commande comme Git et divers serveurs MCP, étendant ses capacités pour rendre votre processus de développement plus efficace et abordable."
       },
       {
-        "question": "Que faire si je n’utilise pas tout mon quota d’abonnement ?",
-        "answer": "Si vous n’utilisez pas tout votre quota, vous pouvez le partager avec vos amis ou membres d’équipe. Nous permettons la création de plusieurs clés API sous un même compte, avec la possibilité de définir des quotas et des dates d’expiration pour chaque clé API. Les membres Lite peuvent créer jusqu’à 3 clés API, les membres Pro jusqu’à 10, et les membres Team jusqu’à 50 clés API."
+        "question": "Que faire si je n'utilise pas tout mon quota mensuel de tokens ?",
+        "answer": "Les tokens inutilisés ne sont pas perdus ! Vous pouvez partager votre accès API avec des amis ou des membres d'équipe. Nous permettons la création de plusieurs clés API sous un même compte, avec la possibilité de définir des quotas et des dates d'expiration pour chaque clé API. Les membres Plus peuvent créer jusqu'à 10 clés API, et les membres Pro jusqu'à 50 clés API."
       },
       {
-        "question": "Quels systèmes d'exploitation (OS) et langages de programmation sont pris en charge ?",
-        "answer": "Il prend en charge tous les langages courants, y compris Python, JavaScript/TypeScript, Java, C++, Go, Rust, etc."
+        "question": "Quelles plates-formes et langages de programmation sont pris en charge ?",
+        "answer": "Code i prend en charge Windows/Mac/Linux et tous les principaux langages de programmation, y compris Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, et bien d'autres."
       },
       {
-        "question": "Est-ce que le cache read est supporté ?",
-        "answer": "Oui, le cache read est supporté. Lors du calcul de la consommation de tokens, les tokens d'entrée provenant du cache read bénéficient d'un facteur de réduction. De plus, différents niveaux d'abonnement bénéficient de réductions sur la consommation de tokens : les membres Pro voient leur consommation réduite de 10 %, et les membres Team de 15 %."
+        "question": "Comment les tarifs de Code i se comparent-ils aux alternatives ?",
+        "answer": "Code i offre un accès à Codex significativement plus abordable que les autres fournisseurs. Nous avons optimisé notre infrastructure pour fournir la même qualité de génération de code à une fraction du coût. De plus, nos tokens d'entrée mis en cache bénéficient d'une réduction de 90 %, rendant l'analyse et la refactorisation de code répétitives extrêmement rentables."
       }
     ]
   },

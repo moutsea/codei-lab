@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAnthropicProxy, createHealthCheck } from '@/lib/anthropic-proxy';
+import { createAnthropicProxy, createHealthCheck } from '@/lib/server/anthropic-proxy';
 
 // export async function POST(request: NextRequest) {
 //   return createAnthropicProxy(request, {

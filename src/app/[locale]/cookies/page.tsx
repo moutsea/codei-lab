@@ -6,7 +6,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Cookie Policy',
-  description: 'Learn how Claude-ide uses cookies and other tracking technologies to improve your experience on our website. Manage your cookie preferences easily.'
+  description: 'Learn how Code I Lab uses cookies and other tracking technologies to improve your experience on our website. Manage your cookie preferences easily.'
 }
 
 
@@ -25,7 +25,7 @@ export default function CookiePolicyPage() {
           </div>
           <h1 className="text-4xl font-bold mb-4">Cookie Policy</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            This policy explains how Claude IDE uses cookies and similar technologies to enhance your experience and provide our services.
+            This policy explains how Code I Lab uses cookies and similar technologies to enhance your experience and provide our affordable OpenAI Codex API access services.
           </p>
           <p className="text-sm text-muted-foreground mt-4">
             Last updated: {new Date().toLocaleDateString()}
@@ -68,8 +68,8 @@ export default function CookiePolicyPage() {
                 <li><strong>Essential Functionality:</strong> To enable basic features like user authentication and session management</li>
                 <li><strong>Preferences:</strong> To remember your settings, language preferences, and customization choices</li>
                 <li><strong>Security:</strong> To protect against fraud and ensure secure access to your account</li>
-                <li><strong>Analytics:</strong> To understand how our service is used and improve performance</li>
-                <li><strong>Personalization:</strong> To provide relevant content and features based on your usage patterns</li>
+                <li><strong>Analytics:</strong> To understand how our Codex API service is used and improve performance</li>
+                <li><strong>Personalization:</strong> To provide relevant API features and development tools based on your usage patterns</li>
               </ul>
             </div>
           </section>
@@ -159,16 +159,16 @@ export default function CookiePolicyPage() {
               </p>
               <div className="space-y-4">
                 <div className="border rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">Auth0 (Authentication)</h4>
-                  <p className="text-sm">Manages user authentication and secure login sessions</p>
+                  <h4 className="font-semibold text-foreground mb-2">Authentication Services</h4>
+                  <p className="text-sm">Manages user authentication and secure login sessions for Code I Lab API access</p>
                 </div>
                 <div className="border rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-2">Stripe (Payment Processing)</h4>
-                  <p className="text-sm">Handles secure payment processing and subscription management</p>
+                  <h4 className="font-semibold text-foreground mb-2">Payment Processing</h4>
+                  <p className="text-sm">Handles secure payment processing for Code I Lab subscription plans</p>
                 </div>
                 <div className="border rounded-lg p-4">
                   <h4 className="font-semibold text-foreground mb-2">Analytics Services</h4>
-                  <p className="text-sm">Provide insights into service usage and performance</p>
+                  <p className="text-sm">Provide insights into Code I Lab API usage and service performance</p>
                 </div>
               </div>
             </div>
@@ -243,16 +243,16 @@ export default function CookiePolicyPage() {
             </h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                When you first visit Claude IDE, you&apos;ll see a cookie consent banner that allows you to:
+                When you first visit Code I Lab, you&apos;ll see a cookie consent banner that allows you to:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li><strong>Accept All Cookies:</strong> Enable all cookies for the best experience</li>
-                <li><strong>Accept Essential Only:</strong> Only enable necessary cookies for basic functionality</li>
-                <li><strong>Customize Settings:</strong> Choose which types of cookies to enable</li>
-                <li><strong>Manage Preferences:</strong> Change your cookie settings at any time</li>
+                <li><strong>Accept All Cookies:</strong> Enable all cookies for the best Code I Lab experience</li>
+                <li><strong>Accept Essential Only:</strong> Only enable necessary cookies for basic API access functionality</li>
+                <li><strong>Customize Settings:</strong> Choose which types of cookies to enable for your development workflow</li>
+                <li><strong>Manage Preferences:</strong> Change your cookie settings at any time through your dashboard</li>
               </ul>
               <p className="mt-4">
-                Your preferences are stored in a cookie so we don&apos;t ask you again on subsequent visits.
+                Your preferences are stored in a cookie so we don&apos;t ask you again on subsequent visits to Code I Lab.
               </p>
             </div>
           </section>
@@ -273,7 +273,7 @@ export default function CookiePolicyPage() {
                 <li>Notify users of significant changes through our service</li>
               </ul>
               <p className="mt-4">
-                Your continued use of Claude IDE after changes constitutes acceptance of the updated policy.
+                Your continued use of Code I Lab after changes constitutes acceptance of the updated policy.
               </p>
             </div>
           </section>
@@ -298,7 +298,7 @@ export default function CookiePolicyPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t text-center text-muted-foreground">
-          <p>Thank you for taking the time to understand how we use cookies. Your privacy and control over your data are important to us.</p>
+          <p>Thank you for using Code I Lab. Your privacy and control over your data are important to us as we provide affordable OpenAI Codex API access to developers worldwide.</p>
         </div>
       </div>
       <Footer />

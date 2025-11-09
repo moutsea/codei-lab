@@ -8,7 +8,7 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'Review the terms and conditions for using Claude-ide. By using our service, you agree to our terms and policies.'
+  description: 'Review the terms and conditions for using Code I Lab. By using our service, you agree to our terms and policies.'
 }
 
 
@@ -27,7 +27,7 @@ export default function TermsPage() {
           </div>
           <h1 className="text-4xl font-bold mb-4">Terms of Service</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            These terms govern your use of Claude IDE. By using our service, you agree to these terms and conditions.
+            These terms govern your use of Code I Lab. By using our affordable OpenAI Codex API access service, you agree to these terms and conditions.
           </p>
           <p className="text-sm text-muted-foreground mt-4">
             Last updated: {new Date().toLocaleDateString()}
@@ -44,7 +44,7 @@ export default function TermsPage() {
             </h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                By accessing and using Claude IDE, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using Code I Lab, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </div>
           </section>
@@ -57,17 +57,17 @@ export default function TermsPage() {
             </h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Claude IDE is an AI-powered coding assistant that provides:
+                Code I Lab provides affordable OpenAI Codex API access that enables:
               </p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Code generation and completion suggestions</li>
-                <li>Bug detection and fixing assistance</li>
-                <li>Code refactoring and optimization recommendations</li>
-                <li>Documentation generation</li>
-                <li>Integration with popular IDEs and development tools</li>
+                <li>Advanced code generation through OpenAI's Codex model</li>
+                <li>Cost-effective token-based API access for developers</li>
+                <li>Integration with existing development workflows and IDEs</li>
+                <li>Multiple API key management for teams and projects</li>
+                <li>Flexible subscription plans for different usage needs</li>
               </ul>
               <p className="mt-4">
-                The service is provided on a subscription basis with different tiers offering varying levels of access and features.
+                The service is provided on a subscription basis with different tiers offering varying levels of API access and token quotas.
               </p>
             </div>
           </section>
@@ -79,16 +79,17 @@ export default function TermsPage() {
               User Responsibilities
             </h2>
             <div className="space-y-4 text-muted-foreground">
-              <p>As a user of Claude IDE, you agree to:</p>
+              <p>As a user of Code I Lab, you agree to:</p>
               <ul className="list-disc list-inside space-y-2 ml-4">
-                <li>Use the service for legitimate coding and development purposes</li>
+                <li>Use the Codex API access for legitimate development and coding purposes</li>
                 <li>Not attempt to reverse engineer, decompile, or disassemble any part of the service</li>
-                <li>Not use the service to generate malicious, harmful, or illegal code</li>
-                <li>Not violate any applicable laws or regulations</li>
-                <li>Not interfere with or disrupt the service or servers</li>
-                <li>Maintain the security of your account and authentication credentials</li>
-                <li>Not share your account credentials with others</li>
+                <li>Not use the API to generate malicious, harmful, or illegal code</li>
+                <li>Not violate any applicable laws or regulations in your API usage</li>
+                <li>Not interfere with or disrupt the Code I Lab service or servers</li>
+                <li>Maintain the security of your account, API keys, and authentication credentials</li>
+                <li>Not share your API keys or account credentials with unauthorized users</li>
                 <li>Report any security vulnerabilities or bugs responsibly</li>
+                <li>Monitor your API usage and stay within your plan's token limits</li>
               </ul>
             </div>
           </section>
@@ -101,7 +102,7 @@ export default function TermsPage() {
             </h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                Your privacy is important to us. Our use and protection of your information is governed by our Privacy Policy, which forms part of these terms. By using Claude IDE, you consent to the collection and use of information as described in our Privacy Policy.
+                Your privacy is important to us. Our use and protection of your information is governed by our Privacy Policy, which forms part of these terms. By using Code I Lab, you consent to the collection and use of information as described in our Privacy Policy.
               </p>
               <div className="bg-muted p-4 rounded-lg">
                 <p><strong>Important:</strong> Please review our Privacy Policy at <Link href="/privacy" className="text-blue-600 hover:underline">/privacy</Link> to understand how we handle your data.</p>
@@ -118,7 +119,7 @@ export default function TermsPage() {
             <div className="space-y-4 text-muted-foreground">
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Subscription Plans</h3>
-                <p>Claude IDE offers various subscription plans with different features and usage limits. You can view current plans and pricing on our website.</p>
+                <p>Code I Lab offers various subscription plans with different API access levels and token quotas. You can view current plans and pricing on our website.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Payment Terms</h3>
@@ -167,15 +168,15 @@ export default function TermsPage() {
             <div className="space-y-4 text-muted-foreground">
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Our Rights</h3>
-                <p>Claude IDE and its original content, features, and functionality are owned by us and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+                <p>Code I Lab and its original content, features, and functionality are owned by us and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Your Rights</h3>
-                <p>You retain ownership of any code you create using Claude IDE. However, you grant us a limited license to use your code and feedback to improve our service, as described in our Privacy Policy.</p>
+                <p>You retain ownership of any code you create using Code I Lab's Codex API access. However, you grant us a limited license to use your code and feedback to improve our service, as described in our Privacy Policy.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Generated Content</h3>
-                <p>Code and content generated by Claude IDE is provided to you under our terms, but you are responsible for ensuring it meets your requirements and complies with applicable laws.</p>
+                <p>Code and content generated through Code I Lab's Codex API access is provided to you under our terms, but you are responsible for ensuring it meets your requirements and complies with applicable laws.</p>
               </div>
             </div>
           </section>
@@ -193,7 +194,7 @@ export default function TermsPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">AI Accuracy</h3>
-                <p>Claude IDE uses advanced AI technology, but generated code may contain errors or bugs. You are responsible for testing, reviewing, and validating all code before use in production environments.</p>
+                <p>Code I Lab provides access to OpenAI's advanced Codex model, but generated code may contain errors or bugs. You are responsible for testing, reviewing, and validating all code before use in production environments.</p>
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-2">Limitation of Liability</h3>
@@ -254,7 +255,7 @@ export default function TermsPage() {
 
         {/* Footer */}
         <div className="mt-16 pt-8 border-t text-center text-muted-foreground">
-          <p>Thank you for choosing Claude IDE. We&apos;re committed to providing you with the best AI-powered coding experience.</p>
+          <p>Thank you for choosing Code I Lab. We&apos;re committed to providing you with affordable and reliable OpenAI Codex API access for your development needs.</p>
         </div>
       </div>
       <Footer />

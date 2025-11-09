@@ -63,18 +63,38 @@
     "featuresList": "Features",
     "aiModel": "Model",
     "sevenDays": "7 days",
-    "thirtyDays": "30 days"
+    "thirtyDays": "30 days",
+    "apiKeysQuota": "API Keys Limit",
+    "apiKeysCount": "{count} individual API keys"
   },
   "pricingModal": {
     "upgrade": "Subscribe",
     "title": "Upgrade your account"
   },
+  "tokenPricing": {
+    "eyebrow": "Pricing table",
+    "title": "Official token price",
+    "description": "Compare input, buffered input, and output token pricing per million tokens.",
+    "unit": "/M tokens",
+    "cards": {
+      "input": {
+        "title": "Input tokens"
+      },
+      "buffered": {
+        "title": "Buffered input tokens",
+        "helper": "90% discount"
+      },
+      "output": {
+        "title": "Output tokens"
+      }
+    }
+  },
   "hero": {
-    "title": "Coding AI In Your IDE",
-    "subtitle": "Experience the future of software development with AI-powered coding assistance. Write better code faster, debug intelligently, and transform complex projects into manageable tasks. Your development workflow, supercharged.",
+    "title": "Code I Lab",
+    "subtitle": "Affordable OpenAI Codex API access for developers. Experience powerful code generation with flexible pricing plans and seamless integration into your existing development workflow.",
     "cta": "Get Started",
     "learnMore": "Learn More",
-    "readDoc": "Read Document",
+    "readDoc": "Read Documentation",
     "installNodeJs": "Install",
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "then run"
@@ -153,7 +173,7 @@
     }
   },
   "footer": {
-    "description": "AI-powered coding assistant that transforms your development workflow. Write better code faster with intelligent suggestions and seamless IDE integration.",
+    "description": "Affordable OpenAI Codex API access for developers. Code i Lab provides cost-effective code generation tools to accelerate your development workflow and boost productivity.",
     "product": {
       "title": "Product",
       "features": "Features",
@@ -165,7 +185,7 @@
       "title": "We also built",
       "cs61b": "CS open courses"
     },
-    "copyright": "Claude IDE",
+    "copyright": "Code i Lab",
     "allRightsReserved": "All rights reserved",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
@@ -173,33 +193,33 @@
   },
   "faq": {
     "title": "Frequently Asked Questions",
-    "subtitle": "Find answers to common questions about Claude IDE and get started with AI-powered coding assistance.",
+    "subtitle": "Find answers to common questions about Code i and get started with affordable OpenAI Codex API access.",
     "moreQuestions": "Still have questions?",
     "contactSupport": "Contact our support team",
     "items": [
       {
-        "question": "How to use claude ide?",
-        "answer": "After installing Node.js and the official Claude Code plugin, simply configure the API key and API base URL in the terminal. The setup takes only a minute. We also provide a self-testing interface, allowing you to test the connection before subscribing. We offer a wide range of subscription plans with generous monthly service quotas to meet various needs."
+        "question": "How to use Code i?",
+        "answer": "After installing Node.js and the Code i CLI tool, simply configure your API key in the terminal. The setup takes only a minute. We provide a testing interface to verify your connection before subscribing. We offer flexible subscription plans with generous monthly token quotas at affordable prices for accessing OpenAI's Codex model."
       },
       {
-        "question": "What model does claude ide use?",
-        "answer": "claude ide is built on top of Claude Opus 4.1 model."
+        "question": "What model does Code i use?",
+        "answer": "Code i provides affordable API access to OpenAI's Codex model, the same powerful code-generation model used in GitHub Copilot."
       },
       {
-        "question": "What is this model suitable for?",
-        "answer": "Claude-IDE is an efficient intelligent development and automation tool that integrates seamlessly with your existing IDE and development tools, without requiring any changes to your workflow. It supports multiple programming languages and helps developers quickly generate, debug, and optimize code. Additionally, Claude-IDE can collaborate with common command-line tools (like Git) and MCP servers (such as GitHub), extending its capabilities and making your development process even more efficient."
+        "question": "What is Code i suitable for?",
+        "answer": "Code i is perfect for developers seeking cost-effective access to advanced AI code generation. It integrates seamlessly with your existing IDE and development tools without changing your workflow. It supports multiple programming languages including Python, JavaScript/TypeScript, Java, C++, Go, Rust, and more. Code i can collaborate with command-line tools like Git and various MCP servers, extending its capabilities to make your development process more efficient and affordable."
       },
       {
-        "question": "What if I don't use up my subscription quota?",
-        "answer": "If you don't use up your quota, you can share it with friends or team members. We support creating multiple API keys under one account, and you can set individual quotas and expiration times for each API key. Lite members can create up to 3 API keys, Pro members can create up to 10, and Team members can create up to 50 API keys."
+        "question": "What if I don't use up my monthly token quota?",
+        "answer": "Unused tokens don't go to waste! You can share your API access with friends or team members. We support creating multiple API keys under one account, and you can set individual quotas and expiration times for each API key. Plus members can create up to 10 API keys, and Pro members can create up to 50 API keys."
       },
       {
-        "question": "Which OS and programming languages are supported?",
-        "answer": "It supports Windows/Mac/Linux and all common languages, including Python, JavaScript/TypeScript, Java, C++, Go, Rust, and more."
+        "question": "Which platforms and programming languages are supported?",
+        "answer": "Code i supports Windows/Mac/Linux and all major programming languages, including Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, and many more."
       },
       {
-        "question": "Does it support cache read?",
-        "answer": "Yes, cache read is supported. When calculating the consumed tokens, input tokens from cache read will be multiplied by a discount factor. In addition, different membership levels enjoy different token consumption discounts: Pro members get a 10% reduction, while Team members get a 15% reduction."
+        "question": "How does Code i pricing compare to alternatives?",
+        "answer": "Code i offers significantly more affordable access to Codex compared to other providers. We've optimized our infrastructure to provide the same high-quality code generation at a fraction of the cost. Plus, our buffered input tokens come with a 90% discount, making repetitive code analysis and refactoring extremely cost-effective."
       }
     ]
   },

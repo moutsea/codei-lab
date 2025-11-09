@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold mb-4">Claude IDE</h3>
+            <h3 className="text-2xl font-bold mb-4">Code I Lab</h3>
             <p className="text-gray-400 mb-4 max-w-md">
               {t("description")}
             </p>

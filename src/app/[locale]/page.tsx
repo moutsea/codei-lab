@@ -3,6 +3,7 @@ import ProductFeature from "@/components/product-feature";
 import ProductFunctionality from "@/components/product-functionality";
 import ProductWorkflows from "@/components/product-workflows";
 import Pricing from "@/components/pricing";
+import TokenPricing from "@/components/token-pricing";
 import FAQ from "@/components/faq";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -29,6 +30,7 @@ export default function Home() {
             <section id="pricing">
                 <Pricing />
             </section>
+            <TokenPricing />
 
             {/* FAQ */}
             <section id="faq">
