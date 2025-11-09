@@ -90,54 +90,6 @@ export async function getAllRecurringPlans(): Promise<PlanSelect[]> {
     .orderBy(desc(plans.quota));
 }
 
-/**
- * Get plans with pagination
- */
-export async function getPlans(options: {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sortBy?: 'name' | 'quota' | 'createdAt';
-  sortOrder?: 'asc' | 'desc';
-} = {}) {
-  const {
-    page = 1,
-    limit = 20,
-    search,
-    sortBy = 'quota',
-    sortOrder = 'desc'
-  } = options;
-
-  const offset = (page - 1) * limit;
-
-  const whereConditions = [];
-
-  // Add search filter
-  if (search) {
-    whereConditions.push(
-      or(
-        ilike(plans.name, `%${search}%`),
-        ilike(plans.description, `%${search}%`)
-      )
-    );
-  }
-
-  // Add sorting
-  const sortColumn = sortBy === 'name' ? plans.name :
-    sortBy === 'quota' ? plans.quota : plans.createdAt;
-  const sortDirection = sortOrder === 'asc' ? sql`${sortColumn} ASC` : sql`${sortColumn} DESC`;
-
-  // Build and execute query
-  const baseQuery = db().select().from(plans);
-  const withFilters = whereConditions.length > 0
-    ? baseQuery.where(and(...whereConditions))
-    : baseQuery;
-
-  return await withFilters
-    .orderBy(sortDirection)
-    .limit(limit)
-    .offset(offset);
-}
 
 /**
  * Search plans by name or description
@@ -155,6 +107,32 @@ export async function searchPlans(query: string, limit: number = 10): Promise<Pl
     .limit(limit);
 }
 
+/**
+ * Get plans by type
+ */
+export async function getPlansByType(type: string): Promise<PlanSelect[]> {
+  return await db()
+    .select()
+    .from(plans)
+    .where(eq(plans.type, type))
+    .orderBy(plans.quota);
+}
+
+/**
+ * Get frontpage plans (type = 'pay' or type = 'sub')
+ */
+export async function getFrontpagePlans(): Promise<PlanSelect[]> {
+  return await db()
+    .select()
+    .from(plans)
+    .where(
+      or(
+        eq(plans.type, 'pay'),
+        eq(plans.type, 'sub')
+      )
+    )
+    .orderBy(plans.quota);
+}
 
 /**
  * Get plan by Stripe price ID
@@ -241,17 +219,3 @@ export async function deletePlanByStripeProductId(stripeProductId: string): Prom
   return plan || null;
 }
 
-// ========== Utility Functions ==========
-
-/**
- * Check if plan exists by Stripe product ID
- */
-export async function planExistsByStripeProductId(stripeProductId: string): Promise<boolean> {
-  const [result] = await db()
-    .select({ exists: sql<boolean>`true` })
-    .from(plans)
-    .where(eq(plans.stripeProductId, stripeProductId))
-    .limit(1);
-
-  return !!result;
-}
