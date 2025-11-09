@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Star, Zap, Users, CheckCircle, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -98,6 +99,25 @@ export default function Pricing() {
     const order: Record<string, number> = { 'month': 1, 'quarter': 2, 'year': 3 };
     return (order[a.interval] || 999) - (order[b.interval] || 999);
   });
+
+  // Filter CNY payment plans
+  const trialCnyPlan = plans.find(plan =>
+    plan.type === 'pay' &&
+    plan.membershipLevel === 'trial' &&
+    plan.currency.toLowerCase() === 'cny'
+  );
+
+  const plusCnyPlan = plans.find(plan =>
+    plan.type === 'pay' &&
+    plan.membershipLevel === 'plus' &&
+    plan.currency.toLowerCase() === 'cny'
+  );
+
+  const proCnyPlan = plans.find(plan =>
+    plan.type === 'pay' &&
+    plan.membershipLevel === 'pro' &&
+    plan.currency.toLowerCase() === 'cny'
+  );
 
   // Prepare subscription cycles for dialog
   const getSubscriptionCycles = (planGroup: Plan[]): SubscriptionCycle[] => {
@@ -328,7 +348,7 @@ export default function Pricing() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {/* Trial Card */}
           {trialPlan && (
             <Card className="transition-all duration-300 hover:shadow-xl bg-card border border-border">
@@ -377,7 +397,7 @@ export default function Pricing() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                      <span>{t('aiModel')}: gpt-5-codex</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
@@ -401,6 +421,21 @@ export default function Pricing() {
                     t('cta') || 'Get Started'
                   )}
                 </Button>
+
+                {/* CNY Payment Link */}
+                {trialCnyPlan && (
+                  <Button
+                    className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
+                    variant="ghost"
+                    onClick={() => window.open(trialCnyPlan.description)}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
+                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
+                      <span>支付宝或微信支付</span>
+                    </div>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -459,7 +494,7 @@ export default function Pricing() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
-                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                      <span>{t('aiModel')}: gpt-5-codex</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
@@ -484,6 +519,21 @@ export default function Pricing() {
                     t('ctaFeatured') || 'Start Now'
                   )}
                 </Button>
+
+                {/* CNY Payment Link */}
+                {plusCnyPlan && (
+                  <Button
+                    className="w-full cursor-pointer py-2 text-sm border-0 "
+                    variant="ghost"
+                    onClick={() => window.open(plusCnyPlan.description)}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
+                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
+                      <span>支付宝或微信支付</span>
+                    </div>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -536,7 +586,7 @@ export default function Pricing() {
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('aiModel')}: gpt-5-codex-high</span>
+                      <span>{t('aiModel')}: gpt-5-codex</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className={'w-4 h-4 text-green-500'} />
@@ -560,6 +610,21 @@ export default function Pricing() {
                     t('cta') || 'Get Started'
                   )}
                 </Button>
+
+                {/* CNY Payment Link */}
+                {proCnyPlan && (
+                  <Button
+                    className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
+                    variant="ghost"
+                    onClick={() => window.open(proCnyPlan.description)}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
+                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
+                      <span>支付宝或微信支付</span>
+                    </div>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
