@@ -29,6 +29,7 @@
     "month": "month",
     "quarter": "quarter",
     "year": "year",
+    "week": "week",
     "allPlansInclude": "All plans include:",
     "securePayment": "Secure payment",
     "instantAccess": "Instant access",
@@ -48,9 +49,13 @@
       "monthly": "Monthly",
       "quarterly": "Quarterly",
       "yearly": "Yearly",
+      "weekly": "Weekly",
       "quarterlyDiscount": "15% OFF",
       "yearlyDiscount": "30% OFF"
-    }
+    },
+    "monthlyQuota": "Monthly Quota",
+    "totalQuota": "Total Quota",
+    "forOneWeek": "for one week"
   },
   "pricingModal": {
     "upgrade": "Subscribe",

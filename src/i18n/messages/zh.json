@@ -29,6 +29,7 @@
     "month": "月",
     "quarter": "季",
     "year": "年",
+    "week": "周",
     "allPlansInclude": "所有套餐均包含：",
     "securePayment": "安全支付",
     "instantAccess": "即时访问",
@@ -48,9 +49,13 @@
       "monthly": "月付",
       "quarterly": "季付",
       "yearly": "年付",
+      "weekly": "周付",
       "quarterlyDiscount": "15% 优惠",
       "yearlyDiscount": "30% 优惠"
-    }
+    },
+    "monthlyQuota": "月度配额",
+    "totalQuota": "总配额",
+    "forOneWeek": "为期一周"
   },
   "pricingModal": {
     "upgrade": "升级",

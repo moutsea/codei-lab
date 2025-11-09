@@ -29,6 +29,7 @@
     "month": "mois",
     "quarter": "trimestre",
     "year": "année",
+    "week": "semaine",
     "allPlansInclude": "Tous les plans incluent :",
     "securePayment": "Paiement sécurisé",
     "instantAccess": "Accès instantané",
@@ -48,9 +49,13 @@
       "monthly": "Mensuel",
       "quarterly": "Trimestriel",
       "yearly": "Annuel",
+      "weekly": "Hebdomadaire",
       "quarterlyDiscount": "15% DE RÉDUCTION",
       "yearlyDiscount": "30% DE RÉDUCTION"
-    }
+    },
+    "monthlyQuota": "Quota Mensuel",
+    "totalQuota": "Quota Total",
+    "forOneWeek": "pour une semaine"
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",
