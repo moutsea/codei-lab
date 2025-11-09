@@ -1,59 +1,97 @@
-import { getTranslations } from "next-intl/server";
-import { BookOpen, GitPullRequest, Code } from "lucide-react";
-import TerminalDemo from "./terminal-demo";
+"use client";
 
-export default async function ProductFunctionality() {
-  const t = await getTranslations("useCases");
+import { useState } from "react";
+import { BookOpen, GitPullRequest, Code, Terminal } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+export default function ProductFunctionality() {
+  const t = useTranslations("useCases");
+  const [activeUseCase, setActiveUseCase] = useState("step1");
 
   const useCases = [
     {
-      key: "codeOnboarding",
-      icon: BookOpen
+      key: "step1",
+      icon: BookOpen,
+      image: "/usecase_1.png"
     },
     {
-      key: "issueToPR",
-      icon: GitPullRequest
+      key: "step2",
+      icon: Terminal,
+      image: "/usecase_2.png"
     },
     {
-      key: "powerfulEdits",
-      icon: Code
+      key: "step3",
+      icon: Code,
+      image: "/usecase_3.png"
+    },
+    {
+      key: "step4",
+      icon: GitPullRequest,
+      image: "/usecase_4.png"
     }
   ];
+
+  const getCurrentImage = () => {
+    const currentUseCase = useCases.find(uc => uc.key === activeUseCase);
+    return currentUseCase?.image || "/usecase_1.png";
+  };
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: Content */}
-          <div className="order-2 lg:order-1 space-y-8">
-            <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                {t("title")}
-              </h2>
-            </div>
+        {/* Title Section - Full Width */}
+        <div className="text-left mb-16">
+          <h2 className="text-4xl lg:text-5xl font-medium text-foreground leading-tight ">
+            {t("title")}
+          </h2>
+        </div>
 
-            <div className="space-y-8">
-              {useCases.map((useCase) => (
-                <div key={useCase.key} className="flex gap-6">
-                  <div className="flex-shrink-0 w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center shadow-sm">
-                    <useCase.icon className="w-6 h-6 lg:w-7 lg:h-7 text-primary" />
-                  </div>
-                  <div className="space-y-3 flex-1">
-                    <h3 className="text-xl lg:text-xl font-semibold text-foreground">
-                      {t(`${useCase.key}.title`)}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed text-base lg:text-base">
-                      {t(`${useCase.key}.description`)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+        {/* Second Row - Terminal Demo Left, Accordion Right */}
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+          {/* Left: Use Case Image */}
+          <div className="order-1 lg:order-1">
+            <div className="relative w-full h-[500px]">
+              <Image
+                src={getCurrentImage()}
+                alt="Use case demonstration"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
           </div>
 
-          {/* Right: Terminal Demo */}
-          <div className="order-1 lg:order-2">
-            <TerminalDemo />
+          {/* Right: Accordion Content */}
+          <div className="order-2 lg:order-2">
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full"
+              value={activeUseCase}
+              onValueChange={setActiveUseCase}
+            >
+              {useCases.map((useCase) => (
+                <AccordionItem key={useCase.key} value={useCase.key}>
+                  <AccordionTrigger className="text-left hover:no-underline">
+                    <div className="flex items-center gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <useCase.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <span className="text-lg font-semibold text-foreground">
+                        {t(`${useCase.key}.title`)}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="text-muted-foreground leading-relaxed ml-13">
+                      {t(`${useCase.key}.description`)}
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </div>

@@ -67,67 +67,57 @@
     "thenRun": "ensuite exécuter"
   },
   "productFeatures": {
-    "title": "Qu'est-ce que Claude IDE",
-    "description": "Claude IDE est un assistant de codage IA puissant intégré directement dans votre terminal et VS Code, mettant le développement assisté par IA à portée de main.",
+    "title": "Code i fonctionne partout où vous codez",
     "features": {
-      "intelligentUnderstanding": {
-        "title": "Compréhension Intelligente du Code",
-        "description": "Comprend l'intégralité de votre base de code plutôt que des extraits isolés, effectue des modifications coordonnées entre fichiers et propose des suggestions qui correspondent vraiment à votre projet."
+      "cli": {
+        "title": "Code i CLI",
+        "description": "Passez du prompt à la pull request en quelques minutes. Expédiez de nouvelles fonctionnalités, corrigez des bugs, trouvez des solutions ou relevez les prochains défis avec Codex dans votre terminal."
       },
-      "worksWhereYouWork": {
-        "title": "Fonctionne Là Où Vous Travaillez",
-        "description": "S'intègre directement dans votre terminal et IDE sans changement de contexte, profondément intégré avec VS Code et JetBrains."
+      "ide": {
+        "title": "Extension Code i IDE",
+        "description": "Collaborez avec Codex dans VSCode, Cursor et autres IDE. Prévisualisez les changements, apportez des modifications ciblées et maintenez votre flux de l'idée à l'implémentation."
       },
-      "seamlessIntegration": {
-        "title": "Intégration Transparente",
-        "description": "Tarification compétitive qui rend l'assistance au codage IA avancée accessible à plus de développeurs sans se soucier des coûts élevés."
+      "cloud": {
+        "title": "Code i Cloud",
+        "description": "Déléguez des tâches à Codex dans le cloud pour rester dans le flux. Codex charge votre dépôt dans un bac à sable sécurisé, générant du code que vous pouvez réviser, fusionner ou continuer de travailler localement."
+      }
+    }
+  },
+  "productWorkflows": {
+    "title": "Code I s'intègre aux workflows clés pour accélérer toute votre équipe",
+    "workflows": {
+      "codeReview": {
+        "title": "Revue de code dans GitHub",
+        "content": "Examinez automatiquement les nouvelles PR et mentionnez @codex pour demander des révisions manuelles. Il compare l'intention de la PR avec les changements, exécutant le code si nécessaire pour fournir une révision détaillée."
+      },
+      "slackTasks": {
+        "title": "Assigner des tâches depuis Slack",
+        "content": "Codex répond aux questions, corrige les bugs et explore les idées directement depuis Slack. Il extrait automatiquement le contexte de la conversation pour choisir le bon dépôt et commencer à travailler."
+      },
+      "sdk": {
+        "title": "Code I SDK",
+        "content": "Intégrez Codex dans GitHub Actions et les outils internes pour automatiser CI/CD, la maintenance du code, la gestion des problèmes et autres processus."
       }
     }
   },
   "useCases": {
-    "title": "Que Pourriez-Vous Faire Avec Claude IDE ?",
-    "codeOnboarding": {
-      "title": "Familiarisation Rapide du Code",
-      "description": "Claude Code analyse et explique des bases de code complètes en quelques secondes. Grâce à une recherche intelligente, il comprend automatiquement l'architecture du projet et les dépendances sans nécessiter de sélection manuelle de fichiers de contexte."
+    "title": "Comment ça fonctionne",
+    "step1": {
+      "title": "Configurez-le dans votre terminal ou IDE",
+      "description": "Téléchargez le CLI ou l'extension IDE Codex et abonnez-vous pour obtenir la clé API."
     },
-    "issueToPR": {
-      "title": "Des Issues aux PRs",
-      "description": "Fini les changements constants d'outils. Claude Code s'intègre profondément avec GitHub, GitLab et les outils en ligne de commande pour gérer le flux de travail complet—lecture des issues, écriture de code, exécution de tests et soumission de PRs—le tout depuis votre terminal."
+    "step2": {
+      "title": "Allez dans un dépôt de code",
+      "description": "Ouvrez votre IDE ou terminal dans un dépôt local et lancez Codex."
     },
-    "powerfulEdits": {
-      "title": "Effectuer des Modifications Puissantes",
-      "description": "Grâce à une compréhension approfondie de votre base de code et des dépendances, Claude Code effectue des modifications puissantes sur plusieurs fichiers garantissant précision et fonctionnalité."
+    "step3": {
+      "title": "Exécutez votre première tâche",
+      "description": "Discutez avec Codex à propos du dépôt, ou demandez-lui d'implémenter une nouvelle fonctionnalité ou corriger un bug."
+    },
+    "step4": {
+      "title": "Laissez Codex travailler",
+      "description": "Codex navigue indépendamment dans votre dépôt pour exécuter votre tâche. Acceptez ses changements de code ou continuez jusqu'à ce que la tâche soit terminée."
     }
-  },
-  "testimonials": {
-    "title": "Ce Que Disent les Développeurs",
-    "items": [
-      {
-        "name": "Alice, Ingénieure Frontend",
-        "feedback": "Claude IDE m'aide à comprendre rapidement une nouvelle base de code en quelques secondes.",
-        "avatar": "/user_1.jpg"
-      },
-      {
-        "name": "Ben, Développeur Backend",
-        "feedback": "J'apprécie qu'il fonctionne directement dans mon terminal et VS Code—plus besoin de changer d’outil sans arrêt.",
-        "avatar": "/user_2.jpg"
-      },
-      {
-        "name": "Chen, Ingénieur Full-Stack",
-        "feedback": "Les modifications multi-fichiers sont très précises et m’évitent beaucoup de travail manuel.",
-        "avatar": "/user_3.jpg"
-      },
-      {
-        "name": "Diana, Ingénieure DevOps",
-        "feedback": "L'intégration avec GitHub me permet de passer d’un Issue à un PR entièrement depuis mon terminal. Un flux de travail très fluide !",
-        "avatar": "/user_4.jpg"
-      },
-      {
-        "name": "Eric, Développeur Mobile",
-        "feedback": "Les suggestions de Claude IDE respectent le style de mon projet—c’est comme collaborer avec un collègue expérimenté.",
-        "avatar": "/user_5.jpg"
-      }
-    ]
   },
   "plans": {
     "lite": {

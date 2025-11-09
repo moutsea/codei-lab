@@ -67,67 +67,57 @@
     "thenRun": "then run"
   },
   "productFeatures": {
-    "title": "What is Claude IDE",
-    "description": "Claude IDE is a powerful AI coding assistant embedded directly in your terminal and VS Code, bringing AI-assisted development right to your fingertips.",
+    "title": "Code i runs everywhere you code",
     "features": {
-      "intelligentUnderstanding": {
-        "title": "Intelligent Code Understanding",
-        "description": "Understands your entire codebase instead of isolated snippets, makes coordinated changes across files, and offers suggestions that truly fit your project."
+      "cli": {
+        "title": "Code i CLI",
+        "description": "Go from prompt to pull request in minutes. Ship new features, fix bugs, brainstorm solutions, or tackle whatever's next with Codex in your terminal."
       },
-      "worksWhereYouWork": {
-        "title": "Works Where You Work",
-        "description": "Lives right inside your terminal and IDE with no context switching, deeply integrated with VS Code and JetBrains."
+      "ide": {
+        "title": "Code i IDE extension",
+        "description": "Partner with Codex in VSCode, Cursor, and other IDEs. Preview changes, make targeted edits, and stay in flow from idea to implementation."
       },
-      "seamlessIntegration": {
-        "title": "Seamless Integration",
-        "description": "Competitive pricing that makes advanced AI coding assistance accessible to more developers without worrying about high costs."
+      "cloud": {
+        "title": "Code i cloud",
+        "description": "Delegate tasks to Codex in the cloud so you can stay in flow. Codex loads your repo in a secure sandbox, generating code you can review, merge, or continue working on locally."
+      }
+    }
+  },
+  "productWorkflows": {
+    "title": "Code I plugs into key workflows to accelerate your entire team",
+    "workflows": {
+      "codeReview": {
+        "title": "Code review in GitHub",
+        "content": "Automatically review new PRs and tag @codex to manually request reviews. It compares PR intent with changes, running the code if needed to provide a detailed review."
+      },
+      "slackTasks": {
+        "title": "Assign tasks from Slack",
+        "content": "Codex answers questions, fixes bugs, and explores ideas right from Slack. It automatically pulls context from the conversation to choose the right repo and start working."
+      },
+      "sdk": {
+        "title": "Code I SDK",
+        "content": "Embed Codex in GitHub Actions and internal tools to automate CI/CD, code maintenance, issue management and other processes."
       }
     }
   },
   "useCases": {
-    "title": "What Could You Do With Claude IDE?",
-    "codeOnboarding": {
-      "title": "Quick Code Familiarization",
-      "description": "Claude Code analyzes and explains complete codebases in seconds. Through intelligent search, it automatically grasps project architecture and dependencies without requiring manual context file selection."
+    "title": "How it works",
+    "step1": {
+      "title": "Set it up in your terminal or IDE",
+      "description": "Download the Codex CLI or IDE extension and subscribe for achieving api-key."
     },
-    "issueToPR": {
-      "title": "From Issues to PRs",
-      "description": "Say goodbye to constant tool switching. Claude Code deeply integrates with GitHub, GitLab, and command-line tools to manage the complete workflow—reading issues, writing code, executing tests, and submitting PRs—all within your terminal."
+    "step2": {
+      "title": "Go to a code repo",
+      "description": "Open your IDE or terminal in a local repo and start Codex."
     },
-    "powerfulEdits": {
-      "title": "Execute Powerful Edits",
-      "description": "With deep understanding of your codebase and dependencies, Claude Code performs powerful multi-file edits that ensure accuracy and functionality."
+    "step3": {
+      "title": "Run your first task",
+      "description": "Chat with Codex about the repo, or ask it to implement a new feature or fix a bug."
+    },
+    "step4": {
+      "title": "Let Codex work",
+      "description": "Codex independently navigates through your repo to execute your task. Accept its code changes or keep going till the task is complete."
     }
-  },
-  "testimonials": {
-    "title": "What Developers Are Saying",
-    "items": [
-      {
-        "name": "Alice, Frontend Engineer",
-        "feedback": "Claude IDE helps me onboard new projects quickly by mapping out the entire codebase in seconds.",
-        "avatar": "/user_1.jpg"
-      },
-      {
-        "name": "Ben, Backend Developer",
-        "feedback": "I love that it runs right inside my terminal and VS Code—no more constant context switching.",
-        "avatar": "/user_2.jpg"
-      },
-      {
-        "name": "Chen, Full-Stack Engineer",
-        "feedback": "The multi-file edits are spot-on and save me from a ton of manual refactoring work.",
-        "avatar": "/user_3.jpg"
-      },
-      {
-        "name": "Diana, DevOps Engineer",
-        "feedback": "Integration with GitHub means I can go from Issue to PR entirely from my terminal. Super smooth workflow!",
-        "avatar": "/user_4.jpg"
-      },
-      {
-        "name": "Eric, Mobile Developer",
-        "feedback": "Claude IDE’s suggestions match my project’s style—it feels like working with another experienced teammate.",
-        "avatar": "/user_5.jpg"
-      }
-    ]
   },
   "plans": {
     "lite": {

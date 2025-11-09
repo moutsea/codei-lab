@@ -67,67 +67,57 @@
     "thenRun": "然后运行"
   },
   "productFeatures": {
-    "title": "什么是 Claude IDE",
-    "description": "Claude IDE 是一个强大的 AI 编程助手，直接嵌入您的终端和 VS Code，让 AI 辅助开发触手可及。",
+    "title": "Code i 在您编码的任何地方运行",
     "features": {
-      "intelligentUnderstanding": {
-        "title": "智能代码理解",
-        "description": "理解你的整个代码库而非孤立片段，进行跨文件的协调修改，提出真正契合你项目的建议。"
+      "cli": {
+        "title": "Code i CLI",
+        "description": "几分钟内从提示语到拉取请求。发布新功能、修复错误、集思广益解决方案，或在终端中用 Codex 处理任何接下来的任务。"
       },
-      "worksWhereYouWork": {
-        "title": "在你工作的地方工作",
-        "description": "直接存在于你的终端和 IDE 中，无需切换环境，与 VS Code 和 JetBrains 深度集成。"
+      "ide": {
+        "title": "Code i IDE 扩展",
+        "description": "在 VSCode、Cursor 和其他 IDE 中与 Codex 协作。预览更改，进行针对性编辑，从想法到实现保持工作流畅。"
       },
-      "seamlessIntegration": {
-        "title": "无缝集成体验",
-        "description": "提供极具竞争力的价格方案，让更多开发者能够使用先进的 AI 编程助手，无需为高昂费用担忧。"
+      "cloud": {
+        "title": "Code i 云端",
+        "description": "将任务委托给云端 Codex，让您保持工作流畅。Codex 在安全沙箱中加载您的仓库，生成您可以审查、合并或在本地继续工作的代码。"
+      }
+    }
+  },
+  "productWorkflows": {
+    "title": "Code I 集成到关键工作流程中，加速整个团队",
+    "workflows": {
+      "codeReview": {
+        "title": "GitHub 代码审查",
+        "content": "自动审查新的 PR 并标记 @codex 来手动请求审查。它比较 PR 意图与更改，在需要时运行代码以提供详细审查。"
+      },
+      "slackTasks": {
+        "title": "从 Slack 分配任务",
+        "content": "Codex 直接在 Slack 中回答问题、修复错误和探索想法。它自动从对话中提取上下文，选择正确的仓库并开始工作。"
+      },
+      "sdk": {
+        "title": "Code I SDK",
+        "content": "将 Codex 嵌入 GitHub Actions 和内部工具，自动化 CI/CD、代码维护、问题管理和其他流程。"
       }
     }
   },
   "useCases": {
-    "title": "Claude IDE 能为你做什么？",
-    "codeOnboarding": {
-      "title": "快速熟悉代码库",
-      "description": "Claude Code 能在几秒钟内分析并解释整个代码库。它通过智能搜索自动理解项目结构和依赖关系，无需你手动选择上下文文件。"
+    "title": "如何使用",
+    "step1": {
+      "title": "在终端或IDE中设置",
+      "description": "下载Codex CLI或IDE扩展并订阅以获取API密钥。"
     },
-    "issueToPR": {
-      "title": "从 Issue 到 PR",
-      "description": "告别工具间的频繁切换。Claude Code 与 GitHub、GitLab 和命令行工具深度集成，处理完整的工作流程——阅读 Issue、编写代码、运行测试并提交 PR——一切都在你的终端中完成。"
+    "step2": {
+      "title": "进入代码仓库",
+      "description": "在本地仓库中打开IDE或终端并启动Codex。"
     },
-    "powerfulEdits": {
-      "title": "执行强大的编辑操作",
-      "description": "得益于对代码库和依赖关系的深入理解，Claude Code 能够执行跨多个文件的强大编辑操作，确保修改的准确性和可用性。"
+    "step3": {
+      "title": "运行第一个任务",
+      "description": "与Codex讨论仓库情况，或要求它实现新功能或修复错误。"
+    },
+    "step4": {
+      "title": "让Codex工作",
+      "description": "Codex会独立浏览你的仓库来执行任务。接受它的代码更改，或继续进行直到任务完成。"
     }
-  },
-  "testimonials": {
-    "title": "开发者怎么说",
-    "items": [
-      {
-        "name": "Alice, 前端工程师",
-        "feedback": "Claude IDE 帮我快速熟悉陌生项目的代码结构，大大缩短了上手时间。",
-        "avatar": "/user_1.jpg"
-      },
-      {
-        "name": "Ben, 后端开发",
-        "feedback": "我最喜欢的一点是它可以直接在终端和 VS Code 中运行，不用频繁切换工具。",
-        "avatar": "/user_2.jpg"
-      },
-      {
-        "name": "Chen, 全栈工程师",
-        "feedback": "跨文件修改非常准确，省去了很多手动调整的工作。",
-        "avatar": "/user_3.jpg"
-      },
-      {
-        "name": "Diana, DevOps 工程师",
-        "feedback": "和 GitHub 的集成让我能在终端里直接从 Issue 到 PR，流程非常顺畅。",
-        "avatar": "/user_4.jpg"
-      },
-      {
-        "name": "Eric, 移动端开发",
-        "feedback": "Claude IDE 的建议很符合项目风格，几乎像团队里另一位熟悉代码的同事。",
-        "avatar": "/user_5.jpg"
-      }
-    ]
   },
   "plans": {
     "lite": {

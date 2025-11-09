@@ -1,7 +1,7 @@
 import HeroSection from "@/components/hero-section";
 import ProductFeature from "@/components/product-feature";
 import ProductFunctionality from "@/components/product-functionality";
-import UserComments from "@/components/user-comments";
+import ProductWorkflows from "@/components/product-workflows";
 import Pricing from "@/components/pricing";
 import FAQ from "@/components/faq";
 import Header from "@/components/header";
@@ -19,16 +19,15 @@ export default function Home() {
                 <ProductFeature />
             </section>
 
-
             {/* Product Functionality */}
             <ProductFunctionality />
 
-            {/* User Comments */}
-            <UserComments />
+            {/* Product Workflows */}
+            <ProductWorkflows />
 
             {/* Pricing */}
             <section id="pricing">
-                <Pricing />
+                {/* <Pricing /> */}
             </section>
 
             {/* FAQ */}

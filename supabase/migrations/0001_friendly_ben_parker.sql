@@ -1,0 +1,1 @@
+ALTER TABLE "plans" ALTER COLUMN "membership_level" DROP NOT NULL;

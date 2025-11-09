@@ -26,7 +26,7 @@ export default function HeroSection() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
                 {/* Left Column - Content */}
                 <div className="text-center md:text-left">
-                    <h1 className="text-5xl md:text-7xl font-bold text-foreground mb-6 tracking-tight">
+                    <h1 className="text-5xl md:text-7xl font-medium text-foreground mb-6 tracking-tight">
                         {t("hero.title")}
                     </h1>
 
