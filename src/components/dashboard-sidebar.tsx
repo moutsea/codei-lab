@@ -115,8 +115,8 @@ export function DashboardSidebar({ hasActiveSubscription, stripeCustomerId, user
   ];
 
   return (
-    <Sidebar className="pt-16 [&>div]:bg-card dark:bg-[#212121] border-r border-border pl-6 overflow-x-hidden">
-      <SidebarContent className="overflow-y-auto overflow-x-hidden bg-card dark:bg-[#212121] ">
+    <Sidebar className="pt-16 [&>div]:bg-card border-r border-border pl-6 overflow-x-hidden">
+      <SidebarContent className="overflow-y-auto overflow-x-hidden bg-card">
         <SidebarGroup>
           <SidebarGroupLabel className="text-sm mb-10 ml-6 text-foreground">{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>

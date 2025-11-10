@@ -39,7 +39,7 @@ export function DashboardLayout({
           isActive={isActive}
         />
         <SidebarInset>
-          <header className="flex h-16 bg-card dark:bg-[#212121] border-b border-border shrink-0 items-center gap-2 transition-[width,height] ease-linear group-data-[collapsible=icon]:h-12 group-data-[collapsible=icon]:w-12">
+          <header className="flex h-16 bg-card border-b border-border shrink-0 items-center gap-2 transition-[width,height] ease-linear group-data-[collapsible=icon]:h-12 group-data-[collapsible=icon]:w-12">
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <h1 className="text-lg font-semibold text-foreground">
