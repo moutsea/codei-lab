@@ -24,26 +24,26 @@ function Step({ number, title, description, icon, completed, onClick }: StepProp
             <CheckCircle className="w-5 h-5 text-white" />
           </div>
         ) : (
-          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-            <Circle className="w-5 h-5 text-gray-400" />
+          <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
+            <Circle className="w-5 h-5 text-muted-foreground" />
           </div>
         )}
       </div>
       <div className="flex-1">
         <div className="flex items-center space-x-2">
-          <span className="text-sm font-medium text-gray-500">Step {number}</span>
+          <span className="text-sm font-medium text-muted-foreground">Step {number}</span>
           {icon}
         </div>
-        <h3 className="text-lg font-semibold mt-1">{title}</h3>
-        <div className="text-gray-600 mt-1">
+        <h3 className="text-lg font-semibold mt-1 text-foreground">{title}</h3>
+        <div className="text-muted-foreground mt-1">
           {description.split('\n').map((paragraph, index) => {
             // Check if the paragraph is a command (starts with spaces followed by command)
-            const isCommand = paragraph.trim().match(/^(node --version|npm install -g @anthropic-ai\/claude-code)/);
+            const isCommand = paragraph.trim().match(/^(node --version|npm install -g @openai\/codex)/);
 
             if (isCommand) {
               return (
                 <div key={index} className="mb-2">
-                  <code className="bg-gray-100 dark:bg-gray-800 text-pink-600 dark:text-pink-400 px-2 py-1 rounded font-mono text-sm">
+                  <code className="bg-muted text-primary px-2 py-1 rounded font-mono text-sm border border-border">
                     {paragraph.trim()}
                   </code>
                 </div>
@@ -71,7 +71,7 @@ function Step({ number, title, description, icon, completed, onClick }: StepProp
                           href="https://nodejs.org/en/download/"
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline"
+                          className="text-primary hover:text-primary/80 underline"
                         >
                           {linkText}
                         </a>
@@ -152,16 +152,16 @@ export default function Tutorial() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-foreground mb-4">
           {t("title")}
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {t("subtitle")}
         </p>
       </div>
 
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-6">
           {t("steps.title")}
         </h2>
 
@@ -179,11 +179,11 @@ export default function Tutorial() {
       </div>
 
       <div className="mt-8 text-center">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             {t("help.title")}
           </h3>
-          <p className="text-blue-700 mb-4">
+          <p className="text-muted-foreground mb-4">
             {t("help.description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

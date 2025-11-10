@@ -29,67 +29,88 @@ export interface PlanWithPricing {
 }
 
 export type BillingInterval = 'month' | 'quarter' | 'year';
-
+export type PlanType = 'frontpage' | 'renew' | 'extra';
 
 export function usePlans() {
-  const [plans, setPlans] = useState<PlanWithPricing[]>([]);
-  const [nonRecurringPlans, setNonRecurringPlans] = useState<PlanWithPricing[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [nonRecurringLoading, setNonRecurringLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [nonRecurringError, setNonRecurringError] = useState<string | null>(null);
+  const [frontpagePlans, setFrontpagePlans] = useState<PlanWithPricing[]>([]);
+  const [renewPlans, setRenewPlans] = useState<PlanWithPricing[]>([]);
+  const [extraPlans, setExtraPlans] = useState<PlanWithPricing[]>([]);
+  const [loading, setLoading] = useState<Record<PlanType, boolean>>({
+    frontpage: true,
+    renew: true,
+    extra: true,
+  });
+  const [error, setError] = useState<Record<PlanType, string | null>>({
+    frontpage: null,
+    renew: null,
+    extra: null,
+  });
   const [selectedInterval, setSelectedInterval] = useState<BillingInterval>('month');
 
+  const fetchPlansByType = useCallback(async (type: PlanType, forceRefresh = false) => {
+    try {
+      setLoading(prev => ({ ...prev, [type]: true }));
+      setError(prev => ({ ...prev, [type]: null }));
+
+      const response = await fetch(`/api/plans?type=${type}${forceRefresh ? '&refresh=true' : ''}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${type} plans`);
+      }
+
+      const plans: PlanWithPricing[] = await response.json();
+
+      switch (type) {
+        case 'frontpage':
+          setFrontpagePlans(plans);
+          break;
+        case 'renew':
+          setRenewPlans(plans);
+          break;
+        case 'extra':
+          setExtraPlans(plans);
+          break;
+      }
+    } catch (err) {
+      console.error(`Error fetching ${type} plans:`, err);
+      setError(prev => ({
+        ...prev,
+        [type]: err instanceof Error ? err.message : `Failed to fetch ${type} plans`
+      }));
+
+      // Set empty array on error
+      switch (type) {
+        case 'frontpage':
+          setFrontpagePlans([]);
+          break;
+        case 'renew':
+          setRenewPlans([]);
+          break;
+        case 'extra':
+          setExtraPlans([]);
+          break;
+      }
+    } finally {
+      setLoading(prev => ({ ...prev, [type]: false }));
+    }
+  }, []);
+
   const fetchPlans = useCallback(async (forceRefresh = false) => {
-    try {
-      setLoading(true);
-      setError(null);
+    // Fetch all plan types in parallel
+    await Promise.all([
+      fetchPlansByType('frontpage', forceRefresh),
+      fetchPlansByType('renew', forceRefresh),
+      fetchPlansByType('extra', forceRefresh),
+    ]);
+  }, [fetchPlansByType]);
 
-      // 从API获取处理好的数据，API 内部会处理 Redis 缓存和数据处理
-      const response = await fetch(`/api/plans/processed${forceRefresh ? '?refresh=true' : ''}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch plans');
-      }
-
-      const processedPlans: PlanWithPricing[] = await response.json();
-      setPlans(processedPlans);
-    } catch (err) {
-      // console.error('Error fetching plans:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch plans');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const fetchNonRecurringPlans = useCallback(async (forceRefresh = false) => {
-    try {
-      setNonRecurringLoading(true);
-      setNonRecurringError(null);
-
-      // Fetch non-recurring plans from API
-      const response = await fetch(`/api/plans/non-recurring${forceRefresh ? '?forceRefresh=true' : ''}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch non-recurring plans');
-      }
-
-      const data = await response.json();
-
-      // console.log(data);
-      const nonRecurringPlansData = data.success && data.data ? data.data : [];
-      setNonRecurringPlans(nonRecurringPlansData);
-    } catch (err) {
-      console.error('Error fetching non-recurring plans:', err);
-      setNonRecurringError(err instanceof Error ? err.message : 'Failed to fetch non-recurring plans');
-      setNonRecurringPlans([]);
-    } finally {
-      setNonRecurringLoading(false);
-    }
-  }, []);
+  // Legacy method for backward compatibility - maps to frontpage plans
+  const fetchLegacyPlans = useCallback(async (forceRefresh = false) => {
+    return fetchPlansByType('frontpage', forceRefresh);
+  }, [fetchPlansByType]);
 
   useEffect(() => {
     fetchPlans();
-    fetchNonRecurringPlans();
-  }, [fetchPlans, fetchNonRecurringPlans]);
+  }, [fetchPlans]);
   const getPlanPrice = (plan: PlanWithPricing) => {
     switch (selectedInterval) {
       case 'quarter':
@@ -121,32 +142,62 @@ export function usePlans() {
 
   const clearCache = useCallback(async () => {
     try {
-      // 通过 API 调用清理处理过的缓存
-      await fetch('/api/plans/processed/clear', { method: 'POST' });
-      console.log('Cleared processed plans cache');
+      // 通过 API 调用清理缓存
+      await Promise.all([
+        fetch('/api/plans/processed/clear', { method: 'POST' }),
+        fetch('/api/plans/cache/clear', { method: 'POST' }),
+      ]);
+      console.log('Cleared plans cache');
     } catch (error) {
-      console.error('Failed to clear processed plans cache:', error);
+      console.error('Failed to clear plans cache:', error);
     }
   }, []);
 
+  // Check if any plan type is loading
+  const isAnyLoading = loading.frontpage || loading.renew || loading.extra;
+
+  // Get combined loading state for backward compatibility
+  const loadingState = isAnyLoading;
+
   return {
-    plans,
-    nonRecurringPlans,
+    // New plan-specific properties
+    frontpagePlans,
+    renewPlans,
+    extraPlans,
     loading,
-    nonRecurringLoading,
     error,
-    nonRecurringError,
+
+    // Backward compatibility properties
+    plans: frontpagePlans, // Map to frontpage plans for existing code
+    loadingState, // Combined loading state
+
+    // Individual loading states for specific plan types
+    isLoading: {
+      frontpage: loading.frontpage,
+      renew: loading.renew,
+      extra: loading.extra,
+    },
+
+    // Individual error states for specific plan types
+    errors: {
+      frontpage: error.frontpage,
+      renew: error.renew,
+      extra: error.extra,
+    },
+
     selectedInterval,
     setSelectedInterval,
     getPlanPrice,
     getPlanDiscount,
     getStripePriceId,
-    refetch: () => fetchPlans(true),
-    refetchNonRecurring: () => fetchNonRecurringPlans(true),
-    refetchAll: () => {
-      fetchPlans(true);
-      fetchNonRecurringPlans(true);
-    },
+
+    // Refetch methods
+    refetch: () => fetchPlansByType('frontpage', true), // Backward compatibility
+    refetchFrontpage: () => fetchPlansByType('frontpage', true),
+    refetchRenew: () => fetchPlansByType('renew', true),
+    refetchExtra: () => fetchPlansByType('extra', true),
+    refetchAll: () => fetchPlans(true),
+
     clearCache,
   };
 }

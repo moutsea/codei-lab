@@ -45,6 +45,14 @@ export async function getUserById(id: string): Promise<UserSelect | null> {
   return user || null;
 }
 
+/**
+ * Get user by email
+ */
+export async function getUserByEmail(email: string): Promise<UserSelect | null> {
+  const [user] = await db().select().from(users).where(eq(users.email, email)).limit(1);
+  return user || null;
+}
+
 
 /**
  * Get user by Stripe customer ID
@@ -231,5 +239,4 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     quotaMonthlyUsed: row.quotaMonthlyUsed || "0",
   };
 }
-
 

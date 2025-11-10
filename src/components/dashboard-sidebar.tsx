@@ -15,7 +15,7 @@ import { Key, LayoutDashboard, CreditCard, User } from "lucide-react";
 import { useState } from "react";
 import { usePlans } from "@/hooks/usePlans";
 import { UserDetail } from "@/hooks/useUserData";
-import { NonRecurringPaymentDialog } from "@/components/non-recurring-payment-dialog";
+// import { NonRecurringPaymentDialog } from "@/components/non-recurring-payment-dialog";
 
 interface DashboardSidebarProps {
   hasActiveSubscription?: boolean;
@@ -29,8 +29,8 @@ export function DashboardSidebar({ hasActiveSubscription, stripeCustomerId, user
   const [showNonRecurringDialog, setShowNonRecurringDialog] = useState(false);
 
   const {
-    nonRecurringPlans,
-    nonRecurringLoading,
+    extraPlans,
+    isLoading: plansLoading,
   } = usePlans();
 
   const handleBillingClick = async (event: React.MouseEvent) => {
@@ -115,10 +115,10 @@ export function DashboardSidebar({ hasActiveSubscription, stripeCustomerId, user
   ];
 
   return (
-    <Sidebar className="pt-16 [&>div]:bg-[#fbfaf7] pl-6">
+    <Sidebar className="pt-16 [&>div]:bg-[#212121] dark:bg-[#212121] border-r border-border pl-6">
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-sm mb-10 ml-6">{t("navigation")}</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-sm mb-10 ml-6 text-foreground">{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="ml-6">
               {navigationItems.map((item) => (
@@ -132,9 +132,9 @@ export function DashboardSidebar({ hasActiveSubscription, stripeCustomerId, user
                       })}
                       onClick={item.onClick}
                     >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </ a>
+                      <item.icon className="text-muted-foreground" />
+                      <span className="text-foreground">{item.title}</span>
+                    </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
@@ -143,13 +143,13 @@ export function DashboardSidebar({ hasActiveSubscription, stripeCustomerId, user
         </SidebarGroup>
       </SidebarContent>
 
-      <NonRecurringPaymentDialog
+      {/* <NonRecurringPaymentDialog
         open={showNonRecurringDialog}
         onOpenChange={setShowNonRecurringDialog}
-        plans={nonRecurringPlans}
-        loading={nonRecurringLoading}
+        plans={extraPlans}
+        loading={plansLoading.extra}
         hideTrigger={true}
-      />
+      /> */}
     </Sidebar>
   );
 }

@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { Suspense } from 'react';
-import { StyleToggle } from '@/components/theme-toggle';
 import Header from '@/components/header';
 import { LoginButtonClient } from './client';
 

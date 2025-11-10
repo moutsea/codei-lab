@@ -43,8 +43,8 @@ export default function Dashboard() {
   } = useUserData({ enableCache: true });
 
   const {
-    nonRecurringPlans,
-    nonRecurringLoading,
+    extraPlans,
+    isLoading: plansLoading,
   } = usePlans();
 
   const [dailyUsageData, setDailyUsageData] = useState<DailyUsage[]>([]);
@@ -199,10 +199,10 @@ export default function Dashboard() {
   // Show loading while checking authentication or fetching data
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading dashboard...</div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <div className="text-muted-foreground">Loading dashboard...</div>
         </div>
       </div>
     );
@@ -236,26 +236,26 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto flex flex-col">
 
         {/* UTC and Data Delay Notice */}
-        <div className="text-md text-gray-600 mb-4">
+        <div className="text-md text-muted-foreground mb-4">
           {t("utcNotice")}
         </div>
 
         {/* Monthly Quota, Usage, and Upgrade Button */}
         <div className="flex justify-between items-center mb-6">
-          <div className="bg-[#fbfaf7] rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">{t("monthlyQuota")}</div>
-            <div className="text-2xl font-bold text-gray-900">{formatTokens(tokenStats.total)}</div>
+          <div className="bg-card rounded-lg p-4 border border-border">
+            <div className="text-sm text-muted-foreground mb-1">{t("monthlyQuota")}</div>
+            <div className="text-2xl font-bold text-foreground">{formatTokens(tokenStats.total)}</div>
           </div>
 
-          <div className="bg-[#fbfaf7] rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">{t("currentUsage")}</div>
-            <div className="text-2xl font-bold text-blue-600">{formatTokens(tokenStats.used)}</div>
-            <div className="text-xs text-gray-500">{usagePercentage.toFixed(1)}% {t("ofQuota")}</div>
+          <div className="bg-card rounded-lg p-4 border border-border">
+            <div className="text-sm text-muted-foreground mb-1">{t("currentUsage")}</div>
+            <div className="text-2xl font-bold text-primary">{formatTokens(tokenStats.used)}</div>
+            <div className="text-xs text-muted-foreground">{usagePercentage.toFixed(1)}% {t("ofQuota")}</div>
           </div>
 
           <Button
-            variant="black"
-            className="w-48 mr-8 h-16 rounded-3xl"
+            variant="default"
+            className="w-48 mr-8 h-16 rounded-3xl button-themed"
             onClick={handleUpgradePlan}
           >
             <ArrowUp className="h-4 w-4 mr-2" />
@@ -265,43 +265,43 @@ export default function Dashboard() {
 
         {/* Daily Usage and Month Selection */}
         <div className="flex justify-between gap-4 mb-6 mr-8">
-          <div className="bg-[#fbfaf7] rounded-lg p-4 flex-1">
+          <div className="bg-card rounded-lg p-4 flex-1 border border-border">
             <div className="flex items-center space-x-2 mb-2">
-              <BarChart3 className="h-5 w-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">{t("dailyUsage")}</h3>
+              <BarChart3 className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-foreground">{t("dailyUsage")}</h3>
             </div>
-            <div className="text-3xl font-bold text-gray-900">
+            <div className="text-3xl font-bold text-foreground">
               {formatTokens(Math.floor(tokenStats.used / 30))}
             </div>
-            <div className="text-sm text-gray-600">{t("averageDailyTokens")}</div>
+            <div className="text-sm text-muted-foreground">{t("averageDailyTokens")}</div>
           </div>
 
-          <div className="bg-[#fbfaf7] rounded-lg p-4 w-48">
+          <div className="bg-card rounded-lg p-4 w-48 border border-border">
             <div className="flex items-center space-x-2 mb-2">
-              <Calendar className="h-5 w-5 text-gray-600" />
-              <h3 className="text-lg font-semibold text-gray-900">{t("month")}</h3>
+              <Calendar className="h-5 w-5 text-muted-foreground" />
+              <h3 className="text-lg font-semibold text-foreground">{t("month")}</h3>
             </div>
             <MonthPicker
               selected={selectedMonth}
               onChange={handleMonthChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
             />
           </div>
         </div>
 
         {/* Daily Usage Chart */}
-        <div className="bg-[#fbfaf7] rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("dailyTokenUsage")}</h3>
+        <div className="bg-card rounded-lg p-4 border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-2">{t("dailyTokenUsage")}</h3>
           {loadingDailyUsage ? (
             <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mr-2"></div>
-              <div className="text-gray-600">Loading daily usage data...</div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-2"></div>
+              <div className="text-muted-foreground">Loading daily usage data...</div>
             </div>
           ) : dailyUsageData.length > 0 ? (
             <DailyUsageChart data={dailyUsageData} selectedMonth={selectedMonth.toISOString().slice(0, 7)} />
           ) : (
             <div className="flex items-center justify-center h-64">
-              <div className="text-gray-500">{dt("noUsageData")}</div>
+              <div className="text-muted-foreground">{dt("noUsageData")}</div>
             </div>
           )}
         </div>
@@ -310,8 +310,8 @@ export default function Dashboard() {
       <NonRecurringPaymentDialog
         open={showNonRecurringDialog}
         onOpenChange={setShowNonRecurringDialog}
-        plans={nonRecurringPlans}
-        loading={nonRecurringLoading}
+        plans={extraPlans}
+        loading={plansLoading.extra}
         hideTrigger={true}
       />
     </DashboardLayout>

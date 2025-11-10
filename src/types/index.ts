@@ -2,3 +2,4 @@
 export * from './db';
 export * from './admin';
 export * from './schema';
+export * from './auth';

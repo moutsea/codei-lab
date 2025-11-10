@@ -1,7 +1,8 @@
 import { cache, cacheTTL } from '@/lib/cache';
-import { getUserByStripeCustomerId, getUserById, getUserDetailById, updateUserById, updateUserStripeCustomerId } from '@/db/queries';
+import { createUser, getUserByStripeCustomerId, getUserById, getUserByEmail, getUserDetailById, updateUserById, updateUserStripeCustomerId } from '@/db/queries';
 import type { UserSelect } from '@/types/schema';
 import type { UserDetail } from '@/types/db';
+import type { AuthUserProfile } from '@/types';
 import Stripe from 'stripe';
 
 // ========== User Cache Keys (Only for UserDetail) ==========
@@ -23,6 +24,103 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 //     },
 // });
 // const customerId = customer.id;
+
+const normalizeEmail = (email?: string | null): string | null => {
+    return email ? email.trim().toLowerCase() : null;
+};
+
+/**
+ * Create a new user or update the existing record based on the auth provider payload.
+ */
+export const createOrUpdateUserFromAuthProfile = async (authUser: AuthUserProfile): Promise<UserSelect> => {
+    if (!authUser?.id) {
+        throw new Error('Auth user payload is missing required id');
+    }
+
+    const normalizedEmail = normalizeEmail(authUser.email);
+    if (!normalizedEmail) {
+        throw new Error('Auth user payload is missing required email address');
+    }
+
+    let user = await getUserById(authUser.id);
+
+    if (!user && normalizedEmail) {
+        user = await getUserByEmail(normalizedEmail);
+        if (user) {
+            console.log(`ℹ️ Found existing user by email for auth id ${authUser.id}`);
+        }
+    }
+
+    if (!user) {
+        user = await createUser({
+            id: authUser.id,
+            email: normalizedEmail,
+            nickname: authUser.name ?? normalizedEmail,
+            avatarUrl: authUser.image ?? null,
+        });
+
+        console.log(`✅ Created new user record: ${user.id}`);
+        return user;
+    }
+
+    const updates: Partial<Omit<UserSelect, 'id' | 'createdAt'>> = {};
+
+    if (normalizedEmail && normalizedEmail !== user.email) {
+        updates.email = normalizedEmail;
+    }
+
+    if (authUser.name && authUser.name !== user.nickname) {
+        updates.nickname = authUser.name;
+    }
+
+    if (authUser.image && authUser.image !== user.avatarUrl) {
+        updates.avatarUrl = authUser.image;
+    }
+
+    if (Object.keys(updates).length === 0) {
+        return user;
+    }
+
+    const updatedUser = await updateUserById(user.id, updates);
+
+    if (updatedUser) {
+        console.log(`✅ Updated user profile information: ${user.id}`);
+        return updatedUser;
+    }
+
+    return user;
+};
+
+/**
+ * Ensure the user has a Stripe customer ID, creating one if necessary.
+ */
+export const ensureStripeCustomerForUser = async (user: UserSelect): Promise<UserSelect> => {
+    if (user.stripeCustomerId) {
+        return user;
+    }
+
+    const customer = await stripe.customers.create({
+        email: user.email,
+        name: user.nickname || user.email,
+        metadata: {
+            userId: user.id,
+        },
+    });
+
+    const updatedUser = await updateUserStripeCustomerId(user.id, customer.id);
+
+    console.log(`✅ Created Stripe customer ${customer.id} for user ${user.id}`);
+
+    return updatedUser ?? { ...user, stripeCustomerId: customer.id };
+};
+
+/**
+ * Sync user data coming from auth providers and make sure the Stripe customer exists.
+ */
+export const syncUserFromAuthProfile = async (authUser: AuthUserProfile): Promise<UserSelect> => {
+    const user = await createOrUpdateUserFromAuthProfile(authUser);
+    return ensureStripeCustomerForUser(user);
+};
 
 /**
  * Get user by ID from database
@@ -220,5 +318,3 @@ export const updateUserStripeCustomerIdService = async (
         return null;
     }
 };
-
-
