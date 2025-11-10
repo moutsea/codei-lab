@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowUp, Calendar, BarChart3 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -32,6 +32,7 @@ interface DailyUsageItem {
 
 export default function Dashboard() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoading = status === 'loading';
@@ -212,7 +213,7 @@ export default function Dashboard() {
 
   // Redirect to login if not authenticated
   if (!user) {
-    const returnTo = window.location.pathname;
+    const returnTo = pathname;
     router.push(`/login?returnTo=${encodeURIComponent(returnTo)}`);
     return null;
   }
