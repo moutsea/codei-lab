@@ -100,7 +100,7 @@
     "thenRun": "ensuite exécuter"
   },
   "productFeatures": {
-    "title": "Code i fonctionne partout où vous codez",
+    "title": "Code I fonctionne partout où vous codez",
     "features": {
       "cli": {
         "title": "Code i CLI",
@@ -461,8 +461,9 @@
   },
   "auth": {
     "welcomeBack": "Bon Retour",
+    "signInTitle": "Connectez-vous à CodeILab",
     "signInDescription": "Choisissez votre méthode de connexion préférée pour continuer",
-    "signInWith": "Se connecter avec {{provider}}",
+    "signInWith": "Se connecter avec {provider}",
     "noAccount": "Pas encore de compte ?",
     "signUp": "S'inscrire"
   }

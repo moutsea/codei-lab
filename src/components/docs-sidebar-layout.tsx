@@ -62,9 +62,9 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
     <Sidebar
       variant="inset"
       collapsible="offcanvas"
-      className="bg-card border-r border-border pl-8 pt-18"
+      className="bg-card border-r border-border pl-8 pt-18 overflow-x-hidden"
     >
-      <SidebarContent className="bg-card">
+      <SidebarContent className="bg-card overflow-y-auto overflow-x-hidden">
         {Object.entries(groupedDocs).map(([category, docs]) => (
           <SidebarGroup key={category}>
             <SidebarGroupLabel className="px-3 py-3 text-foreground">

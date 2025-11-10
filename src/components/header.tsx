@@ -3,7 +3,7 @@
 import React from "react";
 import { useTranslations, useLocale } from "next-intl";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader2, Menu } from "lucide-react";
 import { LocaleToggle } from "@/components/locale/toggle";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { useSession, signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import UserMenu from "@/components/user-menu";
 import { StyleToggle } from "@/components/theme-toggle";
 import { useTheme } from "@/contexts/theme-context";
@@ -30,10 +30,13 @@ export default function Header() {
   const t = useTranslations("navigation");
   const pathname = usePathname();
   const locale = useLocale();
+  const router = useRouter();
   const { theme } = useTheme();
 
-  const handleClick = () => {
-    signIn(undefined, { callbackUrl: window.location.pathname });
+  const loginHref = locale === 'en' ? '/login' : `/${locale}/login`;
+
+  const handleLoginNavigate = () => {
+    router.push(loginHref);
   };
 
   const navigationItems: NavigationItem[] = [
@@ -135,7 +138,7 @@ export default function Header() {
               variant="black"
               className="ml-2 transition-colors duration-200 button-themed"
               disabled={isLoading}
-              onClick={handleClick}
+              onClick={handleLoginNavigate}
             >
               {isLoading ? (
                 <Loader2
@@ -184,7 +187,7 @@ export default function Header() {
                         variant="black"
                         className="w-full transition-colors duration-200 button-themed"
                         disabled={isLoading}
-                        onClick={handleClick}
+                        onClick={handleLoginNavigate}
                       >
                         {isLoading ? (
                           <Loader2

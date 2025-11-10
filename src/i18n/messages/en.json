@@ -100,7 +100,7 @@
     "thenRun": "then run"
   },
   "productFeatures": {
-    "title": "Code i runs everywhere you code",
+    "title": "Code I runs everywhere you code",
     "features": {
       "cli": {
         "title": "Code i CLI",
@@ -454,8 +454,9 @@
   },
   "auth": {
     "welcomeBack": "Welcome Back",
+    "signInTitle": "Sign in to CodeILab",
     "signInDescription": "Choose your preferred sign-in method to continue",
-    "signInWith": "Sign in with {{provider}}",
+    "signInWith": "Sign in with {provider}",
     "noAccount": "Don't have an account?",
     "signUp": "Sign up"
   }
