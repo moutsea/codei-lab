@@ -183,7 +183,8 @@
     },
     "wealsobuilt": {
       "title": "其他产品",
-      "cs61b": "CS顶级公开课"
+      "cs61b": "CS顶级公开课",
+      "claudeide": "Claude Code IDE"
     },
     "company": {
       "title": "公司",
@@ -192,7 +193,7 @@
       "careers": "加入我们",
       "contact": "联系我们"
     },
-    "copyright": "Code i Lab",
+    "copyright": "Code I Lab",
     "allRightsReserved": "版权所有",
     "privacy": "隐私政策",
     "terms": "服务条款",
@@ -200,21 +201,21 @@
   },
   "faq": {
     "title": "常见问题",
-    "subtitle": "查找关于 Code i 的常见问题答案，开始使用经济实惠的 OpenAI Codex API 访问。",
+    "subtitle": "查找关于 Code I 的常见问题答案，开始使用经济实惠的 OpenAI Codex API 访问。",
     "moreQuestions": "还有其他问题？",
     "contactSupport": "联系我们的支持团队",
     "items": [
       {
-        "question": "如何使用 Code i？",
-        "answer": "安装 Node.js 和 Code i CLI 工具后，只需在终端中配置您的 API 密钥即可。设置仅需一分钟。我们提供测试界面来验证连接，您可以在订阅前进行测试。我们提供灵活的订阅方案，以实惠的价格提供丰富的月度 token 配额来访问 OpenAI 的 Codex 模型。"
+        "question": "如何使用 Code I？",
+        "answer": "安装 Node.js 和 Code I CLI 工具后，只需在终端中配置您的 API 密钥即可。设置仅需一分钟。我们提供测试界面来验证连接，您可以在订阅前进行测试。我们提供灵活的订阅方案，以实惠的价格提供丰富的月度 token 配额来访问 OpenAI 的 Codex 模型。"
       },
       {
-        "question": "Code i 使用什么模型？",
-        "answer": "Code i 提供对 OpenAI Codex 模型的经济实惠 API 访问，这是与 GitHub Copilot 使用的相同的强大代码生成模型。"
+        "question": "Code I 使用什么模型？",
+        "answer": "Code I 提供对 OpenAI Codex 模型的经济实惠 API 访问，这是与 GitHub Copilot 使用的相同的强大代码生成模型。"
       },
       {
-        "question": "Code i 适合什么用途？",
-        "answer": "Code i 非常适合寻求经济实惠的高级 AI 代码生成访问的开发者。它与您现有的 IDE 和开发工具无缝集成，无需改变您的工作流程。它支持多种编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust 等。Code i 可以与 Git 等命令行工具和各种 MCP 服务器协作，扩展其功能，使您的开发过程更高效、更经济实惠。"
+        "question": "Code I 适合什么用途？",
+        "answer": "Code I 非常适合寻求经济实惠的高级 AI 代码生成访问的开发者。它与您现有的 IDE 和开发工具无缝集成，无需改变您的工作流程。它支持多种编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust 等。Code i 可以与 Git 等命令行工具和各种 MCP 服务器协作，扩展其功能，使您的开发过程更高效、更经济实惠。"
       },
       {
         "question": "月度 token 额度用不完怎么办？",
@@ -222,11 +223,11 @@
       },
       {
         "question": "支持哪些平台和编程语言？",
-        "answer": "Code i 支持 Windows/Mac/Linux 和所有主流编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust、PHP、Ruby 等等。"
+        "answer": "Code I 支持 Windows/Mac/Linux 和所有主流编程语言，包括 Python、JavaScript/TypeScript、Java、C++、Go、Rust、PHP、Ruby 等等。"
       },
       {
-        "question": "Code i 的价格与其他方案相比如何？",
-        "answer": "Code i 提供比其他提供商更经济实惠的 Codex 访问。我们优化了基础设施，以更低的成本提供相同高质量的代码生成。此外，我们的缓存输入 token 享有 90% 折扣，使重复代码分析和重构极其划算。"
+        "question": "Code I 的价格与其他方案相比如何？",
+        "answer": "Code I 提供比其他提供商更经济实惠的 Codex 访问。我们优化了基础设施，以更低的成本提供相同高质量的代码生成。此外，我们的缓存输入 token 享有 90% 折扣，使重复代码分析和重构极其划算。"
       }
     ]
   },

@@ -75,11 +75,16 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">{t("wealsobuilt.title")}</h4>
             <ul className="space-y-2">
               <li>
+                <Link href="https://www.claudeide.net/" className="text-gray-400 hover:text-white transition-colors">
+                  {t("wealsobuilt.claudeide")}
+                </Link>
+              </li>
+
+              <li>
                 <Link href="https://www.cs61bbeyond.com/" className="text-gray-400 hover:text-white transition-colors">
                   {t("wealsobuilt.cs61b")}
                 </Link>
               </li>
-
             </ul>
           </div>
         </div>

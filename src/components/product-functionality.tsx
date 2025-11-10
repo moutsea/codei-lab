@@ -48,7 +48,6 @@ export default function ProductFunctionality() {
           </h2>
         </div>
 
-        {/* Second Row - Terminal Demo Left, Accordion Right */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left: Use Case Image */}
           <div className="order-1 lg:order-1">
@@ -64,7 +63,7 @@ export default function ProductFunctionality() {
           </div>
 
           {/* Right: Accordion Content */}
-          <div className="order-2 lg:order-2">
+          <div className="order-2 lg:order-2 mt-20">
             <Accordion
               type="single"
               collapsible

@@ -183,7 +183,8 @@
     },
     "wealsobuilt": {
       "title": "We also built",
-      "cs61b": "CS open courses"
+      "cs61b": "CS open courses",
+      "claudeide": "Claude Code IDE"
     },
     "company": {
       "title": "Entreprise",
@@ -192,7 +193,7 @@
       "careers": "Carrières",
       "contact": "Contact"
     },
-    "copyright": "Code i Lab",
+    "copyright": "Code I Lab",
     "allRightsReserved": "Tous droits réservés",
     "privacy": "Politique de Confidentialité",
     "terms": "Conditions d'Utilisation",
@@ -205,16 +206,16 @@
     "contactSupport": "Contactez notre équipe de support",
     "items": [
       {
-        "question": "Comment utiliser Code i ?",
+        "question": "Comment utiliser Code I ?",
         "answer": "Après avoir installé Node.js et l'outil CLI Code i, configurez simplement votre clé API dans le terminal. L'installation ne prend qu'une minute. Nous fournissons une interface de test pour vérifier votre connexion avant de vous abonner. Nous proposons des plans d'abonnement flexibles avec des quotas mensuels de tokens généreux à des prix abordables pour accéder au modèle Codex d'OpenAI."
       },
       {
-        "question": "Quel modèle Code i utilise-t-il ?",
-        "answer": "Code i fournit un accès API abordable au modèle Codex d'OpenAI, le même puissant modèle de génération de code utilisé dans GitHub Copilot."
+        "question": "Quel modèle Code I utilise-t-il ?",
+        "answer": "Code I fournit un accès API abordable au modèle Codex d'OpenAI, le même puissant modèle de génération de code utilisé dans GitHub Copilot."
       },
       {
-        "question": "À quoi Code i est-il adapté ?",
-        "answer": "Code i est parfait pour les développeurs cherchant un accès abordable à la génération de code IA avancée. Il s'intègre parfaitement à votre IDE et outils de développement existants sans changer votre flux de travail. Il prend en charge plusieurs langages de programmation dont Python, JavaScript/TypeScript, Java, C++, Go, Rust, et plus encore. Code i peut collaborer avec des outils en ligne de commande comme Git et divers serveurs MCP, étendant ses capacités pour rendre votre processus de développement plus efficace et abordable."
+        "question": "À quoi Code I est-il adapté ?",
+        "answer": "Code I est parfait pour les développeurs cherchant un accès abordable à la génération de code IA avancée. Il s'intègre parfaitement à votre IDE et outils de développement existants sans changer votre flux de travail. Il prend en charge plusieurs langages de programmation dont Python, JavaScript/TypeScript, Java, C++, Go, Rust, et plus encore. Code i peut collaborer avec des outils en ligne de commande comme Git et divers serveurs MCP, étendant ses capacités pour rendre votre processus de développement plus efficace et abordable."
       },
       {
         "question": "Que faire si je n'utilise pas tout mon quota mensuel de tokens ?",
@@ -222,11 +223,11 @@
       },
       {
         "question": "Quelles plates-formes et langages de programmation sont pris en charge ?",
-        "answer": "Code i prend en charge Windows/Mac/Linux et tous les principaux langages de programmation, y compris Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, et bien d'autres."
+        "answer": "Code I prend en charge Windows/Mac/Linux et tous les principaux langages de programmation, y compris Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, et bien d'autres."
       },
       {
-        "question": "Comment les tarifs de Code i se comparent-ils aux alternatives ?",
-        "answer": "Code i offre un accès à Codex significativement plus abordable que les autres fournisseurs. Nous avons optimisé notre infrastructure pour fournir la même qualité de génération de code à une fraction du coût. De plus, nos tokens d'entrée mis en cache bénéficient d'une réduction de 90 %, rendant l'analyse et la refactorisation de code répétitives extrêmement rentables."
+        "question": "Comment les tarifs de Code I se comparent-ils aux alternatives ?",
+        "answer": "Code I offre un accès à Codex significativement plus abordable que les autres fournisseurs. Nous avons optimisé notre infrastructure pour fournir la même qualité de génération de code à une fraction du coût. De plus, nos tokens d'entrée mis en cache bénéficient d'une réduction de 90 %, rendant l'analyse et la refactorisation de code répétitives extrêmement rentables."
       }
     ]
   },

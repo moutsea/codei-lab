@@ -183,9 +183,10 @@
     },
     "wealsobuilt": {
       "title": "We also built",
-      "cs61b": "CS open courses"
+      "cs61b": "CS open courses",
+      "claudeide": "Claude Code IDE"
     },
-    "copyright": "Code i Lab",
+    "copyright": "Code I Lab",
     "allRightsReserved": "All rights reserved",
     "privacy": "Privacy Policy",
     "terms": "Terms of Service",
@@ -198,16 +199,16 @@
     "contactSupport": "Contact our support team",
     "items": [
       {
-        "question": "How to use Code i?",
-        "answer": "After installing Node.js and the Code i CLI tool, simply configure your API key in the terminal. The setup takes only a minute. We provide a testing interface to verify your connection before subscribing. We offer flexible subscription plans with generous monthly token quotas at affordable prices for accessing OpenAI's Codex model."
+        "question": "How to use Code I?",
+        "answer": "After installing Node.js and the Codex CLI tool, simply configure your API key in the terminal. The setup takes only a minute. We provide a testing interface to verify your connection before subscribing. We offer flexible subscription plans with generous monthly token quotas at affordable prices for accessing OpenAI's Codex model."
       },
       {
-        "question": "What model does Code i use?",
-        "answer": "Code i provides affordable API access to OpenAI's Codex model, the same powerful code-generation model used in GitHub Copilot."
+        "question": "What model does Code I use?",
+        "answer": "Code I provides affordable API access to OpenAI's Codex model, the same powerful code-generation model used in GitHub Copilot."
       },
       {
-        "question": "What is Code i suitable for?",
-        "answer": "Code i is perfect for developers seeking cost-effective access to advanced AI code generation. It integrates seamlessly with your existing IDE and development tools without changing your workflow. It supports multiple programming languages including Python, JavaScript/TypeScript, Java, C++, Go, Rust, and more. Code i can collaborate with command-line tools like Git and various MCP servers, extending its capabilities to make your development process more efficient and affordable."
+        "question": "What is Code I suitable for?",
+        "answer": "Code I is perfect for developers seeking cost-effective access to advanced AI code generation. It integrates seamlessly with your existing IDE and development tools without changing your workflow. It supports multiple programming languages including Python, JavaScript/TypeScript, Java, C++, Go, Rust, and more. Code i can collaborate with command-line tools like Git and various MCP servers, extending its capabilities to make your development process more efficient and affordable."
       },
       {
         "question": "What if I don't use up my monthly token quota?",
@@ -215,11 +216,11 @@
       },
       {
         "question": "Which platforms and programming languages are supported?",
-        "answer": "Code i supports Windows/Mac/Linux and all major programming languages, including Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, and many more."
+        "answer": "Code I supports Windows/Mac/Linux and all major programming languages, including Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby, and many more."
       },
       {
-        "question": "How does Code i pricing compare to alternatives?",
-        "answer": "Code i offers significantly more affordable access to Codex compared to other providers. We've optimized our infrastructure to provide the same high-quality code generation at a fraction of the cost. Plus, our buffered input tokens come with a 90% discount, making repetitive code analysis and refactoring extremely cost-effective."
+        "question": "How does Code I pricing compare to alternatives?",
+        "answer": "Code I offers significantly more affordable access to Codex compared to other providers. We've optimized our infrastructure to provide the same high-quality code generation at a fraction of the cost. Plus, our buffered input tokens come with a 90% discount, making repetitive code analysis and refactoring extremely cost-effective."
       }
     ]
   },
