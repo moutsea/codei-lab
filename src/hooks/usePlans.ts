@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export interface PlanWithPricing {
   id: string;
@@ -46,6 +46,7 @@ export function usePlans() {
     extra: null,
   });
   const [selectedInterval, setSelectedInterval] = useState<BillingInterval>('month');
+  const isInitialMount = useRef(true);
 
   const fetchPlansByType = useCallback(async (type: PlanType, forceRefresh = false) => {
     try {
@@ -109,8 +110,11 @@ export function usePlans() {
   }, [fetchPlansByType]);
 
   useEffect(() => {
-    fetchPlans();
-  }, [fetchPlans]);
+    if (isInitialMount.current) {
+      fetchPlans();
+      isInitialMount.current = false;
+    }
+  }, [fetchPlans]); // Proper dependencies but only run once
   const getPlanPrice = (plan: PlanWithPricing) => {
     switch (selectedInterval) {
       case 'quarter':
