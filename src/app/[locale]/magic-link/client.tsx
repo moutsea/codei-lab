@@ -1,13 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import { signIn, type SignInResponse } from 'next-auth/react';
 import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 type MagicLinkStatus = 'loading' | 'success' | 'error';
+
+type MagicLinkStatusResponse = {
+  status: 'valid' | 'expired' | 'consumed' | 'not_found' | 'email_mismatch';
+  expiresAt?: string;
+  consumedAt?: string;
+};
 
 interface MagicLinkClientProps {
   locale: string;
@@ -16,6 +22,7 @@ interface MagicLinkClientProps {
     checking: string;
     redirecting: string;
     invalid: string;
+    alreadyUsed: string;
     backToLogin: string;
   };
 }
@@ -27,37 +34,87 @@ export function MagicLinkClient({ locale, labels }: MagicLinkClientProps) {
   const redirectParam = searchParams.get('redirectTo');
   const [status, setStatus] = useState<MagicLinkStatus>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const attemptedKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!emailParam || !tokenParam) {
-      setStatus('error');
-      setErrorMessage(labels.invalid);
-      return;
-    }
+    let cancelled = false;
 
-    const fallbackRedirect = locale === 'en' ? '/' : `/${locale}`;
-    const callbackUrl = redirectParam || fallbackRedirect;
-
-    signIn('magiclink', {
-      email: emailParam,
-      token: tokenParam,
-      callbackUrl,
-      redirect: true,
-    })
-      .then((result) => {
-        if (result?.error) {
-          setStatus('error');
-          setErrorMessage(labels.invalid);
-        } else {
-          setStatus('success');
-        }
-      })
-      .catch((error) => {
-        console.error('Magic link sign-in failed', error);
+    async function verifyAndSignIn() {
+      if (!emailParam || !tokenParam) {
         setStatus('error');
         setErrorMessage(labels.invalid);
-      });
-  }, [emailParam, tokenParam, redirectParam, locale, labels.invalid]);
+        return;
+      }
+
+      const fallbackRedirect = locale === 'en' ? '/' : `/${locale}`;
+      const callbackUrl = redirectParam || fallbackRedirect;
+      const attemptKey = `${emailParam}:${tokenParam}`;
+
+      if (attemptedKeyRef.current === attemptKey) {
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({ email: emailParam, token: tokenParam });
+        const response = await fetch(`/api/auth/magiclink/status?${params.toString()}`, {
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load magic link status (${response.status})`);
+        }
+
+        const payload = (await response.json()) as MagicLinkStatusResponse;
+
+        if (cancelled) {
+          return;
+        }
+
+        if (payload.status === 'consumed') {
+          setStatus('error');
+          setErrorMessage(labels.alreadyUsed);
+          return;
+        }
+
+        if (payload.status !== 'valid') {
+          setStatus('error');
+          setErrorMessage(labels.invalid);
+          return;
+        }
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Magic link status check failed', error);
+          setStatus('error');
+          setErrorMessage(labels.invalid);
+        }
+        return;
+      }
+
+      attemptedKeyRef.current = attemptKey;
+
+      signIn('magiclink', {
+        email: emailParam,
+        token: tokenParam,
+        callbackUrl,
+        redirect: true,
+      })
+        .then(() => {
+          setStatus('success');
+        })
+        .catch((error) => {
+          attemptedKeyRef.current = null;
+          console.error('Magic link sign-in failed', error);
+          setStatus('error');
+          setErrorMessage(labels.invalid);
+        });
+    }
+
+    verifyAndSignIn();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [emailParam, tokenParam, redirectParam, locale, labels.invalid, labels.alreadyUsed]);
 
   const loginHref = locale === 'en' ? '/login' : `/${locale}/login`;
 

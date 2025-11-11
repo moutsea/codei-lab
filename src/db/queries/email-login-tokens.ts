@@ -28,3 +28,10 @@ export async function deleteEmailLoginTokensForEmail(email: string): Promise<voi
 export async function deleteExpiredEmailLoginTokens(currentDate: Date = new Date()): Promise<void> {
   await db().delete(emailLoginTokens).where(lt(emailLoginTokens.expiresAt, currentDate));
 }
+
+export async function markEmailLoginTokenAsConsumed(id: number): Promise<void> {
+  await db()
+    .update(emailLoginTokens)
+    .set({ consumedAt: new Date() })
+    .where(eq(emailLoginTokens.id, id));
+}

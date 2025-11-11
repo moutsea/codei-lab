@@ -470,6 +470,7 @@
     "magicLinkChecking": "Confirming your secure sign-in link…",
     "magicLinkRedirecting": "Link verified! Redirecting you now…",
     "magicLinkInvalid": "This magic link is invalid or has expired.",
+    "magicLinkAlreadyUsed": "That magic link was already used. Please request a new one.",
     "magicLinkBackToLogin": "Back to login"
   }
 }

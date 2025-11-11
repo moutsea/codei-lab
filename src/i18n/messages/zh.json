@@ -477,6 +477,7 @@
     "magicLinkChecking": "正在验证安全登录链接…",
     "magicLinkRedirecting": "验证成功，正在跳转…",
     "magicLinkInvalid": "该登录链接无效或已过期。",
+    "magicLinkAlreadyUsed": "该登录链接已被使用，请重新请求新的链接。",
     "magicLinkBackToLogin": "返回登录"
   }
 }

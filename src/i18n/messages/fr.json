@@ -477,6 +477,7 @@
     "magicLinkChecking": "Vérification de votre lien sécurisé…",
     "magicLinkRedirecting": "Lien vérifié ! Redirection en cours…",
     "magicLinkInvalid": "Ce lien est invalide ou a expiré.",
+    "magicLinkAlreadyUsed": "Ce lien magique a déjà été utilisé. Demandez-en un nouveau.",
     "magicLinkBackToLogin": "Retour à la connexion"
   }
 }

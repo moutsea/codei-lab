@@ -27,6 +27,7 @@ export default async function MagicLinkPage({
               checking: t('magicLinkChecking'),
               redirecting: t('magicLinkRedirecting'),
               invalid: t('magicLinkInvalid'),
+              alreadyUsed: t('magicLinkAlreadyUsed'),
               backToLogin: t('magicLinkBackToLogin'),
             }}
           />

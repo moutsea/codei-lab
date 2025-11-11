@@ -170,4 +170,5 @@ export const emailLoginTokens = pgTable("email_login_tokens", {
     locale: varchar("locale", { length: 10 }),
     createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
     expiresAt: timestamp("expires_at", { withTimezone: false }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: false }),
 });
