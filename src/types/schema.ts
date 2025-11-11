@@ -10,6 +10,7 @@ import {
     dailyUserUsage,
     monthlyApiUsage,
     monthlyUserUsage,
+    emailLoginTokens,
 } from '@/db/schema';
 
 // Infer types from table definitions for type safety
@@ -37,6 +38,9 @@ export type MonthlyApiUsageInsert = typeof monthlyApiUsage.$inferInsert;
 export type MonthlyUserUsageSelect = typeof monthlyUserUsage.$inferSelect;
 export type MonthlyUserUsageInsert = typeof monthlyUserUsage.$inferInsert;
 
+export type EmailLoginTokenSelect = typeof emailLoginTokens.$inferSelect;
+export type EmailLoginTokenInsert = typeof emailLoginTokens.$inferInsert;
+
 // Export table types for direct reference
 export type UsersTable = typeof users;
 export type PlansTable = typeof plans;
@@ -46,6 +50,7 @@ export type ApiKeysTable = typeof apiKeys;
 export type DailyUserUsageTable = typeof dailyUserUsage;
 export type MonthlyApiUsageTable = typeof monthlyApiUsage;
 export type MonthlyUserUsageTable = typeof monthlyUserUsage;
+export type EmailLoginTokensTable = typeof emailLoginTokens;
 
 // Common utility types
 export type UserId = UserSelect['id'];

@@ -458,6 +458,20 @@
     "signInDescription": "Choose your preferred sign-in method to continue",
     "signInWith": "Sign in with {provider}",
     "noAccount": "Don't have an account?",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "or": "or",
+    "emailLoginTitle": "Email me a sign-in link",
+    "emailLoginDescription": "We'll send a secure magic link—no password required.",
+    "emailPlaceholder": "you@example.com",
+    "sendMagicLink": "Send magic link",
+    "magicLinkSent": "Magic link sent! Check your inbox.",
+    "magicLinkHint": "The link expires in {minutes} minutes.",
+    "magicLinkError": "We couldn't send that email. Please try again.",
+    "emailRequired": "Enter a valid email address.",
+    "magicLinkHeading": "Check your email",
+    "magicLinkChecking": "Confirming your secure sign-in link…",
+    "magicLinkRedirecting": "Link verified! Redirecting you now…",
+    "magicLinkInvalid": "This magic link is invalid or has expired.",
+    "magicLinkBackToLogin": "Back to login"
   }
 }

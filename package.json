@@ -43,6 +43,7 @@
     "react-syntax-highlighter": "^15.6.6",
     "recharts": "^3.2.1",
     "remark-gfm": "^4.0.1",
+    "resend": "^6.4.2",
     "shiki": "^3.13.0",
     "stripe": "^19.1.0",
     "tailwind-merge": "^3.3.1",

@@ -465,6 +465,20 @@
     "signInDescription": "Choisissez votre méthode de connexion préférée pour continuer",
     "signInWith": "Se connecter avec {provider}",
     "noAccount": "Pas encore de compte ?",
-    "signUp": "S'inscrire"
+    "signUp": "S'inscrire",
+    "or": "ou",
+    "emailLoginTitle": "Recevoir un lien de connexion par email",
+    "emailLoginDescription": "Nous vous envoyons un lien sécurisé, sans mot de passe.",
+    "emailPlaceholder": "vous@example.com",
+    "sendMagicLink": "Envoyer le lien magique",
+    "magicLinkSent": "Lien envoyé ! Vérifiez votre boîte de réception.",
+    "magicLinkHint": "Le lien expire dans {minutes} minutes.",
+    "magicLinkError": "Impossible d'envoyer l'email. Réessayez.",
+    "emailRequired": "Veuillez saisir une adresse email valide.",
+    "magicLinkHeading": "Consultez votre email",
+    "magicLinkChecking": "Vérification de votre lien sécurisé…",
+    "magicLinkRedirecting": "Lien vérifié ! Redirection en cours…",
+    "magicLinkInvalid": "Ce lien est invalide ou a expiré.",
+    "magicLinkBackToLogin": "Retour à la connexion"
   }
 }

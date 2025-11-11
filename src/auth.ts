@@ -1,15 +1,30 @@
 import "@/server/proxy";
 import NextAuth from "next-auth";
+import type { DefaultSession } from "next-auth";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import MicrosoftEntraID from "next-auth/providers/microsoft-entra-id";
+import Credentials from "next-auth/providers/credentials";
 import { syncUserFromAuthProfile } from "@/lib/services/user_service";
+import { consumeEmailMagicLinkToken, resolveUserForEmail } from "@/lib/auth/email-login";
 
 // Extend the built-in session types
 declare module "next-auth" {
+    interface User {
+        id: string;
+    }
+
     interface Session {
+        user: DefaultSession["user"] & { id: string };
         provider?: string;
         accessToken?: string;
+    }
+}
+
+declare module "next-auth" {
+    interface JWT {
+        appUserId?: string;
+        provider?: string;
     }
 }
 
@@ -38,48 +53,91 @@ export const {
             clientSecret: process.env.AZURE_AD_CLIENT_SECRET!,
             issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID || "common"}/v2.0`
         }),
+
+        Credentials({
+            id: "magiclink",
+            name: "Email",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                token: { label: "Token", type: "text" },
+            },
+            async authorize(credentials) {
+                const email = credentials?.email as string;
+                const token = credentials?.token as string;
+
+                if (!email || !token) {
+                    return null;
+                }
+
+                const verifiedToken = await consumeEmailMagicLinkToken(email, token);
+                if (!verifiedToken) {
+                    console.warn(`[auth] Invalid or expired magic link for ${email}`);
+                    return null;
+                }
+
+                try {
+                    const user = await resolveUserForEmail(email);
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.nickname ?? user.email,
+                        image: user.avatarUrl ?? undefined,
+                    };
+                } catch (error) {
+                    console.error("Failed to resolve email user", error);
+                    return null;
+                }
+            },
+        }),
     ],
 
-    events: {
-        /**
-         * @param  {object}  message      Message object
-         * @param  {object}  session      Session object
-         */
-        async signIn({ user, account, profile }) {
-            const provider = account?.provider ?? 'unknown';
-            const resolvedId = user?.id ?? account?.providerAccountId;
-            const profileRecord = profile as Record<string, unknown> | undefined;
-            const profileEmail = typeof profileRecord?.email === 'string' ? profileRecord.email : undefined;
-            const profileName = typeof profileRecord?.name === 'string' ? profileRecord.name : undefined;
-            const profilePicture = typeof profileRecord?.picture === 'string' ? profileRecord.picture : undefined;
-            const profileAvatar = typeof profileRecord?.avatar_url === 'string' ? profileRecord.avatar_url : undefined;
+    callbacks: {
+        async jwt({ token, user, account, profile }) {
+            if (user) {
+                const provider = account?.provider;
+                const profileRecord = profile as Record<string, unknown> | undefined;
+                const profileEmail = typeof profileRecord?.email === 'string' ? profileRecord.email : undefined;
+                const profileName = typeof profileRecord?.name === 'string' ? profileRecord.name : undefined;
+                const profilePicture = typeof profileRecord?.picture === 'string' ? profileRecord.picture : undefined;
+                const profileAvatar = typeof profileRecord?.avatar_url === 'string' ? profileRecord.avatar_url : undefined;
 
-            const resolvedEmail = user?.email ?? profileEmail;
-            const resolvedName = user?.name ?? profileName;
-            const resolvedImage = user?.image ?? profilePicture ?? profileAvatar;
+                const resolvedEmail = user.email ?? profileEmail;
+                const resolvedName = user.name ?? profileName;
+                const resolvedImage = user.image ?? profilePicture ?? profileAvatar;
+                const resolvedId = user.id ?? account?.providerAccountId ?? token.appUserId;
 
-            if (!resolvedId) {
-                console.warn(`[auth] Missing user id from provider ${provider}; skipping user sync.`);
-                return;
+                if (provider) {
+                    token.provider = provider;
+                }
+
+                if (resolvedId && resolvedEmail) {
+                    try {
+                        const syncedUser = await syncUserFromAuthProfile({
+                            id: resolvedId,
+                            email: resolvedEmail,
+                            name: resolvedName,
+                            image: resolvedImage,
+                        });
+                        token.appUserId = syncedUser.id;
+                    } catch (error) {
+                        console.error('❌ Failed to sync user during JWT callback:', error);
+                    }
+                }
             }
 
-            if (!resolvedEmail) {
-                console.warn(`[auth] Missing email for user ${resolvedId} from provider ${provider}; skipping user sync.`);
-                return;
+            return token;
+        },
+
+        async session({ session, token }) {
+            if (session.user && token.appUserId) {
+                session.user.id = token.appUserId as string;
             }
 
-            try {
-                await syncUserFromAuthProfile({
-                    id: resolvedId,
-                    email: resolvedEmail,
-                    name: resolvedName,
-                    image: resolvedImage,
-                });
-
-                console.log(`✅ Synced user ${resolvedId} from ${provider} sign-in.`);
-            } catch (error) {
-                console.error('❌ Failed to sync user during sign-in:', error);
+            if (token.provider) {
+                session.provider = token.provider as string;
             }
+
+            return session;
         },
     },
 });

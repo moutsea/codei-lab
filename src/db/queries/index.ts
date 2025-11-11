@@ -9,6 +9,7 @@ export * from './api-keys';
 export * from './daily-user-usage';
 export * from './monthly-api-usage';
 export * from './monthly-user-usage';
+export * from './email-login-tokens';
 
 
 // Database query utilities
@@ -285,4 +286,3 @@ export class DatabaseStatus {
     };
   }
 }
-

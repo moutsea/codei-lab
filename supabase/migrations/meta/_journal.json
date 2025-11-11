@@ -15,6 +15,13 @@
       "when": 1762617745432,
       "tag": "0001_friendly_ben_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762828497499,
+      "tag": "0002_serious_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

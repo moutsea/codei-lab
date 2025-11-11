@@ -3,11 +3,18 @@
 import { signIn } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 interface LoginButtonClientProps {
   provider: 'google' | 'github' | 'microsoft';
+}
+
+interface EmailLoginFormProps {
+  locale: string;
+  expiresInMinutes: number;
+  redirectTo: string;
 }
 
 export function LoginButtonClient({ provider }: LoginButtonClientProps) {
@@ -95,5 +102,91 @@ export function LoginButtonClient({ provider }: LoginButtonClientProps) {
         {t('signInWith', { provider: providerInfo.name })}
       </span>
     </Button>
+  );
+}
+
+export function EmailLoginForm({ locale, expiresInMinutes, redirectTo }: EmailLoginFormProps) {
+  const t = useTranslations('auth');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
+      setStatus('error');
+      setMessage(t('emailRequired'));
+      return;
+    }
+
+    setStatus('loading');
+    setMessage(null);
+
+    try {
+      const response = await fetch('/api/email-login/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: normalizedEmail, locale, redirectTo }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send magic link');
+      }
+
+      setStatus('success');
+      setMessage(t('magicLinkSent'));
+    } catch (error) {
+      console.error('Failed to send magic link', error);
+      setStatus('error');
+      setMessage(t('magicLinkError'));
+    }
+  };
+
+  return (
+    <div className="mt-6 border border-dashed border-border rounded-lg p-5">
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-foreground mb-1">{t('emailLoginTitle')}</h2>
+        <p className="text-sm text-muted-foreground">
+          {status === 'success'
+            ? t('magicLinkHint', { minutes: expiresInMinutes })
+            : t('emailLoginDescription')}
+        </p>
+      </div>
+
+      <form className="space-y-3" onSubmit={handleSubmit}>
+        <Input
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder={t('emailPlaceholder')}
+          disabled={status === 'loading'}
+          required
+        />
+
+        <Button type="submit" className="w-full" disabled={status === 'loading'}>
+          {status === 'loading' ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>{t('sendMagicLink')}</span>
+            </div>
+          ) : (
+            t('sendMagicLink')
+          )}
+        </Button>
+      </form>
+
+      {message && (
+        <p
+          className={`mt-3 text-sm ${status === 'error' ? 'text-red-500' : 'text-green-600'}`}
+          aria-live="polite"
+        >
+          {message}
+        </p>
+      )}
+    </div>
   );
 }

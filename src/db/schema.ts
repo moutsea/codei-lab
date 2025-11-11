@@ -163,3 +163,11 @@ export const monthlyUserUsage = pgTable(
     ]
 );
 
+export const emailLoginTokens = pgTable("email_login_tokens", {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    email: varchar("email", { length: 255 }).notNull(),
+    tokenHash: varchar("token_hash", { length: 255 }).notNull().unique(),
+    locale: varchar("locale", { length: 10 }),
+    createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
+    expiresAt: timestamp("expires_at", { withTimezone: false }).notNull(),
+});
