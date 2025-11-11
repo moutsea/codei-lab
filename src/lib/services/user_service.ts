@@ -157,7 +157,6 @@ export const getUserFromDBByStripeCustomerId = async (stripeCustomerId: string):
 export const getUserDetailByIdWithCache = async (userId: string): Promise<UserDetail | null> => {
     const userDetail = await getUserDetailFromCache(userId);
     if (userDetail && userDetail.active) {
-        // console.log("=====userdetail from cache=====\n", userDetail);
         return userDetail;
     }
 

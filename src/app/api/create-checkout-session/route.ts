@@ -12,11 +12,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 function planToLevel(level: string): number {
   const key = String(level).trim().toLowerCase();
   const map: Record<string, number> = {
-    team: 3,
-    pro: 2,
-    lite: 1,
+    pro: 3,
+    plus: 2,
+    trial: 1,
   };
   return map[key] ?? 0;
+}
+
+function intervalToDays(interval: string): number {
+  const key = String(interval).trim().toLowerCase();
+  const map: Record<string, number> = {
+    week: 7,
+    month: 30,
+    quarter: 90,
+    year: 365,
+  };
+  return map[key] ?? 30; // Default to 30 days if interval not recognized
 }
 
 async function getPriceDiff(
@@ -27,7 +38,7 @@ async function getPriceDiff(
   if (!userDetail || userDetail.currentEndAt! < now) {
     // 当前订阅已过期，直接返回新方案金额和新到期时间
     const newEndAt = new Date(now);
-    newEndAt.setDate(now.getDate() + (newPlan.interval === 'quarter' ? 90 : 30));
+    newEndAt.setDate(now.getDate() + intervalToDays(newPlan.interval));
 
     return {
       totalAmount: newPlan.amount,
@@ -39,7 +50,7 @@ async function getPriceDiff(
 
   if (userDetail.membershipLevel === newPlan.membershipLevel) {
     const newEndAt = new Date(currentEndAt);
-    newEndAt.setDate(currentEndAt.getDate() + (newPlan.interval === 'quarter' ? 90 : 30));
+    newEndAt.setDate(currentEndAt.getDate() + intervalToDays(newPlan.interval));
     return {
       totalAmount: newPlan.amount,
       newEndAt
@@ -48,16 +59,17 @@ async function getPriceDiff(
 
   const oldPlan = await getPlanFromDBById(userDetail.planId!);
 
-  if (oldPlan && planToLevel(oldPlan.membershipLevel) > planToLevel(newPlan.membershipLevel)) {
+  if (oldPlan && oldPlan.membershipLevel && newPlan.membershipLevel &&
+    planToLevel(oldPlan.membershipLevel) > planToLevel(newPlan.membershipLevel)) {
     return null;
   }
 
-  const oldPlanInterval = oldPlan?.interval === 'quarter' ? 90 : 30;
+  const oldPlanInterval = oldPlan ? intervalToDays(oldPlan.interval) : 30;
 
   // 计算剩余天数
   const timeDiff = currentEndAt.getTime() - now.getTime();
   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  const newPlanIntervalDays = newPlan.interval === 'quarter' ? 90 : 30;
+  const newPlanIntervalDays = intervalToDays(newPlan.interval);
 
   // 计算差价
   const totalAmount = oldPlan
@@ -73,9 +85,9 @@ async function getPriceDiff(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { planId, priceId, interval, userId, requestLimit } = body;
+    const { planId, priceId, interval, userId, quota, currency } = body;
 
-    if (!planId || !priceId || !interval || !userId || !requestLimit) {
+    if (!planId || !priceId || !interval || !userId || !quota || !currency) {
       return NextResponse.json(
         { error: 'Missing required fields: planId, priceId, interval, userId' },
         { status: 400 }
@@ -131,7 +143,7 @@ export async function POST(request: NextRequest) {
     }
 
     const endDate = new Date();
-    endDate.setDate(endDate.getDate() + (plan.interval === 'quarter' ? 90 : 30));
+    endDate.setDate(endDate.getDate() + intervalToDays(plan.interval));
 
     const metadata = {
       planId: planId,
@@ -139,11 +151,12 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       stripeCustomerId: customerId,
       currentEndAt: endDate.toISOString(),
-      requestLimit
+      quota
     };
 
     let sessionId, url;
 
+    // renew the subscription with cny
     if (userDetail?.active && !userDetail.stripeSubscriptionId) {
       const priceDiff = await getPriceDiff(userDetail, plan);
 
@@ -192,17 +205,16 @@ export async function POST(request: NextRequest) {
       url = session.url;
 
     } else {
-      // 创建checkout session
+      // subscripe 
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
-        client_reference_id: user.id, // 设置client_reference_id为用户ID
-        payment_method_types: plan.isRecurring ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        client_reference_id: user.id,
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
         line_items: [{
           price: priceId,
           quantity: 1,
         }],
         phone_number_collection: { enabled: true }, // 可选
-        // customer_email: user.email, // 可选
         mode: plan.isRecurring ? 'subscription' : 'payment',
         payment_method_options: {
           wechat_pay: {

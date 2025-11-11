@@ -133,7 +133,6 @@ ${user.name || user.email}
       <DashboardLayout
         pageTitle={t("profile")}
         hasActiveSubscription={false}
-        stripeCustomerId={userDetail?.stripeCustomerId}
       >
         <div className="text-center py-8">
           <h2 className="text-2xl font-bold mb-4">{pt("title")}</h2>
@@ -148,7 +147,6 @@ ${user.name || user.email}
       pageTitle={t("profile")}
       pageSubtitle={pt("subtitle")}
       hasActiveSubscription={userDetail?.active}
-      stripeCustomerId={userDetail?.stripeCustomerId}
     >
       {user && (
         <div className="max-w-4xl mx-auto space-y-6">

@@ -1,29 +1,14 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { UserDetail } from '@/types';
 
 
 interface UsageData {
   period: string;
   month: string;
-  totalTokens: number;
+  totalQuota: number;
   updatedAt: string | null;
 
-}
-
-// 新的 UserDetail 接口，与后端保持一致
-export interface UserDetail {
-  userId: string;
-  name?: string | null;
-  email?: string | null;
-  stripeSubscriptionId?: string;
-  stripeCustomerId: string;
-  startDate?: Date | null;
-  planId?: string;
-  membershipLevel?: string;
-  active?: boolean;
-  currentEndAt?: Date | null;
-  requestLimit: number;
-  tokenMonthlyUsed?: number;
 }
 
 interface UsageApiResponse {
@@ -158,8 +143,8 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 计算属性：方便使用的数据
   const isActive = userDetail?.active;
-  const requestLimit = userDetail?.requestLimit || 0;
-  const tokenMonthlyUsed = userDetail?.tokenMonthlyUsed || 0;
+  const quota = userDetail?.quota || "0";
+  const quotaMonthlyUsed = userDetail?.quotaMonthlyUsed || "0";
   const membershipLevel = userDetail?.membershipLevel || 'free';
 
   return {
@@ -168,8 +153,8 @@ export function useUserData(options: UseUserDataOptions = {}) {
     usageData,
     // 便利属性：从 UserDetail 中提取的常用值
     isActive,
-    requestLimit,
-    tokenMonthlyUsed,
+    quota: parseFloat(quota),
+    quotaMonthlyUsed: parseFloat(quotaMonthlyUsed),
     membershipLevel,
     loading,
     error,

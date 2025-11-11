@@ -65,7 +65,15 @@
     "sevenDays": "7 days",
     "thirtyDays": "30 days",
     "apiKeysQuota": "API Keys Limit",
-    "apiKeysCount": "{count} individual API keys"
+    "apiKeysCount": "{count} individual API keys",
+    "subscriptionDialog": {
+      "title": "Choose Subscription Cycle",
+      "description": "Select your preferred billing cycle for {planName}",
+      "billedEvery": "Billed every {interval}",
+      "perInterval": "per {interval}",
+      "cancel": "Cancel",
+      "processing": "Processing..."
+    }
   },
   "pricingModal": {
     "upgrade": "Subscribe",
@@ -294,24 +302,23 @@
   "sidebar": {
     "dashboard": "Dashboard",
     "apiKeys": "API Keys",
-    "billing": "Subscription",
     "profile": "Profile",
     "settings": "Settings",
     "navigation": "Navigation",
     "utcNotice": "All dates and times are UTC-based, and data may be delayed up to 5 minutes.",
     "monthlyQuota": "Monthly Quota",
-    "currentUsage": "Current Usage",
-    "ofQuota": "of quota",
+    "subscriptionEndDate": "Subscription End Date",
     "upgradePlan": "Upgrade Plan",
-    "dailyUsage": "Daily Usage",
-    "averageDailyTokens": "Average daily tokens",
     "month": "Month",
-    "dailyTokenUsage": "Daily Token Usage"
+    "dailyTokenUsage": "Daily Token Quota",
+    "currentUsage": "Current Usage",
+    "ofQuota": "of quota"
   },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Manage your API keys and monitor your token usage",
     "noUsageData": "No usage data available for selected month",
+    "noSubscription": "No active subscription",
     "welcome": {
       "title": "Welcome to your dashboard! 🎉",
       "message": "Your account has been set up successfully. Start exploring our features!"

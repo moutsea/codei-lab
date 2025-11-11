@@ -267,14 +267,12 @@ export async function POST(request: NextRequest) {
 
         if (session.mode === 'payment') {
           const userId = session.metadata?.userId;
-          const auth0Id = session.metadata?.auth0Id;
-          const requestLimit = Number(session.metadata?.requestLimit);
           const stripeCustomerId = session.metadata?.stripeCustomerId;
           const planId = session.metadata?.planId;
           const currentEndAt = session.metadata?.currentEndAt;
 
-          if (!userId || !auth0Id || !requestLimit || !stripeCustomerId || !planId || !currentEndAt) {
-            console.error(`Parameters invalid ${userId}, auth0Id: ${auth0Id} requestLimit: ${requestLimit} stripeCustomerId: ${stripeCustomerId} planId: ${planId}`);
+          if (!userId || !stripeCustomerId || !planId || !currentEndAt) {
+            console.error(`Parameters invalid ${userId}, stripeCustomerId: ${stripeCustomerId} planId: ${planId}`);
             return NextResponse.json(
               { error: 'Parameters invalid' },
               { status: 404 }
@@ -286,8 +284,6 @@ export async function POST(request: NextRequest) {
             createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status),
             createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
           ]);
-
-
         } else if (session.mode === 'subscription') {
           const userId = session.metadata?.userId;
           const auth0Id = session.metadata?.auth0Id;

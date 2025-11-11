@@ -181,8 +181,9 @@ export default function Pricing() {
           planId: plan.id,
           priceId: priceId,
           interval: selectedCycle?.interval || plan.interval,
-          membershipLevel: plan.membershipLevel,
-          auth0Id: user.id,
+          userId: user.id,
+          quota: plan.quota,
+          currency: plan.currency
         }),
       });
 
@@ -201,10 +202,8 @@ export default function Pricing() {
     }
   };
 
-  const handleTrialSubscribe = () => {
-    if (trialPlan) {
-      handleSubscribe(trialPlan);
-    }
+  const handleOneTimePay = (plan: Plan) => {
+    handleSubscribe(plan);
   };
 
   const handlePlusSubscribe = () => {
@@ -290,49 +289,77 @@ export default function Pricing() {
   }: {
     planName: string;
     cycles: SubscriptionCycle[]
-  }) => (
-    <Dialog open={showCycleDialog} onOpenChange={setShowCycleDialog}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Choose Subscription Cycle</DialogTitle>
-          <DialogDescription>
-            Select your preferred billing cycle for {planName}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {cycles.map((cycle, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              className="justify-start h-auto p-4"
-              onClick={() => handleCycleSelect(cycle)}
-              disabled={subscribingPlanId !== null}
-            >
-              <div className="flex justify-between items-center w-full">
-                <div className="text-left">
-                  <div className="font-medium capitalize">{cycle.interval}</div>
-                  <div className="text-sm text-muted-foreground">
-                    Billed every {getIntervalLabel(cycle.interval)}
+  }) => {
+    const dialogT = useTranslations('pricingSection.subscriptionDialog');
+
+    return (
+      <Dialog open={showCycleDialog} onOpenChange={setShowCycleDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{dialogT('title')}</DialogTitle>
+            <DialogDescription>
+              {dialogT('description', { planName })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {cycles.map((cycle, index) => {
+              const getDiscountBadge = (interval: string) => {
+                switch (interval) {
+                  case 'quarter':
+                    return (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 ml-2">
+                        15% off
+                      </span>
+                    );
+                  case 'year':
+                    return (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 ml-2">
+                        25% off
+                      </span>
+                    );
+                  default:
+                    return null;
+                }
+              };
+
+              return (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="justify-start h-auto p-4"
+                  onClick={() => handleCycleSelect(cycle)}
+                  disabled={subscribingPlanId !== null}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <div className="text-left">
+                      <div className="flex items-center">
+                        <div className="font-medium capitalize">{cycle.interval}</div>
+                        {getDiscountBadge(cycle.interval)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {dialogT('billedEvery', { interval: getIntervalLabel(cycle.interval) })}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">${cycle.price.toFixed(2)}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {dialogT('perInterval', { interval: getIntervalLabel(cycle.interval) })}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold">${cycle.price.toFixed(2)}</div>
-                  <div className="text-sm text-muted-foreground">
-                    per {getIntervalLabel(cycle.interval)}
-                  </div>
-                </div>
-              </div>
+                </Button>
+              );
+            })}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowCycleDialog(false)}>
+              {dialogT('cancel')}
             </Button>
-          ))}
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowCycleDialog(false)}>
-            Cancel
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  };
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
@@ -413,13 +440,13 @@ export default function Pricing() {
                 {/* CTA Button */}
                 <Button
                   className="w-full cursor-pointer py-3 text-base font-semibold"
-                  onClick={handleTrialSubscribe}
-                  disabled={subscribingPlanId === trialPlan.id}
+                  onClick={() => handleOneTimePay(trialPlan)}
+                  disabled={subscribingPlanId !== null}
                 >
                   {subscribingPlanId === trialPlan.id ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      {t('subscriptionDialog.processing')}
                     </>
                   ) : (
                     t('cta') || 'Get Started'
@@ -431,7 +458,7 @@ export default function Pricing() {
                   <Button
                     className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
                     variant="ghost"
-                    onClick={() => window.open(trialCnyPlan.description)}
+                    onClick={() => handleOneTimePay(trialCnyPlan)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
@@ -521,7 +548,7 @@ export default function Pricing() {
                   {subscribingPlanId !== null ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      {t('subscriptionDialog.processing')}
                     </>
                   ) : (
                     t('ctaFeatured') || 'Start Now'
@@ -533,7 +560,7 @@ export default function Pricing() {
                   <Button
                     className="w-full cursor-pointer py-2 text-sm border-0 "
                     variant="ghost"
-                    onClick={() => window.open(plusCnyPlan.description)}
+                    onClick={() => handleOneTimePay(plusCnyPlan)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
@@ -616,7 +643,7 @@ export default function Pricing() {
                   {subscribingPlanId !== null ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Processing...
+                      {t('subscriptionDialog.processing')}
                     </>
                   ) : (
                     t('cta') || 'Get Started'
@@ -628,7 +655,7 @@ export default function Pricing() {
                   <Button
                     className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
                     variant="ghost"
-                    onClick={() => window.open(proCnyPlan.description)}
+                    onClick={() => handleOneTimePay(proCnyPlan)}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />

@@ -12,7 +12,6 @@ import { MonthPicker } from "@/components/ui/month-picker";
 import Tutorial from "@/components/tutorial/tutorial";
 import { useUserData } from "@/hooks/useUserData";
 import { usePlans } from "@/hooks/usePlans";
-import { NonRecurringPaymentDialog } from "@/components/non-recurring-payment-dialog";
 
 interface TokenStats {
   total: number;
@@ -40,8 +39,7 @@ export default function Dashboard() {
     userDetail,
     usageData,
     isActive,
-    requestLimit,
-
+    quota,
     loading
   } = useUserData({ enableCache: true });
 
@@ -60,23 +58,23 @@ export default function Dashboard() {
 
   // All state hooks must be declared before any conditional returns
   const [tokenStats, setTokenStats] = useState<TokenStats>({
-    total: 50000000, // 默认值50M，会被实际计划值覆盖
+    total: 30, // 默认值50M，会被实际计划值覆盖
     used: 0
   });
 
   // 当使用数据加载完成后更新token统计
   useEffect(() => {
-    if (usageData && requestLimit !== undefined) {
+    if (usageData && quota !== undefined) {
       // 使用新的 usage data结构
-      const used = usageData.totalTokens || 0;
-      const total = requestLimit || 50000000;
+      const used = usageData.totalQuota || 0;
+      const total = quota || 30;
       console.log(`Using requestLimit: ${total}, tokens used: ${used}, usagePercentage: ${total > 0 ? (used / total) * 100 : 0}%`);
       setTokenStats({
         total,
         used
       });
     }
-  }, [usageData, requestLimit]);
+  }, [usageData, quota]);
 
   const [selectedMonth, setSelectedMonth] = useState(new Date()); // Date object for react-datepicker
   const [showNonRecurringDialog, setShowNonRecurringDialog] = useState(false);
@@ -224,7 +222,6 @@ export default function Dashboard() {
       <DashboardLayout
         pageTitle={dt("title")}
         hasActiveSubscription={false}
-        stripeCustomerId={userDetail?.stripeCustomerId} // TODO: Update when available in UserDetail
       >
         <Tutorial />
       </DashboardLayout>
@@ -235,7 +232,6 @@ export default function Dashboard() {
     <DashboardLayout
       pageTitle={dt("title")}
       hasActiveSubscription={isActive}
-      stripeCustomerId={userDetail?.stripeCustomerId} // TODO: Update when available in UserDetail
     >
       <div className="max-w-6xl mx-auto flex flex-col">
 
@@ -246,15 +242,16 @@ export default function Dashboard() {
 
         {/* Monthly Quota, Usage, and Upgrade Button */}
         <div className="flex justify-between items-center mb-6">
-          <div className="bg-card rounded-lg p-4 border border-border">
+          <div className="bg-dashboard-card rounded-lg p-4">
             <div className="text-sm text-muted-foreground mb-1">{t("monthlyQuota")}</div>
-            <div className="text-2xl font-bold text-foreground">{formatTokens(tokenStats.total)}</div>
+            <div className="text-2xl font-bold text-foreground">${tokenStats.total}</div>
           </div>
 
-          <div className="bg-card rounded-lg p-4 border border-border">
-            <div className="text-sm text-muted-foreground mb-1">{t("currentUsage")}</div>
-            <div className="text-2xl font-bold text-primary">{formatTokens(tokenStats.used)}</div>
-            <div className="text-xs text-muted-foreground">{usagePercentage.toFixed(1)}% {t("ofQuota")}</div>
+          <div className="bg-dashboard-card rounded-lg p-4">
+            <div className="text-sm text-muted-foreground mb-1">{t("subscriptionEndDate")}</div>
+            <div className="text-2xl font-bold text-primary">
+              {userDetail?.currentEndAt ? new Date(userDetail.currentEndAt).toLocaleDateString() : dt("noSubscription")}
+            </div>
           </div>
 
           <Button
@@ -267,20 +264,19 @@ export default function Dashboard() {
           </Button>
         </div>
 
-        {/* Daily Usage and Month Selection */}
         <div className="flex justify-between gap-4 mb-6 mr-8">
-          <div className="bg-card rounded-lg p-4 flex-1 border border-border">
+          <div className="bg-dashboard-card rounded-lg p-4 flex-1">
             <div className="flex items-center space-x-2 mb-2">
               <BarChart3 className="h-5 w-5 text-muted-foreground" />
-              <h3 className="text-lg font-semibold text-foreground">{t("dailyUsage")}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t("currentUsage")}</h3>
             </div>
             <div className="text-3xl font-bold text-foreground">
-              {formatTokens(Math.floor(tokenStats.used / 30))}
+              ${tokenStats.used}
             </div>
-            <div className="text-sm text-muted-foreground">{t("averageDailyTokens")}</div>
+            <div className="text-xs text-muted-foreground">{usagePercentage.toFixed(1)}% {t("ofQuota")}</div>
           </div>
 
-          <div className="bg-card rounded-lg p-4 w-48 border border-border">
+          <div className="bg-dashboard-card rounded-lg p-4 w-48">
             <div className="flex items-center space-x-2 mb-2">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold text-foreground">{t("month")}</h3>
@@ -294,7 +290,7 @@ export default function Dashboard() {
         </div>
 
         {/* Daily Usage Chart */}
-        <div className="bg-card rounded-lg p-4 border border-border">
+        <div className="bg-dashboard-card rounded-lg p-4">
           <h3 className="text-lg font-semibold text-foreground mb-2">{t("dailyTokenUsage")}</h3>
           {loadingDailyUsage ? (
             <div className="flex items-center justify-center h-64">
@@ -311,13 +307,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <NonRecurringPaymentDialog
-        open={showNonRecurringDialog}
-        onOpenChange={setShowNonRecurringDialog}
-        plans={extraPlans}
-        loading={plansLoading.extra}
-        hideTrigger={true}
-      />
     </DashboardLayout>
   );
 }

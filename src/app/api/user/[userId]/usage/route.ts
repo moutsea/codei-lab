@@ -58,14 +58,14 @@ export async function GET(
         usageData = {
           period: 'current_month',
           month: currentMonthUsage.month,
-          totalQuotaUsed: currentMonthUsage.quotaUsed,
+          totalQuotaUsed: parseFloat(currentMonthUsage.quotaUsed),
           updatedAt: currentMonthUsage.updatedAt
         };
       } else {
         usageData = {
           period: 'current_month',
           month: new Date().toISOString().slice(0, 7),
-          totalTokens: 0,
+          totalQuotaUsed: 0,
           updatedAt: null
         };
       }

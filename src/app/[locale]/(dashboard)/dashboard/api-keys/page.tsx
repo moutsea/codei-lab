@@ -485,7 +485,6 @@ export default function ApiKeysPage() {
       pageTitle={t("apiKeys")}
       pageSubtitle="Manage your API keys for accessing Claude IDE services"
       hasActiveSubscription={isActive}
-      stripeCustomerId={undefined} // TODO: Update when available in UserDetail
     >
       <div className="max-w-7xl mx-auto space-y-8">
 

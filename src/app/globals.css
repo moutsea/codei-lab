@@ -166,4 +166,8 @@
   .section-themed {
     background-color: var(--section-bg);
   }
+
+  .bg-dashboard-card {
+    background-color: var(--background);
+  }
 }

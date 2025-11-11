@@ -65,7 +65,15 @@
     "sevenDays": "7 jours",
     "thirtyDays": "30 jours",
     "apiKeysQuota": "Limite de Clés API",
-    "apiKeysCount": "{count} clés API individuelles"
+    "apiKeysCount": "{count} clés API individuelles",
+    "subscriptionDialog": {
+      "title": "Choisir le Cycle d'Abonnement",
+      "description": "Sélectionnez votre cycle de facturation préféré pour {planName}",
+      "billedEvery": "Facturé chaque {interval}",
+      "perInterval": "par {interval}",
+      "cancel": "Annuler",
+      "processing": "Traitement en cours..."
+    }
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",
@@ -301,24 +309,23 @@
   "sidebar": {
     "dashboard": "Tableau de Bord",
     "apiKeys": "Clés API",
-    "billing": "Abonnement",
     "profile": "Profil",
     "settings": "Paramètres",
     "navigation": "Navigation",
     "utcNotice": "Toutes les dates et heures sont basées sur l'UTC, et les données peuvent être retardées jusqu'à 5 minutes.",
     "monthlyQuota": "Quota Mensuel",
-    "currentUsage": "Utilisation Actuelle",
-    "ofQuota": "du quota",
+    "subscriptionEndDate": "Date de Fin d'Abonnement",
     "upgradePlan": "Mettre à Niveau le Plan",
-    "dailyUsage": "Utilisation Quotidienne",
-    "averageDailyTokens": "Moyenne quotidienne de tokens",
     "month": "Mois",
-    "dailyTokenUsage": "Utilisation Quotidienne des Tokens"
+    "dailyTokenUsage": "Utilisation Quotidienne des quota",
+    "currentUsage": "Utilisation Actuelle",
+    "ofQuota": "du quota"
   },
   "dashboard": {
     "title": "Tableau de Bord",
     "subtitle": "Gérez vos clés API et surveillez votre utilisation de tokens",
     "noUsageData": "Aucune donnée d'utilisation disponible pour le mois sélectionné",
+    "noSubscription": "Aucun abonnement actif",
     "welcome": {
       "title": "Bienvenue sur votre tableau de bord ! 🎉",
       "message": "Votre compte a été configuré avec succès. Commencez à explorer nos fonctionnalités !"

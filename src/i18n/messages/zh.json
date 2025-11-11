@@ -65,7 +65,15 @@
     "sevenDays": "7 天",
     "thirtyDays": "30 天",
     "apiKeysQuota": "API 密钥限额",
-    "apiKeysCount": "{count} 个独立 API 密钥"
+    "apiKeysCount": "{count} 个独立 API 密钥",
+    "subscriptionDialog": {
+      "title": "选择订阅周期",
+      "description": "为 {planName} 选择您偏好的计费周期",
+      "billedEvery": "每{interval}计费",
+      "perInterval": "每{interval}",
+      "cancel": "取消",
+      "processing": "处理中..."
+    }
   },
   "pricingModal": {
     "upgrade": "升级",
@@ -301,24 +309,23 @@
   "sidebar": {
     "dashboard": "控制台",
     "apiKeys": "API 密钥",
-    "billing": "订阅",
     "profile": "个人资料",
     "settings": "设置",
     "navigation": "导航",
     "utcNotice": "所有日期和时间均基于 UTC，数据可能延迟最多 5 分钟。",
     "monthlyQuota": "月度配额",
-    "currentUsage": "当前使用情况",
-    "ofQuota": "配额的",
+    "subscriptionEndDate": "订阅到期日期",
     "upgradePlan": "升级计划",
-    "dailyUsage": "每日使用情况",
-    "averageDailyTokens": "平均每日 token 数",
     "month": "月份",
-    "dailyTokenUsage": "每日 Token 使用情况"
+    "dailyTokenUsage": "每日额度使用情况",
+    "currentUsage": "当前使用情况",
+    "ofQuota": "的配额"
   },
   "dashboard": {
     "title": "控制台",
     "subtitle": "管理您的 API 密钥并监控 token 使用情况",
     "noUsageData": "所选月份暂无使用数据",
+    "noSubscription": "无活跃订阅",
     "welcome": {
       "title": "欢迎使用您的控制台！🎉",
       "message": "您的账户已成功设置。开始探索我们的功能吧！"
