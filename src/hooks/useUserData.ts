@@ -50,14 +50,13 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 获取用户信息和订阅数据
   const fetchUserData = useCallback(async (forceRefresh = false) => {
-    if (!user?.email) return;
+    if (!user?.id) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const encodedEmail = encodeURIComponent(user.email);
-      const response = await fetch(`/api/user/${encodedEmail}${forceRefresh ? '?refresh=true' : ''}`);
+      const response = await fetch(`/api/user/${user.id}${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -67,7 +66,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
       const userDetailData = data.user as UserDetail;
 
       if (!userDetailData) {
-        const res = await fetch(`/api/user/${encodedEmail}`, {
+        const res = await fetch(`/api/user/${user.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -114,18 +113,17 @@ export function useUserData(options: UseUserDataOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [user?.email]);
+  }, [user?.id]);
 
   // 获取使用数据
   const fetchUsageData = useCallback(async (forceRefresh = false) => {
-    if (!user?.email) return;
+    if (!user?.id) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      const encodedEmail = encodeURIComponent(user.email);
-      const response = await fetch(`/api/user/${encodedEmail}/usage${forceRefresh ? '?refresh=true' : ''}`);
+      const response = await fetch(`/api/user/${user.id}/usage${forceRefresh ? '?refresh=true' : ''}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -141,7 +139,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
     } finally {
       setLoading(false);
     }
-  }, [user?.email]);
+  }, [user?.id]);
 
   // 获取所有数据
   const fetchAllData = useCallback(async (forceRefresh = false) => {
@@ -153,10 +151,10 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   // 用户登录时自动获取数据
   useEffect(() => {
-    if (user?.email && enabled) {
+    if (user?.id && enabled) {
       fetchAllData();
     }
-  }, [user?.email, fetchAllData, enabled]);
+  }, [user?.id, fetchAllData, enabled]);
 
   // 计算属性：方便使用的数据
   const isActive = userDetail?.active;

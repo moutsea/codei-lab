@@ -433,7 +433,7 @@
     },
     "step1": {
       "title": "快速入门指南",
-      "description": "安装 Node.js 18.0.0 或更高版本和 Claude Code CLI 工具，全局安装。只需几分钟即可开始使用。\n\n先决条件：\n• Node.js - 安装 Node.js version 18.0.0 或更高版本\n  node --version (v18.0.0 或更高)\n• Claude Code - 全局安装 Claude Code CLI 工具\n  npm install -g @anthropic-ai/claude-code"
+      "description": "安装 Node.js 18.0.0 或更高版本和 OpenAI Codex CLI 工具，全局安装。只需几分钟即可开始使用 OpenAI 的 Codex API。\n\n先决条件：\n• Node.js - 安装 Node.js version 18.0.0 或更高版本\n  node --version (v18.0.0 或更高)\n• OpenAI Codex CLI - 全局安装 OpenAI Codex CLI 工具\n  npm install -g @openai/codex"
     },
     "step2": {
       "title": "使用测试API密钥测试",

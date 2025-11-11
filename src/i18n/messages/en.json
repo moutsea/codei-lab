@@ -426,7 +426,7 @@
     },
     "step1": {
       "title": "Quick Start Guide",
-      "description": "Install Node.js 18.0.0 or higher and Claude Code CLI tool globally. Get up and running in just a few minutes.\n\nPrerequisites:\n• Node.js - Install Node.js version 18.0.0 or higher\n  node --version (v18.0.0 or higher)\n• Claude Code - Install Claude Code CLI tool globally\n  npm install -g @anthropic-ai/claude-code"
+      "description": "Install Node.js 18.0.0 or higher and OpenAI Codex CLI tool globally. Get up and running in just a few minutes to access OpenAI's Codex API.\n\nPrerequisites:\n• Node.js - Install Node.js version 18.0.0 or higher\n  node --version (v18.0.0 or higher)\n• OpenAI Codex CLI - Install OpenAI Codex CLI tool globally\n  npm install -g @openai/codex"
     },
     "step2": {
       "title": "Test with API Key",

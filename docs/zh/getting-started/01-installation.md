@@ -55,19 +55,19 @@ npm -v
 
 如果您能看到版本号，表示 Node.js 安装成功。
 
-### 第二步：安装 Claude Code
+### 第二步：安装 OpenAI Codex CLI
 
-claude-code 是一个 Node.js 包，用于与 Anthropic 的 Claude AI 模型进行交互。它提供了一个简单的接口，使开发者能够轻松地与 Claude 模型通信，并将其功能集成到应用程序中。
+openai-codex 是一个 Node.js 包，用于与 OpenAI 的 Codex AI 模型进行交互。它提供了一个简单的接口，使开发者能够轻松地与 Codex 模型通信，并将其功能集成到应用程序中。
 
-使用您刚刚安装的 npm 安装 claude-code：
+使用您刚刚安装的 npm 安装 openai-codex：
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm install -g @openai/codex
 ```
 
 安装完成后，您可以通过检查版本来验证安装：
 
 ```bash
-claude --version
-# 您应该看到类似：2.0.2 (Claude Code)
+codex --version
+# 您应该看到安装的版本号
 ```

@@ -55,19 +55,19 @@ npm -v
 
 Si vous voyez les numéros de version, cela signifie que Node.js a été installé avec succès.
 
-### Étape 2 : Installer Claude Code
+### Étape 2 : Installer OpenAI Codex CLI
 
-claude-code est un paquet Node.js utilisé pour interagir avec le modèle Claude d'Anthropic. Il fournit une interface simple permettant aux développeurs de communiquer facilement avec le modèle Claude et d'intégrer ses fonctionnalités dans leurs applications.
+openai-codex est un paquet Node.js utilisé pour interagir avec le modèle Codex d'OpenAI. Il fournit une interface simple permettant aux développeurs de communiquer facilement avec le modèle Codex et d'intégrer ses fonctionnalités dans leurs applications.
 
-Installez claude-code en utilisant npm (que vous avez installé plus tôt) :
+Installez openai-codex en utilisant npm (que vous avez installé plus tôt) :
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm install -g @openai/codex
 ```
 
 Une fois l'installation terminée, vérifiez la version pour confirmer l'installation :
 
 ```bash
-claude --version
-# Vous devriez voir quelque chose comme : 2.0.2 (Claude Code)
+codex --version
+# Vous devriez voir le numéro de version installé
 ```

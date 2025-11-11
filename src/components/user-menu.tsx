@@ -26,12 +26,12 @@ export default function UserMenu() {
 
   React.useEffect(() => {
     // Check if user is admin
-    if (user?.email) {
-      fetch(`/api/user/${user.email}/admin-check`)
+    if (user?.id) {
+      fetch(`/api/user/${user.id}/admin-check`)
         .then(response => response.json())
         .then(data => setIsAdmin(data.isAdmin))
     }
-  }, [user?.email]);
+  }, [user?.id]);
 
   if (!user) {
     return null;
