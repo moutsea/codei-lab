@@ -457,8 +457,6 @@
     "signInTitle": "Sign in to CodeILab",
     "signInDescription": "Choose your preferred sign-in method to continue",
     "signInWith": "Sign in with {provider}",
-    "noAccount": "Don't have an account?",
-    "signUp": "Sign up",
     "or": "or",
     "emailLoginTitle": "Email me a sign-in link",
     "emailLoginDescription": "We'll send a secure magic link—no password required.",

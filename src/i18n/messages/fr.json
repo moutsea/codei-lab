@@ -464,8 +464,6 @@
     "signInTitle": "Connectez-vous à CodeILab",
     "signInDescription": "Choisissez votre méthode de connexion préférée pour continuer",
     "signInWith": "Se connecter avec {provider}",
-    "noAccount": "Pas encore de compte ?",
-    "signUp": "S'inscrire",
     "or": "ou",
     "emailLoginTitle": "Recevoir un lien de connexion par email",
     "emailLoginDescription": "Nous vous envoyons un lien sécurisé, sans mot de passe.",

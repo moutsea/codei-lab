@@ -464,8 +464,6 @@
     "signInTitle": "登录 CodeILab",
     "signInDescription": "选择您偏好的登录方式继续",
     "signInWith": "使用 {provider} 登录",
-    "noAccount": "还没有账户？",
-    "signUp": "注册",
     "or": "或",
     "emailLoginTitle": "发送邮箱登录链接",
     "emailLoginDescription": "我们会发送一次性登录链接，无需密码。",

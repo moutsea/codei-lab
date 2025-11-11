@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface LoginButtonClientProps {
   provider: 'google' | 'github' | 'microsoft';
@@ -107,6 +108,7 @@ export function LoginButtonClient({ provider }: LoginButtonClientProps) {
 
 export function EmailLoginForm({ locale, expiresInMinutes, redirectTo }: EmailLoginFormProps) {
   const t = useTranslations('auth');
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState<string | null>(null);
@@ -139,6 +141,11 @@ export function EmailLoginForm({ locale, expiresInMinutes, redirectTo }: EmailLo
 
       setStatus('success');
       setMessage(t('magicLinkSent'));
+
+      // Redirect to homepage after successful email sending
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 2000);
     } catch (error) {
       console.error('Failed to send magic link', error);
       setStatus('error');

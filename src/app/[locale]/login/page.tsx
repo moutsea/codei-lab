@@ -52,15 +52,6 @@ export default async function LoginPage({
               redirectTo={redirectTo}
               expiresInMinutes={MAGIC_LINK_TOKEN_TTL_MINUTES}
             />
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                {t('noAccount')}{' '}
-                <a href="#" className="text-primary hover:underline">
-                  {t('signUp')}
-                </a>
-              </p>
-            </div>
           </div>
         </div>
       </div>
