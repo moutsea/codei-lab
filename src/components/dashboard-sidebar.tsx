@@ -11,7 +11,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Key, LayoutDashboard, User, Settings } from "lucide-react";
+import { CreditCard, Key, LayoutDashboard, User, Settings } from "lucide-react";
 
 interface DashboardSidebarProps {
   hasActiveSubscription?: boolean;
@@ -38,6 +38,11 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
       title: t("apiKeys"),
       icon: Key,
       href: "/dashboard/api-keys",
+    },
+    {
+      title: t("billing"),
+      icon: CreditCard,
+      href: "/dashboard/billing",
     },
     {
       title: t("profile"),
