@@ -22,29 +22,8 @@ export async function GET(
     const userDetail = await getUserDetailByIdWithCache(userId);
 
     if (!userDetail) {
-      // New user - this is normal, return null for new user
-      const user = await getUserFromDBById(userId);
-
-      if (!user) {
-        console.log(`User not found for user ID: ${userId}`);
-        return NextResponse.json({ user: null, isNewUser: true });
-      }
-
-      // For new users, we return basic user info, no need to create defaultUserDetail
-      // since the user should be created through the authentication flow
-      return NextResponse.json({
-        user: {
-          id: user.id,
-          email: user.email,
-          nickname: user.nickname,
-          avatarUrl: user.avatarUrl,
-          stripeCustomerId: user.stripeCustomerId,
-          isAdmin: user.isAdmin,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt
-        },
-        isNewUser: true
-      });
+      console.log(`User not found for user ID: ${userId}`);
+      return NextResponse.json({ user: null, isNewUser: true });
     }
 
     // Existing user - add isNewUser flag

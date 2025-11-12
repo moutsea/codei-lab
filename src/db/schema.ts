@@ -85,6 +85,7 @@ export const payments = pgTable("payments", {
     // 关联
     userId: varchar("user_id", { length: 100 }).references(() => users.id),
     subscriptionId: varchar("subscription_id", { length: 255 }),
+    topupPurchaseId: varchar("topup_purchase_id", { length: 255 }),
 
     // Stripe 支付对象
     stripePaymentIntentId: varchar("stripe_payment_intent_id", { length: 255 }), // pi_XXXX
@@ -95,7 +96,8 @@ export const payments = pgTable("payments", {
 
     // 状态
     status: varchar("status", { length: 50 }),
-    // requires_payment_method, requires_confirmation, succeeded, failed, refunded
+
+    type: varchar("type", { length: 50 }), // renew, sub, pay, extra
     // 通用
     createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
 });

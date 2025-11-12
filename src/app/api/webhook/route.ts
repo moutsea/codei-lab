@@ -134,7 +134,8 @@ async function createPayment(
   paymentIntentId: string,
   amountTotal: number,
   currency: string | null,
-  paymentStatus: string | null
+  paymentStatus: string | null,
+  type: string = "sub"
 ) {
   const paymentData = {
     userId,
@@ -143,6 +144,7 @@ async function createPayment(
     amount: (amountTotal / 100).toString(), // 转换为元并转为字符串
     currency: currency?.toUpperCase() || 'USD',
     status: paymentStatus || 'unknown',
+    type
   };
 
   try {
@@ -163,6 +165,7 @@ async function createPayment(
 
 async function createPaymentRecord(
   userId: string,
+  type: string,
   stripeSubscription: Stripe.Subscription
 ) {
   const subscription = stripeSubscription;
@@ -205,6 +208,7 @@ async function createPaymentRecord(
         amount: ((invoice.amount_paid ?? 0) / 100).toString(), // 分→元
         currency: invoice.currency?.toUpperCase() || 'USD',
         status: invoice.status || 'unknown',
+        type
       };
 
       try {
@@ -270,8 +274,9 @@ export async function POST(request: NextRequest) {
           const stripeCustomerId = session.metadata?.stripeCustomerId;
           const planId = session.metadata?.planId;
           const currentEndAt = session.metadata?.currentEndAt;
+          const currency = session.currency;
 
-          if (!userId || !stripeCustomerId || !planId || !currentEndAt) {
+          if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency) {
             console.error(`Parameters invalid ${userId}, stripeCustomerId: ${stripeCustomerId} planId: ${planId}`);
             return NextResponse.json(
               { error: 'Parameters invalid' },
@@ -286,12 +291,12 @@ export async function POST(request: NextRequest) {
           ]);
         } else if (session.mode === 'subscription') {
           const userId = session.metadata?.userId;
-          const auth0Id = session.metadata?.auth0Id;
           const quota = session.metadata?.quota;
           const stripeCustomerId = session.metadata?.stripeCustomerId;
+          const currency = session.currency;
 
-          if (!userId || !auth0Id || !stripeCustomerId || !quota) {
-            console.error(`User not found for userId: ${userId}, auth0Id: ${auth0Id}`);
+          if (!userId || !stripeCustomerId || !quota || !currency) {
+            console.error(`User not found for userId: ${userId}`);
             return NextResponse.json(
               { error: 'User not found' },
               { status: 404 }
@@ -306,7 +311,8 @@ export async function POST(request: NextRequest) {
             email: null,
             stripeCustomerId,
             quota,
-            quotaMonthlyUsed: '0'
+            quotaMonthlyUsed: '0',
+            currency
           }
 
           await createOrUpdateUserDetailCache(userId, userdetail);
@@ -325,14 +331,16 @@ export async function POST(request: NextRequest) {
         const membershipLevel = subscription.metadata?.membershipLevel;
         const quota = subscription.metadata?.quota;
         const stripeCustomerId = subscription.metadata?.stripeCustomerId;
+        const currency = subscription.currency;
+        const type = subscription.metadata?.type;
 
-        if (!userId || !planId || !auth0Id || !quota || !stripeCustomerId) {
+        if (!userId || !planId || !auth0Id || !quota || !stripeCustomerId || !currency || !type) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
         }
 
         await createSubscriptionRecord(userId, planId, subscription);
-        await createPaymentRecord(userId, subscription);
+        await createPaymentRecord(userId, type, subscription);
 
         const userdetail: UserDetail = {
           userId: userId,
@@ -343,7 +351,8 @@ export async function POST(request: NextRequest) {
           quota,
           stripeCustomerId,
           membershipLevel,
-          quotaMonthlyUsed: '0'
+          quotaMonthlyUsed: '0',
+          currency
         }
 
         await createOrUpdateUserDetailCache(userId, userdetail);
@@ -361,8 +370,10 @@ export async function POST(request: NextRequest) {
         const plan = planId ? await getPlanFromDBById(planId) : null;
         const membershipLevel = plan?.membershipLevel || null;
         const quota = plan?.quota || null;
+        const currency = subscription.currency;
+        const type = subscription.metadata?.type;
 
-        if (!userId || !plan || !membershipLevel || !stripeCustomerId || !quota) {
+        if (!userId || !plan || !membershipLevel || !stripeCustomerId || !quota || !currency) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
         }
@@ -391,7 +402,7 @@ export async function POST(request: NextRequest) {
         };
 
         await updateSubscriptionByStripeId(subscription.id, updates);
-        await createPaymentRecord(userId, subscription);
+        await createPaymentRecord(userId, type, subscription);
 
         const userdetail: UserDetail = {
           userId: userId,
@@ -402,6 +413,7 @@ export async function POST(request: NextRequest) {
           quota,
           stripeCustomerId,
           membershipLevel,
+          currency
         }
 
         await createOrUpdateUserDetailCache(userId, userdetail);

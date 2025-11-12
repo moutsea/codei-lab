@@ -10,6 +10,7 @@ export * from './daily-user-usage';
 export * from './monthly-api-usage';
 export * from './monthly-user-usage';
 export * from './email-login-tokens';
+export * from './topup-purchases';
 
 
 // Database query utilities

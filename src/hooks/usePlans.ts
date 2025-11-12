@@ -1,35 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-
-export interface PlanWithPricing {
-  id: string;
-  name: string;
-  description: string | null;
-  amount: number;
-  currency: string;
-  interval: string;
-  intervalCount: number;
-  trialPeriodDays: number | null;
-  active: boolean;
-  stripeProductId: string | null;
-  stripePriceId: string | null;
-  requestLimit: number;
-  modelAccess: string[] | null;
-  features: string[] | null;
-  membershipLevel: string,
-  sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
-  monthlyPrice: number;
-  quarterlyPrice: number;
-  yearlyPrice: number;
-  quarterlyDiscount: number;
-  yearlyDiscount: number;
-}
-
-export type BillingInterval = 'month' | 'quarter' | 'year';
-export type PlanType = 'frontpage' | 'renew' | 'extra';
+import type { PlanWithPricing, BillingInterval, PlanType } from '@/types/plan';
 
 export function usePlans() {
   const [frontpagePlans, setFrontpagePlans] = useState<PlanWithPricing[]>([]);
@@ -104,27 +76,13 @@ export function usePlans() {
     ]);
   }, [fetchPlansByType]);
 
-  // Legacy method for backward compatibility - maps to frontpage plans
-  const fetchLegacyPlans = useCallback(async (forceRefresh = false) => {
-    return fetchPlansByType('frontpage', forceRefresh);
-  }, [fetchPlansByType]);
-
   useEffect(() => {
     if (isInitialMount.current) {
       fetchPlans();
       isInitialMount.current = false;
     }
   }, [fetchPlans]); // Proper dependencies but only run once
-  const getPlanPrice = (plan: PlanWithPricing) => {
-    switch (selectedInterval) {
-      case 'quarter':
-        return plan.quarterlyPrice;
-      case 'year':
-        return plan.yearlyPrice;
-      default:
-        return plan.monthlyPrice;
-    }
-  };
+
 
   const getPlanDiscount = (plan: PlanWithPricing) => {
     switch (selectedInterval) {
@@ -143,19 +101,6 @@ export function usePlans() {
     // 简化实现，实际应该从原始数据中查找
     return plan.stripePriceId;
   };
-
-  const clearCache = useCallback(async () => {
-    try {
-      // 通过 API 调用清理缓存
-      await Promise.all([
-        fetch('/api/plans/processed/clear', { method: 'POST' }),
-        fetch('/api/plans/cache/clear', { method: 'POST' }),
-      ]);
-      console.log('Cleared plans cache');
-    } catch (error) {
-      console.error('Failed to clear plans cache:', error);
-    }
-  }, []);
 
   // Check if any plan type is loading
   const isAnyLoading = loading.frontpage || loading.renew || loading.extra;
@@ -191,7 +136,6 @@ export function usePlans() {
 
     selectedInterval,
     setSelectedInterval,
-    getPlanPrice,
     getPlanDiscount,
     getStripePriceId,
 
@@ -201,7 +145,5 @@ export function usePlans() {
     refetchRenew: () => fetchPlansByType('renew', true),
     refetchExtra: () => fetchPlansByType('extra', true),
     refetchAll: () => fetchPlans(true),
-
-    clearCache,
   };
 }

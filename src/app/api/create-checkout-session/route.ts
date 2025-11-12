@@ -151,13 +151,14 @@ export async function POST(request: NextRequest) {
       userId: user.id,
       stripeCustomerId: customerId,
       currentEndAt: endDate.toISOString(),
-      quota
+      quota,
+      type: plan.type
     };
 
     let sessionId, url;
 
     // renew the subscription with cny
-    if (userDetail?.active && !userDetail.stripeSubscriptionId) {
+    if (userDetail?.active && userDetail?.currency.toUpperCase() === 'CNY') {
       const priceDiff = await getPriceDiff(userDetail, plan);
 
       if (!priceDiff) {

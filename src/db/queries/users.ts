@@ -206,6 +206,7 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
       currendEndAt: subscriptions.currentPeriodEnd,
       quota: plans.quota,
       quotaMonthlyUsed: sql<string>`COALESCE(${userLastSubscription.quotaUsed}, '0')`,
+      currency: plans.currency
     })
     .from(users)
     .leftJoin(subscriptions, and(
@@ -237,6 +238,7 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     currentEndAt: row.currendEndAt,
     quota: row.quota || "0",
     quotaMonthlyUsed: row.quotaMonthlyUsed || "0",
+    currency: row.currency || "USD"
   };
 }
 

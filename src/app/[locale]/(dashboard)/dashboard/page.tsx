@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowUp, Calendar, BarChart3 } from "lucide-react";
+import { Calendar, BarChart3, Plus } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DailyUsageChart } from "@/components/ui/daily-usage-chart";
@@ -12,6 +12,14 @@ import { MonthPicker } from "@/components/ui/month-picker";
 import Tutorial from "@/components/tutorial/tutorial";
 import { useUserData } from "@/hooks/useUserData";
 import { usePlans } from "@/hooks/usePlans";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import type { PlanWithPricing } from "@/types/plan";
 
 interface TokenStats {
   total: number;
@@ -28,6 +36,8 @@ interface DailyUsageItem {
   totalTokens: number;
 }
 
+// Use PlanWithPricing from usePlans hook
+
 
 export default function Dashboard() {
   const router = useRouter();
@@ -40,6 +50,7 @@ export default function Dashboard() {
     usageData,
     isActive,
     quota,
+    membershipLevel,
     loading
   } = useUserData({ enableCache: true });
 
@@ -78,6 +89,8 @@ export default function Dashboard() {
 
   const [selectedMonth, setSelectedMonth] = useState(new Date()); // Date object for react-datepicker
   const [showNonRecurringDialog, setShowNonRecurringDialog] = useState(false);
+  const [showTopUpDialog, setShowTopUpDialog] = useState(false);
+  const [topUpPlanId, setTopUpPlanId] = useState<string | null>(null);
 
   // 获取特定月份的每日使用数据
   const fetchDailyUsageData = useCallback(async (date: Date) => {
@@ -139,16 +152,23 @@ export default function Dashboard() {
     }
   }, [selectedMonth, user?.id, isActive, fetchDailyUsageData]);
 
-  const formatTokens = (tokens: number | undefined) => {
-    if (typeof tokens !== 'number' || isNaN(tokens)) {
-      return '0';
+
+  const formatTokensString = (tokens: string) => {
+    const num = parseInt(tokens);
+    if (num >= 100000000) {
+      const value = (num / 100000000).toFixed(0);
+      return `${value}00M`;
+    } else if (num >= 10000000) {
+      const value = (num / 10000000).toFixed(0);
+      return `${value}0M`;
+    } else if (num >= 1000000) {
+      const value = (num / 1000000).toFixed(1);
+      return `${value}M`;
+    } else if (num >= 1000) {
+      const value = (num / 1000).toFixed(0);
+      return `${value}K`;
     }
-    if (tokens >= 1000000) {
-      return `${(tokens / 1000000).toFixed(1)}M`;
-    } else if (tokens >= 1000) {
-      return `${(tokens / 1000).toFixed(1)}K`;
-    }
-    return tokens.toString();
+    return num.toLocaleString();
   };
 
   const usagePercentage = (typeof tokenStats.total === 'number' && tokenStats.total > 0 && typeof tokenStats.used === 'number')
@@ -158,6 +178,47 @@ export default function Dashboard() {
   const handleMonthChange = (date: Date | null) => {
     if (date) {
       setSelectedMonth(date);
+    }
+  };
+
+  const handleTopUp = async (plan: PlanWithPricing) => {
+    try {
+      if (!user?.email) {
+        window.location.assign("/login");
+        return;
+      }
+
+      setTopUpPlanId(plan.id);
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: plan.id,
+          priceId: plan.stripePriceId,
+          interval: plan.interval,
+          userId: user.id,
+          quota: plan.quota,
+          currency: plan.currency,
+          type: 'extra' // Mark as top-up
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.open(url);
+    } catch (error) {
+      console.error('Top-up error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to process top-up. Please try again.');
+    } finally {
+      setTopUpPlanId(null);
+      setShowTopUpDialog(false);
     }
   };
 
@@ -195,6 +256,65 @@ export default function Dashboard() {
       console.error('Error creating billing portal session:', error);
       alert('Failed to open billing portal. Please try again later.');
     }
+  };
+
+  // Filter extra plans by user currency (extraPlans are already filtered by type='extra' from the hook)
+  const extraPlansForUser = extraPlans?.filter(plan =>
+    plan.currency.toLowerCase() === userDetail?.currency?.toLowerCase()
+  ) || [];
+
+  const TopUpDialog = () => {
+    const dialogT = useTranslations('sidebar.topUpDialog');
+
+    return (
+      <Dialog open={showTopUpDialog} onOpenChange={setShowTopUpDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{dialogT('title')}</DialogTitle>
+            <DialogDescription>
+              {dialogT('description')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            {extraPlansForUser.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No top-up packages available for your currency ({userDetail?.currency}).
+              </div>
+            ) : (
+              extraPlansForUser.map((plan) => (
+                <Button
+                  key={plan.id}
+                  variant="outline"
+                  className="justify-start h-auto p-4"
+                  onClick={() => handleTopUp(plan)}
+                  disabled={topUpPlanId !== null}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <div className="text-left">
+                      <div className="font-medium">{plan.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        ${formatTokensString(plan.quota)} quota
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Valid for one month
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">
+                        {plan.currency.toUpperCase()} ${(plan.amount / 100).toFixed(2)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {dialogT('selectPlan')}
+                      </div>
+                    </div>
+                  </div>
+                </Button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   // Show loading while checking authentication or fetching data
@@ -244,7 +364,17 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-6">
           <div className="bg-dashboard-card rounded-lg p-4">
             <div className="text-sm text-muted-foreground mb-1">{t("monthlyQuota")}</div>
-            <div className="text-2xl font-bold text-foreground">${tokenStats.total}</div>
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold text-foreground">${tokenStats.total}</div>
+              <Button
+                variant="default"
+                className="ml-auto h-8 rounded-2xl button-themed px-3 text-sm"
+                onClick={() => setShowTopUpDialog(true)}
+              >
+                <Plus className="h-3 w-3 mr-1" />
+                {t("topUp")}
+              </Button>
+            </div>
           </div>
 
           <div className="bg-dashboard-card rounded-lg p-4">
@@ -254,14 +384,24 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <Button
-            variant="default"
-            className="w-48 mr-8 h-16 rounded-3xl button-themed"
-            onClick={handleUpgradePlan}
-          >
-            <ArrowUp className="h-4 w-4 mr-2" />
-            {t("upgradePlan")}
-          </Button>
+          <div className="bg-dashboard-card rounded-lg p-4">
+            <div className="text-sm text-muted-foreground mb-1">{t("membershipLevel")}</div>
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold text-primary capitalize">
+                {membershipLevel}
+              </div>
+              {membershipLevel !== 'pro' && (
+                <Button
+                  variant="default"
+                  className="h-10 rounded-2xl button-themed px-4"
+                  onClick={handleUpgradePlan}
+                >
+                  {/* <ArrowUp className="h-4 w-4 mr-2" /> */}
+                  {t("upgradePlan")}
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-between gap-4 mb-6 mr-8">
@@ -307,6 +447,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <TopUpDialog />
     </DashboardLayout>
   );
 }

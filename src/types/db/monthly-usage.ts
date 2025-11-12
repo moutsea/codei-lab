@@ -53,6 +53,7 @@ export interface UserDetail {
   currentEndAt?: Date | null; // from subscription
   quota: string; // from plan
   quotaMonthlyUsed?: string; // from monthly-user-usage table (quotaUsed field)
+  currency: string;
 }
 
 /**

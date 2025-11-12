@@ -266,6 +266,7 @@ export const createOrUpdateUserDetailCache = async (userId: string, userDetail: 
                 currentEndAt: userDetail.currentEndAt !== undefined ? userDetail.currentEndAt : null,
                 quota: userDetail.quota!,
                 quotaMonthlyUsed: userDetail.quotaMonthlyUsed!,
+                currency: userDetail.currency!
             };
             console.log(`✅ Created new user detail cache for userId: ${userId}`);
         }

@@ -11,6 +11,7 @@ import {
     monthlyApiUsage,
     monthlyUserUsage,
     emailLoginTokens,
+    topUpPurchases,
 } from '@/db/schema';
 
 // Infer types from table definitions for type safety
@@ -41,6 +42,9 @@ export type MonthlyUserUsageInsert = typeof monthlyUserUsage.$inferInsert;
 export type EmailLoginTokenSelect = typeof emailLoginTokens.$inferSelect;
 export type EmailLoginTokenInsert = typeof emailLoginTokens.$inferInsert;
 
+export type TopUpPurchaseSelect = typeof topUpPurchases.$inferSelect;
+export type TopUpPurchaseInsert = typeof topUpPurchases.$inferInsert;
+
 // Export table types for direct reference
 export type UsersTable = typeof users;
 export type PlansTable = typeof plans;
@@ -51,6 +55,7 @@ export type DailyUserUsageTable = typeof dailyUserUsage;
 export type MonthlyApiUsageTable = typeof monthlyApiUsage;
 export type MonthlyUserUsageTable = typeof monthlyUserUsage;
 export type EmailLoginTokensTable = typeof emailLoginTokens;
+export type TopUpPurchasesTable = typeof topUpPurchases;
 
 // Common utility types
 export type UserId = UserSelect['id'];
@@ -61,3 +66,4 @@ export type ApiKeyId = ApiKeySelect['id'];
 export type DailyUserUsageId = DailyUserUsageSelect['id'];
 export type MonthlyApiUsageId = MonthlyApiUsageSelect['id'];
 export type MonthlyUserUsageId = MonthlyUserUsageSelect['id'];
+export type TopUpPurchaseId = TopUpPurchaseSelect['id'];
