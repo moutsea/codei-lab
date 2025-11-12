@@ -131,6 +131,23 @@ export const dailyUserUsage = pgTable(
     ]
 );
 
+export const dailyApiUsage = pgTable(
+    "daily_api_usage",
+    {
+        id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+        apikey: varchar("api_key", { length: 255 }).references(() => apiKeys.key),
+        date: varchar("date", { length: 30 }),
+        inputTokens: integer("input_tokens").notNull().default(0),
+        cachedTokens: integer("cached_tokens").notNull().default(0),
+        outputTokens: integer("output_tokens").notNull().default(0),
+        quotaUsed: numeric("quota_used", { precision: 10, scale: 4 }).notNull().default("0"),
+        updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
+    },
+    (table) => [
+        unique("unique_api_date").on(table.apikey, table.date),
+    ]
+);
+
 export const monthlyApiUsage = pgTable(
     "monthly_api_usage",
     {

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CreditCard, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { useLocale } from "next-intl";
+import { useAdminStatus } from "@/hooks/useAdmin";
 
 export default function UserMenu() {
   const { data: session } = useSession();
@@ -22,54 +23,22 @@ export default function UserMenu() {
   const t = useTranslations("userMenu");
   const router = useRouter();
   const locale = useLocale();
-  const [isAdmin, setIsAdmin] = React.useState(false);
-
-  React.useEffect(() => {
-    // Check if user is admin
-    if (user?.id) {
-      fetch(`/api/user/${user.id}/admin-check`)
-        .then(response => response.json())
-        .then(data => setIsAdmin(data.isAdmin))
-    }
-  }, [user?.id]);
+  const { isAdmin } = useAdminStatus({ enableCache: true });
 
   if (!user) {
     return null;
   }
 
   const handleDashboard = () => {
-    router.push(`/${locale}/dashboard`);
+    router.push(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
   };
 
   const handleAdmin = () => {
-    router.push(`/${locale}/admin`);
+    router.push(locale === 'en' ? '/admin' : `/${locale}/admin`);
   };
 
   const handleBilling = async () => {
-    try {
-      const response = await fetch('/api/billing-portal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email }),
-      });
-
-      // 如果响应不是成功的状态码（200），抛出错误
-      if (!response.ok) {
-        throw new Error(`Failed to fetch billing URL, status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.billingUrl) {
-        window.location.assign(data.billingUrl);  // 成功获取到 URL 后跳转
-      } else {
-        console.error('Failed to get billing URL:', data.error);
-      }
-    } catch (error) {
-      console.error('Error generating billing link:', error);
-    }
+    router.push(locale === 'en' ? '/dashboard/billing' : `/${locale}/dashboard/billing`)
   };
 
   const handleLogout = () => {

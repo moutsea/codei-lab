@@ -8,6 +8,7 @@ import {
     payments,
     apiKeys,
     dailyUserUsage,
+    dailyApiUsage,
     monthlyApiUsage,
     monthlyUserUsage,
     emailLoginTokens,
@@ -33,6 +34,9 @@ export type ApiKeyInsert = typeof apiKeys.$inferInsert;
 export type DailyUserUsageSelect = typeof dailyUserUsage.$inferSelect;
 export type DailyUserUsageInsert = typeof dailyUserUsage.$inferInsert;
 
+export type DailyApiUsageSelect = typeof dailyApiUsage.$inferSelect;
+export type DailyApiUsageInsert = typeof dailyApiUsage.$inferInsert;
+
 export type MonthlyApiUsageSelect = typeof monthlyApiUsage.$inferSelect;
 export type MonthlyApiUsageInsert = typeof monthlyApiUsage.$inferInsert;
 
@@ -52,6 +56,7 @@ export type SubscriptionsTable = typeof subscriptions;
 export type PaymentsTable = typeof payments;
 export type ApiKeysTable = typeof apiKeys;
 export type DailyUserUsageTable = typeof dailyUserUsage;
+export type DailyApiUsageTable = typeof dailyApiUsage;
 export type MonthlyApiUsageTable = typeof monthlyApiUsage;
 export type MonthlyUserUsageTable = typeof monthlyUserUsage;
 export type EmailLoginTokensTable = typeof emailLoginTokens;
@@ -64,6 +69,7 @@ export type SubscriptionId = SubscriptionSelect['id'];
 export type PaymentId = PaymentSelect['id'];
 export type ApiKeyId = ApiKeySelect['id'];
 export type DailyUserUsageId = DailyUserUsageSelect['id'];
+export type DailyApiUsageId = DailyApiUsageSelect['id'];
 export type MonthlyApiUsageId = MonthlyApiUsageSelect['id'];
 export type MonthlyUserUsageId = MonthlyUserUsageSelect['id'];
 export type TopUpPurchaseId = TopUpPurchaseSelect['id'];
