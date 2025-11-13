@@ -287,7 +287,7 @@ export default function BillingPage() {
                           {formatDate(payment.createdAt)}
                         </td>
                         <td className="py-3 px-4 text-sm font-mono">
-                          {payment.currency?.toUpperCase() || 'USD'} {payment.amount}
+                          {payment.currency?.toUpperCase() || 'USD'} {parseFloat(payment.amount).toFixed(2)}
                         </td>
                         <td className="py-3 px-4 text-sm text-muted-foreground capitalize">
                           {getPaymentTypeDisplay(payment.type || '')}

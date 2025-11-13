@@ -73,7 +73,9 @@
       "perInterval": "每{interval}",
       "cancel": "取消",
       "processing": "处理中..."
-    }
+    },
+    "subscriptionError": "创建结账会话失败",
+    "currencyConflictError": "您已有 {existingCurrency} 货币的订阅。您无法同时使用 {requestedCurrency} 货币订阅。"
   },
   "pricingModal": {
     "upgrade": "升级",

@@ -88,15 +88,20 @@ async function createSubscriptionFromPlan(
 
   } else {
     // 场景: 延长现有订阅
-    console.log("Extending existing subscription period.");
+    console.log("Extending or upgrading existing subscription period.");
 
     const updateData = {
       currentPeriodEnd: currentEndAt,
       renewsAt: currentEndAt,
+      cancelAt: currentEndAt,
       planId: planId,
     };
 
-    return await updateSubscriptionByUserId(userId, updateData);
+    const [_, updatedSubscription] = await Promise.all([
+      deleteUserDetailCache(userId),
+      updateSubscriptionByUserId(userId, updateData)
+    ]);
+    return updatedSubscription;
   }
 }
 
@@ -141,7 +146,7 @@ async function createPayment(
     userId,
     subscriptionId: subscriptionId, // one-payment use planId as subscription id
     stripePaymentIntentId: paymentIntentId,
-    amount: (amountTotal / 100).toString(), // 转换为元并转为字符串
+    amount: (amountTotal / 100).toFixed(2), // 转换为元并保留2位小数
     currency: currency?.toUpperCase() || 'USD',
     status: paymentStatus || 'unknown',
     type
@@ -205,7 +210,7 @@ async function createPaymentRecord(
         userId,
         subscriptionId: subscription.id,
         stripePaymentIntentId: paymentIntentId,
-        amount: ((invoice.amount_paid ?? 0) / 100).toString(), // 分→元
+        amount: ((invoice.amount_paid ?? 0) / 100).toFixed(2), // 分→元并保留2位小数
         currency: invoice.currency?.toUpperCase() || 'USD',
         status: invoice.status || 'unknown',
         type
@@ -269,15 +274,18 @@ export async function POST(request: NextRequest) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
 
+        // console.log(session);
+
         if (session.mode === 'payment') {
           const userId = session.metadata?.userId;
           const stripeCustomerId = session.metadata?.stripeCustomerId;
           const planId = session.metadata?.planId;
           const currentEndAt = session.metadata?.currentEndAt;
           const currency = session.currency;
+          const type = session.metadata?.type;
 
-          if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency) {
-            console.error(`Parameters invalid ${userId}, stripeCustomerId: ${stripeCustomerId} planId: ${planId}`);
+          if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency || !type) {
+            console.error(`Parameters invalid ${userId}, stripeCustomerId: ${stripeCustomerId} planId: ${planId} type: ${type}`);
             return NextResponse.json(
               { error: 'Parameters invalid' },
               { status: 404 }
@@ -286,7 +294,7 @@ export async function POST(request: NextRequest) {
 
           await Promise.all([
             updateUserCustomerId(userId, stripeCustomerId),
-            createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status),
+            createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type),
             createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
           ]);
         } else if (session.mode === 'subscription') {

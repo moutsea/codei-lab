@@ -36,7 +36,6 @@ async function getPriceDiff(
 ) {
   const now = new Date();
   if (!userDetail || userDetail.currentEndAt! < now) {
-    // 当前订阅已过期，直接返回新方案金额和新到期时间
     const newEndAt = new Date(now);
     newEndAt.setDate(now.getDate() + intervalToDays(newPlan.interval));
 
@@ -117,6 +116,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (userDetail?.currency !== currency) {
+      return NextResponse.json(
+        {
+          error: 'CURRENCY_CONFLICT',
+          // details: 'You cannot combine currencies for a single customer. You might already subscribed with other currency, pls choose the same currency as before',
+          type: 'currency_conflict'
+        },
+        { status: 400 }
+      );
+    }
+
     let customerId = user.stripeCustomerId;
     if (customerId) {
       customerId = user.stripeCustomerId;
@@ -142,6 +152,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!plan.membershipLevel) {
+      // extra package
+    }
+
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + intervalToDays(plan.interval));
 
@@ -157,15 +171,15 @@ export async function POST(request: NextRequest) {
 
     let sessionId, url;
 
-    // renew the subscription with cny
-    if (userDetail?.active && userDetail?.currency.toUpperCase() === 'CNY') {
+
+    if (userDetail?.active) {
       const priceDiff = await getPriceDiff(userDetail, plan);
 
       if (!priceDiff) {
         return NextResponse.json(
           {
             error: 'SUBSCRIPTION_CONFLICT',
-            message: '您已有 Pro 及以上的订阅或订单，暂不支持降级订阅',
+            message: '您已有 Plus 及以上的订阅或订单，暂不支持降级订阅',
             details: "You're already subscribed in Pro/Team membership, currently we don't support downgrade",
             type: 'subscription_conflict'
           },

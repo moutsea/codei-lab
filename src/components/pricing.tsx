@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Star, Zap, Users, CheckCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -40,6 +40,7 @@ interface SubscriptionCycle {
 
 export default function Pricing() {
   const t = useTranslations('pricingSection');
+  const locale = useLocale();
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -128,24 +129,6 @@ export default function Pricing() {
     }));
   };
 
-  const formatTokens = (tokens: string) => {
-    const num = parseInt(tokens);
-    if (num >= 100000000) {
-      const value = (num / 100000000).toFixed(0);
-      return `${value}00M`;
-    } else if (num >= 10000000) {
-      const value = (num / 10000000).toFixed(0);
-      return `${value}0M`;
-    } else if (num >= 1000000) {
-      const value = (num / 1000000).toFixed(1);
-      return `${value}M`;
-    } else if (num >= 1000) {
-      const value = (num / 1000).toFixed(0);
-      return `${value}K`;
-    }
-    return num.toLocaleString();
-  };
-
   const getIntervalLabel = (interval: string) => {
     switch (interval) {
       case 'week':
@@ -164,7 +147,8 @@ export default function Pricing() {
   const handleSubscribe = async (plan: Plan, selectedCycle?: SubscriptionCycle) => {
     try {
       if (!user?.email) {
-        window.location.assign("/login");
+        const loginUrl = locale === 'en' ? '/login' : `/${locale}/login`;
+        window.location.assign(loginUrl);
         return;
       }
 
@@ -189,7 +173,21 @@ export default function Pricing() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create checkout session');
+        let errorMessage = errorData.error || t('subscriptionError', { defaultValue: 'Failed to create checkout session' });
+
+        // Special handling for currency conflict
+        if (errorData.error && errorData.error === 'CURRENCY_CONFLICT') {
+          const existingCurrency = errorData.existingCurrency || 'USD';
+          const requestedCurrency = plan.currency.toUpperCase();
+          errorMessage = t('currencyConflictError', {
+            existingCurrency,
+            requestedCurrency,
+            defaultValue: `You already have a subscription with ${existingCurrency}. You cannot subscribe with ${requestedCurrency} at the same time.`
+          });
+        }
+
+        alert(errorMessage);
+        return;
       }
 
       const { url } = await response.json();
@@ -408,7 +406,7 @@ export default function Pricing() {
                     {t('totalQuota')}
                   </div>
                   <div className="text-xl font-bold text-foreground">
-                    ${formatTokens(trialPlan.quota)}
+                    ${trialPlan.quota}
                   </div>
                 </div>
 
@@ -459,6 +457,7 @@ export default function Pricing() {
                     className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
                     variant="ghost"
                     onClick={() => handleOneTimePay(trialCnyPlan)}
+                    disabled={subscribingPlanId !== null}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
@@ -509,7 +508,7 @@ export default function Pricing() {
                     {t('monthlyQuota')}
                   </div>
                   <div className="text-xl font-bold text-primary-foreground">
-                    ${formatTokens(plusPlans[0].quota)}
+                    ${plusPlans[0].quota}
                   </div>
                 </div>
 
@@ -561,6 +560,7 @@ export default function Pricing() {
                     className="w-full cursor-pointer py-2 text-sm border-0 "
                     variant="ghost"
                     onClick={() => handleOneTimePay(plusCnyPlan)}
+                    disabled={subscribingPlanId !== null}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
@@ -605,7 +605,7 @@ export default function Pricing() {
                     {t('monthlyQuota')}
                   </div>
                   <div className="text-xl font-bold text-foreground">
-                    ${formatTokens(proPlans[0].quota)}
+                    ${proPlans[0].quota}
                   </div>
                 </div>
 
@@ -656,6 +656,7 @@ export default function Pricing() {
                     className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
                     variant="ghost"
                     onClick={() => handleOneTimePay(proCnyPlan)}
+                    disabled={subscribingPlanId !== null}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />

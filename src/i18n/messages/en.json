@@ -73,7 +73,9 @@
       "perInterval": "per {interval}",
       "cancel": "Cancel",
       "processing": "Processing..."
-    }
+    },
+    "subscriptionError": "Failed to create checkout session",
+    "currencyConflictError": "You already have a subscription with {existingCurrency}. You cannot subscribe with {requestedCurrency} at the same time."
   },
   "pricingModal": {
     "upgrade": "Subscribe",

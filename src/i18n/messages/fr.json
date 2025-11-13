@@ -73,7 +73,9 @@
       "perInterval": "par {interval}",
       "cancel": "Annuler",
       "processing": "Traitement en cours..."
-    }
+    },
+    "subscriptionError": "Échec de la création de la session de paiement",
+    "currencyConflictError": "Vous avez déjà un abonnement en {existingCurrency}. Vous ne pouvez pas vous abonner en {requestedCurrency} en même temps."
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",
