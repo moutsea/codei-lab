@@ -186,6 +186,33 @@ export default function Pricing() {
           });
         }
 
+        // Special handling for plan downgrade error
+        if (errorData.error && errorData.error === 'PLAN_DOWNGRADE_ERROR') {
+          const currentPlan = errorData.currentPlan || 'Pro';
+          const requestedPlan = plan.membershipLevel;
+          errorMessage = t('planDowngradeError', {
+            currentPlan,
+            requestedPlan,
+            defaultValue: `You currently have a ${currentPlan} subscription. Downgrading to ${requestedPlan} is not allowed. Please cancel your current subscription first and then subscribe to the new plan.`
+          });
+        }
+
+        // Special handling for server error
+        if (errorData.error && errorData.error === 'SERVER_ERROR') {
+          errorMessage = t('serverError', {
+            defaultValue: 'An unexpected server error occurred. Please try again later or contact support if the problem persists.'
+          });
+        }
+
+        // Special handling for Stripe error
+        if (errorData.error && errorData.error === 'STRIPE_ERROR') {
+          const stripeErrorType = errorData.stripeErrorType || 'payment';
+          errorMessage = t('stripeError', {
+            errorType: stripeErrorType,
+            defaultValue: `A payment processing error occurred (${stripeErrorType}). Please check your payment details and try again.`
+          });
+        }
+
         alert(errorMessage);
         return;
       }

@@ -75,7 +75,10 @@
       "processing": "Traitement en cours..."
     },
     "subscriptionError": "Échec de la création de la session de paiement",
-    "currencyConflictError": "Vous avez déjà un abonnement en {existingCurrency}. Vous ne pouvez pas vous abonner en {requestedCurrency} en même temps."
+    "currencyConflictError": "Vous avez déjà un abonnement en {existingCurrency}. Vous ne pouvez pas vous abonner en {requestedCurrency} en même temps.",
+    "planDowngradeError": "Vous avez actuellement un abonnement {currentPlan}. La rétrogradation vers {requestedPlan} n'est pas autorisée.",
+    "serverError": "Une erreur serveur inattendue s'est produite. Veuillez réessayer plus tard ou contacter le support si le problème persiste.",
+    "stripeError": "Une erreur de traitement de paiement s'est produite ({errorType}). Veuillez vérifier vos informations de paiement et réessayer."
   },
   "pricingModal": {
     "upgrade": "Mettre à niveau",

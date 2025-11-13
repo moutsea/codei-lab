@@ -75,7 +75,10 @@
       "processing": "Processing..."
     },
     "subscriptionError": "Failed to create checkout session",
-    "currencyConflictError": "You already have a subscription with {existingCurrency}. You cannot subscribe with {requestedCurrency} at the same time."
+    "currencyConflictError": "You already have a subscription with {existingCurrency}. You cannot subscribe with {requestedCurrency} at the same time.",
+    "planDowngradeError": "You currently have a {currentPlan} subscription. Downgrading to {requestedPlan} is not allowed.",
+    "serverError": "An unexpected server error occurred. Please try again later or contact support if the problem persists.",
+    "stripeError": "A payment processing error occurred ({errorType}). Please check your payment details and try again."
   },
   "pricingModal": {
     "upgrade": "Subscribe",
