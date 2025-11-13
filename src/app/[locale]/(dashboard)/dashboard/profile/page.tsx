@@ -23,7 +23,7 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
 
   // 使用 useUserData hook 获取用户详情
-  const { userDetail, loading } = useUserData();
+  const { userDetail, loading, quota, quotaMonthlyUsed } = useUserData();
 
   const [editingUser, setEditingUser] = useState({
     name: userDetail?.name || user?.name || '',
@@ -246,25 +246,19 @@ ${user.name || user.email}
                     }
                   </span>
                 </div>
-                {userDetail?.requestLimit && (
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">{pt("requestLimit")}</span>
-                    <span className="text-sm text-gray-900">
-                      {userDetail.requestLimit >= 1000000
-                        ? `${(userDetail.requestLimit / 1000000).toFixed(1)}M`
-                        : `${(userDetail.requestLimit / 1000).toFixed(0)}K`
-                      } tokens
+                {quota !== undefined && (
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-sm font-medium text-gray-600">Monthly Quota</span>
+                    <span className="text-sm text-gray-900 font-medium">
+                      ${quota.toFixed(2)}
                     </span>
                   </div>
                 )}
-                {userDetail?.tokenMonthlyUsed !== undefined && (
+                {quotaMonthlyUsed !== undefined && (
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">Monthly Tokens Used</span>
-                    <span className="text-sm text-gray-900">
-                      {userDetail.tokenMonthlyUsed >= 1000000
-                        ? `${(userDetail.tokenMonthlyUsed / 1000000).toFixed(1)}M`
-                        : `${(userDetail.tokenMonthlyUsed / 1000).toFixed(0)}K`
-                      } tokens
+                    <span className="text-sm font-medium text-gray-600">Monthly Usage</span>
+                    <span className="text-sm text-gray-900 font-medium">
+                      ${quotaMonthlyUsed.toFixed(2)}
                     </span>
                   </div>
                 )}

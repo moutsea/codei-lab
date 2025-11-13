@@ -48,7 +48,7 @@ export async function getPaymentsByUserIdPaginated(
     userId: string,
     page: number = 1,
     limit: number = 10,
-    orderBy: 'createdAt' | 'amount' | 'status' | 'createdAt' = 'createdAt',
+    orderBy: 'createdAt' | 'amount' | 'status' = 'createdAt',
     orderDirection: 'asc' | 'desc' = 'desc'
 ): Promise<{
     payments: PaymentSelect[];
@@ -59,35 +59,31 @@ export async function getPaymentsByUserIdPaginated(
 }> {
     const offset = (page - 1) * limit;
 
-    // Build order clause
-    const orderClause = orderBy === 'createdAt'
-        ? (orderDirection === 'desc' ? desc(payments.createdAt) : asc(payments.createdAt))
-        : orderBy === 'amount'
-        ? (orderDirection === 'desc' ? desc(payments.amount) : asc(payments.amount))
-        : (orderDirection === 'desc' ? desc(payments.status) : asc(payments.status));
+    // Determine sorting column and direction
+    const sortColumn = orderBy === 'amount' ? payments.amount :
+        orderBy === 'status' ? payments.status : payments.createdAt;
+    const sortDirection = orderDirection === 'asc' ? asc(sortColumn) : desc(sortColumn);
 
-    const [paymentRecords, totalResult] = await Promise.all([
-        db()
-            .select()
-            .from(payments)
-            .where(eq(payments.userId, userId))
-            .orderBy(orderClause)
-            .limit(limit)
-            .offset(offset),
+    // Get payments with pagination
+    const paymentsResult = await db()
+        .select()
+        .from(payments)
+        .where(eq(payments.userId, userId))
+        .orderBy(sortDirection)
+        .limit(limit)
+        .offset(offset);
 
-        db()
-            .select({
-                count: sql<number>`COUNT(*)`
-            })
-            .from(payments)
-            .where(eq(payments.userId, userId))
-    ]);
+    // Get total count for pagination info
+    const [countResult] = await db()
+        .select({ count: sql<number>`count(*)` })
+        .from(payments)
+        .where(eq(payments.userId, userId));
 
-    const total = totalResult[0]?.count || 0;
+    const total = countResult?.count || 0;
     const totalPages = Math.ceil(total / limit);
 
     return {
-        payments: paymentRecords,
+        payments: paymentsResult,
         total,
         page,
         totalPages,
@@ -96,13 +92,11 @@ export async function getPaymentsByUserIdPaginated(
 }
 
 /**
- * Get payments count for a user
+ * Get total payments count for a user
  */
 export async function getPaymentsCountByUserId(userId: string): Promise<number> {
     const [result] = await db()
-        .select({
-            count: sql<number>`COUNT(*)`
-        })
+        .select({ count: sql<number>`count(*)` })
         .from(payments)
         .where(eq(payments.userId, userId));
 
@@ -162,99 +156,146 @@ export async function getTotalRevenue(options: {
 export async function getTotalRevenueByCurrency(options: {
     startDate?: Date;
     endDate?: Date;
-} = {}): Promise<{ currencies: { [currency: string]: number } }> {
-    const whereConditions = [eq(payments.status, 'succeeded')];
+    userId?: string;
+} = {}): Promise<{
+    total: number;
+    currencies: {
+        [currency: string]: {
+            amount: number;
+            currency: string;
+            count: number;
+        };
+    };
+}> {
+    const { startDate, endDate, userId } = options;
+    const whereConditions = [eq(payments.status, 'paid')];
 
-    if (options.startDate) {
-        whereConditions.push(gte(payments.createdAt, options.startDate));
+    if (userId) {
+        whereConditions.push(eq(payments.userId, userId));
     }
-    if (options.endDate) {
-        whereConditions.push(lte(payments.createdAt, options.endDate));
+
+    if (startDate) {
+        whereConditions.push(sql`${payments.createdAt} >= ${startDate}`);
+    }
+
+    if (endDate) {
+        whereConditions.push(sql`${payments.createdAt} <= ${endDate}`);
     }
 
     const results = await db()
         .select({
             currency: payments.currency,
-            total: sql<number>`SUM(CASE WHEN ${payments.status} = 'succeeded' THEN CAST(${payments.amount} AS NUMERIC) ELSE 0 END)`
+            amount: sql<number>`COALESCE(SUM(CAST(${payments.amount} AS NUMERIC)), 0)`,
+            count: sql<number>`COUNT(${payments.id})`
         })
         .from(payments)
         .where(and(...whereConditions))
         .groupBy(payments.currency)
-        .orderBy(desc(payments.currency));
+        .orderBy(sql`SUM(CAST(${payments.amount} AS NUMERIC)) DESC`);
 
-    const currencies: { [currency: string]: number } = {};
-    for (const result of results) {
-        currencies[result.currency || 'USD'] = Number(result.total) || 0;
-    }
+    const currencies: { [currency: string]: { amount: number; currency: string; count: number } } = {};
+    let total = 0;
 
-    return { currencies };
+    results.forEach(result => {
+        const currency = result.currency?.toUpperCase() || 'USD';
+        const amount = Number(result.amount) || 0;
+        const count = Number(result.count) || 0;
+
+        currencies[currency] = {
+            currency,
+            amount,
+            count
+        };
+
+        total += amount;
+    });
+
+    return {
+        total,
+        currencies
+    };
 }
 
 /**
- * Get monthly revenue for current month
+ * Get revenue for current month (with optional currency filter)
  */
 export async function getMonthlyRevenue(options: {
-    currency?: string;
+    currency?: string; // If specified, returns total for specific currency
 } = {}): Promise<number> {
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const { currency } = options;
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const whereConditions = [
-        eq(payments.status, 'succeeded'),
-        gte(payments.createdAt, firstDayOfMonth),
-        lte(payments.createdAt, lastDayOfMonth)
+        eq(payments.status, 'paid'),
+        gte(payments.createdAt, startOfMonth)
     ];
 
-    if (options.currency) {
-        whereConditions.push(eq(payments.currency, options.currency));
+    if (currency) {
+        whereConditions.push(eq(payments.currency, currency.toUpperCase()));
     }
 
     const [result] = await db()
         .select({
-            total: sql<number>`SUM(CASE WHEN ${payments.status} = 'succeeded' THEN CAST(${payments.amount} AS NUMERIC) ELSE 0 END)`
+            total: sql<number>`COALESCE(SUM(CAST(${payments.amount} AS NUMERIC)), 0)`
         })
         .from(payments)
         .where(and(...whereConditions));
 
-    return Number(result?.total) || 0;
+    return Number(result?.total || 0);
 }
 
 /**
- * Get monthly revenue by currency
+ * Get monthly revenue breakdown by currency
  */
 export async function getMonthlyRevenueByCurrency(): Promise<{
     total: number;
-    currencies: { [currency: string]: number };
+    currencies: {
+        [currency: string]: {
+            amount: number;
+            currency: string;
+            count: number;
+        };
+    };
 }> {
-    const currentDate = new Date();
-    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
     const results = await db()
         .select({
             currency: payments.currency,
-            total: sql<number>`SUM(CASE WHEN ${payments.status} = 'succeeded' THEN CAST(${payments.amount} AS NUMERIC) ELSE 0 END)`
+            amount: sql<number>`COALESCE(SUM(CAST(${payments.amount} AS NUMERIC)), 0)`,
+            count: sql<number>`COUNT(${payments.id})`
         })
         .from(payments)
         .where(
             and(
-                eq(payments.status, 'succeeded'),
-                gte(payments.createdAt, firstDayOfMonth),
-                lte(payments.createdAt, lastDayOfMonth)
+                eq(payments.status, 'paid'),
+                gte(payments.createdAt, startOfMonth)
             )
         )
         .groupBy(payments.currency)
-        .orderBy(desc(payments.currency));
+        .orderBy(sql`SUM(CAST(${payments.amount} AS NUMERIC)) DESC`);
 
+    const currencies: { [currency: string]: { amount: number; currency: string; count: number } } = {};
     let total = 0;
-    const currencies: { [currency: string]: number } = {};
 
-    for (const result of results) {
-        const amount = Number(result.total) || 0;
+    results.forEach(result => {
+        const currency = result.currency?.toUpperCase() || 'USD';
+        const amount = Number(result.amount) || 0;
+        const count = Number(result.count) || 0;
+
+        currencies[currency] = {
+            currency,
+            amount,
+            count
+        };
+
         total += amount;
-        currencies[result.currency || 'USD'] = amount;
-    }
+    });
 
-    return { total, currencies };
+    return {
+        total,
+        currencies
+    };
 }

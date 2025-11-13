@@ -69,9 +69,19 @@ export interface UseAdminReturn {
 type AdminCacheEntry = {
   value: boolean;
   timestamp: number;
+  promise?: Promise<boolean>;
 };
 
 const adminStatusCache = new Map<string, AdminCacheEntry>();
+
+// Global admin status to avoid duplicate checks across hook instances
+let globalAdminStatus: { isAdmin: boolean | null; userId: string | null; timestamp: number } = {
+  isAdmin: null,
+  userId: null,
+  timestamp: 0
+};
+
+let globalAdminCheckPromise: Promise<boolean> | null = null;
 
 export function useAdmin(options: UseAdminOptions = {}): UseAdminReturn {
   const { enableCache = true, cacheTimeout = 5 * 60 * 1000 } = options;
@@ -109,37 +119,66 @@ export function useAdmin(options: UseAdminOptions = {}): UseAdminReturn {
       return;
     }
 
-    const cacheKey = `admin-status:${userId}`;
-    if (enableCache) {
-      const cached = adminStatusCache.get(cacheKey);
-      if (cached && Date.now() - cached.timestamp < cacheTimeout) {
-        setIsAdmin(cached.value);
+    // Check global cache first to avoid duplicate requests across hook instances
+    const now = Date.now();
+    if (globalAdminStatus.userId === userId &&
+        globalAdminStatus.isAdmin !== null &&
+        now - globalAdminStatus.timestamp < cacheTimeout) {
+      setIsAdmin(globalAdminStatus.isAdmin);
+      return;
+    }
+
+    // If another instance is currently checking, wait for that result
+    if (globalAdminCheckPromise && globalAdminStatus.userId === userId) {
+      try {
+        const isAdminValue = await globalAdminCheckPromise;
+        setIsAdmin(isAdminValue);
         return;
+      } catch (err) {
+        // Continue with normal error handling if global promise failed
       }
     }
 
     setAdminLoading(true);
     setAdminError(null);
 
-    try {
+    // Create the admin check promise and store it globally
+    globalAdminCheckPromise = (async () => {
       const response = await fetch(`/api/user/${userId}/admin-check`);
       if (!response.ok) {
         throw new Error(`Failed to check admin status: ${response.status}`);
       }
 
       const data = await response.json();
-      const isAdminValue = Boolean(data.isAdmin);
+      return Boolean(data.isAdmin);
+    })();
+
+    try {
+      const isAdminValue = await globalAdminCheckPromise;
       setIsAdmin(isAdminValue);
 
+      // Update global cache
+      globalAdminStatus = {
+        isAdmin: isAdminValue,
+        userId,
+        timestamp: now
+      };
+
+      // Update local cache as well
       if (enableCache) {
-        adminStatusCache.set(cacheKey, { value: isAdminValue, timestamp: Date.now() });
+        const cacheKey = `admin-status:${userId}`;
+        adminStatusCache.set(cacheKey, { value: isAdminValue, timestamp: now });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to check admin status';
       setAdminError(message);
       setIsAdmin(false);
+
+      // Clear global cache on error
+      globalAdminStatus = { isAdmin: false, userId, timestamp: 0 };
     } finally {
       setAdminLoading(false);
+      globalAdminCheckPromise = null;
     }
   }, [userId, enableCache, cacheTimeout]);
 

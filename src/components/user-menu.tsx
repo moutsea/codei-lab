@@ -37,9 +37,9 @@ export default function UserMenu() {
     router.push(locale === 'en' ? '/admin' : `/${locale}/admin`);
   };
 
-  const handleBilling = async () => {
-    router.push(locale === 'en' ? '/dashboard/billing' : `/${locale}/dashboard/billing`)
-  };
+  // const handleBilling = async () => {
+  //   router.push(locale === 'en' ? '/dashboard/billing' : `/${locale}/dashboard/billing`)
+  // };
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/' });
@@ -91,10 +91,10 @@ export default function UserMenu() {
           </>
         )}
 
-        <DropdownMenuItem onClick={handleBilling}>
+        {/* <DropdownMenuItem onClick={handleBilling}>
           <CreditCard className="mr-2 h-4 w-4" />
           <span>{t("billing")}</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
           <LogOut className="mr-2 h-4 w-4" />

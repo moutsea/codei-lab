@@ -28,7 +28,7 @@ export default function ApiKeysPage() {
   const {
     userDetail,
     isActive,
-    requestLimit
+    quota
   } = useUserData({ enableCache: true });
 
   const t = useTranslations("sidebar");
@@ -519,7 +519,7 @@ export default function ApiKeysPage() {
                   <p className="text-sm font-medium text-gray-600">{apiKeysT("apiKeysQuotaUsed")}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {/* {formatTokens(apiKeys.reduce((sum, key) => sum + key.tokensUsed, 0))} */}
-                    {formatTokens(userDetail?.tokenMonthlyUsed)}
+                    {userDetail?.quotaMonthlyUsed}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     {apiKeys.length > 0
@@ -542,7 +542,7 @@ export default function ApiKeysPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-600">{apiKeysT("yourMonthlyQuota")}</p>
                   <p className="text-2xl font-bold text-gray-900">
-                    {formatTokens(requestLimit || 50000000)}
+                    ${quota || 30}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     {apiKeysT("basedOnSubscription")}

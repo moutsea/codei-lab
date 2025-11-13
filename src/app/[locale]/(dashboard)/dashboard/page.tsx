@@ -51,7 +51,8 @@ export default function Dashboard() {
     isActive,
     quota,
     membershipLevel,
-    loading
+    loading,
+    fetchDailyUsageData
   } = useUserData({ enableCache: true });
 
   const {
@@ -93,8 +94,8 @@ export default function Dashboard() {
   const [topUpPlanId, setTopUpPlanId] = useState<string | null>(null);
 
   // 获取特定月份的每日使用数据
-  const fetchDailyUsageData = useCallback(async (date: Date) => {
-    if (!user?.id) return;
+  const fetchDailyUsageForMonth = useCallback(async (date: Date) => {
+    if (!fetchDailyUsageData) return;
 
     try {
       setLoadingDailyUsage(true);
@@ -118,39 +119,35 @@ export default function Dashboard() {
 
       const { startDate, endDate } = getMonthRange(year, month);
 
-      const response = await fetch(
-        `/api/user/${user.id}/usage?startDate=${formatLocalDate(startDate)}&endDate=${formatLocalDate(endDate)}`
+      // 使用 hook 中的函数
+      const dailyUsage = await fetchDailyUsageData(
+        formatLocalDate(startDate),
+        formatLocalDate(endDate)
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(`Fetched daily usage for ${year}-${month.toString().padStart(2, '0')}:`, data.usage);
+      console.log(`Fetched daily usage for ${year}-${month.toString().padStart(2, '0')}:`, dailyUsage);
 
-        // 转换数据格式以匹配 DailyUsage 接口
-        const formattedData: DailyUsage[] = data.usage?.dailyUsage?.map((item: DailyUsageItem) => ({
-          date: item.date,
-          tokens: item.totalTokens
-        })) || [];
+      // 转换数据格式以匹配 DailyUsage 接口
+      const formattedData: DailyUsage[] = dailyUsage?.map((item: DailyUsageItem) => ({
+        date: item.date,
+        tokens: item.totalTokens
+      })) || [];
 
-        setDailyUsageData(formattedData);
-      } else {
-        console.error('Failed to fetch daily usage data');
-        setDailyUsageData([]);
-      }
+      setDailyUsageData(formattedData);
     } catch (error) {
       console.error('Error fetching daily usage data:', error);
       setDailyUsageData([]);
     } finally {
       setLoadingDailyUsage(false);
     }
-  }, [user?.id]);
+  }, [fetchDailyUsageData]);
 
   // 当选择的月份变化时，获取对应的每日使用数据
   useEffect(() => {
     if (user?.id && isActive) {
-      fetchDailyUsageData(selectedMonth);
+      fetchDailyUsageForMonth(selectedMonth);
     }
-  }, [selectedMonth, user?.id, isActive, fetchDailyUsageData]);
+  }, [selectedMonth, user?.id, isActive, fetchDailyUsageForMonth]);
 
 
   const formatTokensString = (tokens: string) => {

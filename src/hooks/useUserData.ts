@@ -8,7 +8,17 @@ interface UsageData {
   month: string;
   totalQuota: number;
   updatedAt: string | null;
+}
 
+interface DailyUsageItem {
+  date: string;
+  totalTokens: number;
+}
+
+interface DailyUsageResponse {
+  usage: {
+    dailyUsage: DailyUsageItem[];
+  };
 }
 
 interface UsageApiResponse {
@@ -126,6 +136,27 @@ export function useUserData(options: UseUserDataOptions = {}) {
     }
   }, [user?.id]);
 
+  // 获取每日使用数据（带日期范围）
+  const fetchDailyUsageData = useCallback(async (startDate: string, endDate: string) => {
+    if (!user?.id) return null;
+
+    try {
+      const response = await fetch(
+        `/api/user/${user.id}/usage?startDate=${startDate}&endDate=${endDate}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: DailyUsageResponse = await response.json();
+      return data.usage?.dailyUsage || [];
+    } catch (err) {
+      console.error('Error fetching daily usage data:', err);
+      return [];
+    }
+  }, [user?.id]);
+
   // 获取所有数据
   const fetchAllData = useCallback(async (forceRefresh = false) => {
     await Promise.all([
@@ -161,5 +192,6 @@ export function useUserData(options: UseUserDataOptions = {}) {
     refetch: (forceRefresh = true) => fetchAllData(forceRefresh),
     refetchUserData: (forceRefresh = true) => fetchUserData(forceRefresh),
     refetchUsageData: (forceRefresh = true) => fetchUsageData(forceRefresh),
+    fetchDailyUsageData, // 新增：获取每日使用数据的函数
   };
 }
