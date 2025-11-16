@@ -2,6 +2,7 @@ import { db, DbClient } from "../index";
 import { monthlyUserUsage } from "../schema";
 import { eq, and, desc, sql, gte, lte } from "drizzle-orm";
 import type { MonthlyUserUsageInsert, MonthlyUserUsageSelect } from "@/types";
+import { currentSubscription } from "@/lib/utils";
 
 // ========== Create Operations ==========
 
@@ -129,6 +130,22 @@ export async function getMonthlyUserUsageCount(
     .where(and(...whereConditions));
 
   return result.count;
+}
+
+/**
+ * Get monthly usage for a user in the last month
+ */
+export async function getLastMonthUserUsage(userId: string, cycle: string): Promise<MonthlyUserUsageSelect | null> {
+  const [usage] = await db()
+    .select()
+    .from(monthlyUserUsage)
+    .where(and(
+      eq(monthlyUserUsage.userId, userId),
+      gte(monthlyUserUsage.month, cycle)
+    ))
+    .limit(1);
+
+  return usage || null;
 }
 
 /**

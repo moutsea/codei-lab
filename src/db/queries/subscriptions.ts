@@ -333,6 +333,13 @@ export async function deleteSubscriptionById(id: number): Promise<SubscriptionSe
   return subscription || null;
 }
 
+export async function deleteSubscriptionByUserId(userId: string): Promise<SubscriptionSelect | null> {
+  const [subscription] = await db()
+    .delete(subscriptions)
+    .where(eq(subscriptions.userId, userId))
+    .returning();
+  return subscription || null;
+}
 /**
  * Delete subscription by Stripe subscription ID
  */

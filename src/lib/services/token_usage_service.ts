@@ -10,6 +10,7 @@ import {
 import {
     getRecentMonthlyUserUsage,
     addTokensToMonthlyUserUsage,
+    getLastMonthUserUsage,
 } from '@/db/queries/monthly-user-usage';
 import { updateApiKeyByKey } from '@/db/queries/api-keys';
 import type { DailyUserUsageSelect } from '@/types/schema';
@@ -19,10 +20,12 @@ import type { ApiDetail, UserDetail } from '@/types/db';
 import { createOrUpdateUserDetailCache } from './user_service';
 import { db } from '@/db';
 import { addTokensToDailyApiUsage } from '@/db/queries/daily-api-usage';
+import { getSubscriptionByUserId } from '@/db/queries';
+import { currentSubscription } from '../utils';
 
 // ========== API Key Usage Cache ==========
 const API_USAGE_CACHE_KEYS = {
-    apiKeyUsage: (apiKey: string) => `api_key:usage:${apiKey}`,
+    apiKeyUsage: (apiKey: string) => `codei:api_key:usage:${apiKey}`,
 };
 
 interface ApiKeyUsageCache {
@@ -226,3 +229,11 @@ export const updateApiKeyTokenUsage = async (apiKey: string, month: string, apiD
     }
 };
 
+export const getTrialUserLastMonthUsage = async (userId: string, startDate: Date) => {
+    const cycle = currentSubscription(startDate);
+    const usage = await getLastMonthUserUsage(userId, cycle);
+    if (!usage) {
+        return 0;
+    }
+    return parseFloat(usage.quotaUsed);
+}

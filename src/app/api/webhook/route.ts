@@ -6,6 +6,8 @@ import { createSubscription, getUserSubscriptionByStripeSubscriptionId, getUserS
 import { createPaymentFromStripeIntent } from '@/lib/services/payment_service';
 import { createOrUpdateUserDetailCache, deleteUserDetailCache, getUserFromDBById, updateUserStripeCustomerIdService } from '@/lib/services/user_service';
 import { getPlanFromDBById } from '@/lib/services/plan_service'
+import { getTrialUserLastMonthUsage } from '@/lib/services/token_usage_service';
+import { createTopUpPurchaseFromCheckout, getSubscriptionByUserId } from '@/db/queries';
 export const runtime = 'nodejs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -269,12 +271,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`Processing webhook event: ${event.type}`);
+    const now = new Date();
 
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
-
-        // console.log(session);
 
         if (session.mode === 'payment') {
           const userId = session.metadata?.userId;
@@ -283,8 +284,11 @@ export async function POST(request: NextRequest) {
           const currentEndAt = session.metadata?.currentEndAt;
           const currency = session.currency;
           const type = session.metadata?.type;
+          const quota = session.metadata?.quota;
+          const previousMember = session.metadata?.previousMember;
+          const currentMember = session.metadata?.currentMember;
 
-          if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency || !type) {
+          if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency || !type || !quota) {
             console.error(`Parameters invalid ${userId}, stripeCustomerId: ${stripeCustomerId} planId: ${planId} type: ${type}`);
             return NextResponse.json(
               { error: 'Parameters invalid' },
@@ -292,38 +296,24 @@ export async function POST(request: NextRequest) {
             );
           }
 
+          if (previousMember === "trial" && currentMember !== "trial") {
+            const subscription = await getSubscriptionByUserId(userId);
+            if (subscription && subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd > now) {
+              const quotaUsed = await getTrialUserLastMonthUsage(userId, subscription.startDate!);
+              const quotaLeft = parseFloat(quota) - quotaUsed;
+              const topup = await createTopUpPurchaseFromCheckout({ userId, quota: quotaLeft.toString(), status: "active", endDate: subscription.currentPeriodEnd });
+              console.log("top up: ", topup);
+            }
+          }
+
           await Promise.all([
-            updateUserCustomerId(userId, stripeCustomerId),
+            // updateUserCustomerId(userId, stripeCustomerId),
             createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type),
             createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
           ]);
         } else if (session.mode === 'subscription') {
-          const userId = session.metadata?.userId;
-          const quota = session.metadata?.quota;
-          const stripeCustomerId = session.metadata?.stripeCustomerId;
-          const currency = session.currency;
+          console.log("nothing to do here");
 
-          if (!userId || !stripeCustomerId || !quota || !currency) {
-            console.error(`User not found for userId: ${userId}`);
-            return NextResponse.json(
-              { error: 'User not found' },
-              { status: 404 }
-            );
-          }
-
-          await updateUserCustomerId(userId, stripeCustomerId)
-
-          const userdetail: UserDetail = {
-            userId: userId,
-            name: null,
-            email: null,
-            stripeCustomerId,
-            quota,
-            quotaMonthlyUsed: '0',
-            currency
-          }
-
-          await createOrUpdateUserDetailCache(userId, userdetail);
         } else {
           console.log("Unknow session mode");
         }
@@ -334,17 +324,28 @@ export async function POST(request: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
 
         const userId = subscription.metadata?.userId;
-        const auth0Id = subscription.metadata?.auth0Id;
         const planId = subscription.metadata?.planId;
         const membershipLevel = subscription.metadata?.membershipLevel;
         const quota = subscription.metadata?.quota;
         const stripeCustomerId = subscription.metadata?.stripeCustomerId;
         const currency = subscription.currency;
         const type = subscription.metadata?.type;
+        const previousMember = subscription.metadata?.previousMember;
+        const previousQuota = subscription.metadata.previousQuota;
 
-        if (!userId || !planId || !auth0Id || !quota || !stripeCustomerId || !currency || !type) {
+        if (!userId || !planId || !quota || !stripeCustomerId || !currency || !type) {
           console.error('Missing metadata in subscription:', subscription.id);
           return new Response('Missing metadata', { status: 400 });
+        }
+
+        if (previousMember === "trial") {
+          const subscription = await getSubscriptionByUserId(userId);
+          if (subscription && subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd > now) {
+            const quotaUsed = await getTrialUserLastMonthUsage(userId, subscription.startDate!);
+            const quotaLeft = parseFloat(previousQuota) - quotaUsed;
+            const topup = await createTopUpPurchaseFromCheckout({ userId, quota: quotaLeft.toString(), status: "active", endDate: subscription.currentPeriodEnd });
+            console.log("top up: ", topup);
+          }
         }
 
         await createSubscriptionRecord(userId, planId, subscription);
@@ -365,7 +366,7 @@ export async function POST(request: NextRequest) {
 
         await createOrUpdateUserDetailCache(userId, userdetail);
 
-        console.log(`Subscription created for user ${auth0Id}, planId ${planId}`);
+        console.log(`Subscription created for user userId: ${userId} planId ${planId}`);
         break;
       }
 
@@ -418,12 +419,14 @@ export async function POST(request: NextRequest) {
           email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId!,
+          currentEndAt: updates.currentPeriodEnd,
           quota,
           stripeCustomerId,
           membershipLevel,
           currency
         }
 
+        console.log(userdetail);
         await createOrUpdateUserDetailCache(userId, userdetail);
 
         console.log(`Subscription updated: ${subscription.id}`);

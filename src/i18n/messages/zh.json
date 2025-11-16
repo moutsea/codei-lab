@@ -75,6 +75,7 @@
       "processing": "处理中..."
     },
     "subscriptionError": "创建结账会话失败",
+    "duplicateError": "您已经订阅了试用计划，无法再次订阅。",
     "currencyConflictError": "您已有 {existingCurrency} 货币的订阅。您无法同时使用 {requestedCurrency} 货币订阅。",
     "planDowngradeError": "您当前拥有 {currentPlan} 订阅。不允许降级到 {requestedPlan}。",
     "serverError": "发生意外服务器错误。请稍后重试，如果问题持续存在请联系客服。",

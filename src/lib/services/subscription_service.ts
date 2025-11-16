@@ -3,7 +3,8 @@ import {
     updateSubscriptionByStripeId as updateSubscriptionByStripeIdDB,
     updateSubscriptionById as updateSubscriptionByIdDB,
     getSubscriptionByStripeSubscriptionId,
-    getSubscriptionByUserId
+    getSubscriptionByUserId,
+    deleteSubscriptionByUserId
 } from '@/db/queries';
 import type { SubscriptionSelect } from '@/types/schema';
 
@@ -14,7 +15,8 @@ export const createSubscription = async (
     data: Omit<Parameters<typeof createSubscriptionDB>[0], 'createdAt' | 'updatedAt'>
 ): Promise<SubscriptionSelect | null> => {
     try {
-        // Create subscription in database
+
+        await deleteSubscriptionByUserId(data.userId!);
         const subscription = await createSubscriptionDB(data);
 
         if (!subscription) {

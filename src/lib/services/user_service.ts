@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 
 // ========== User Cache Keys (Only for UserDetail) ==========
 const USER_CACHE_KEYS = {
-    userDetail: (userId: string) => `user:id:${userId}:detail`,
+    userDetail: (userId: string) => `codei:user:id:${userId}:detail`,
 };
 
 
@@ -155,6 +155,7 @@ export const getUserFromDBByStripeCustomerId = async (stripeCustomerId: string):
  * Get user detail by userId with cache-first approach
  */
 export const getUserDetailByIdWithCache = async (userId: string): Promise<UserDetail | null> => {
+    // don't use cache in test stage
     const userDetail = await getUserDetailFromCache(userId);
     if (userDetail && userDetail.active) {
         return userDetail;

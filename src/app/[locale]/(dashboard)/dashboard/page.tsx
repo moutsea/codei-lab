@@ -263,6 +263,8 @@ export default function Dashboard() {
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
 
+    // console.log(userDetail);
+
     return (
       <Dialog open={showTopUpDialog} onOpenChange={setShowTopUpDialog}>
         <DialogContent className="sm:max-w-[500px]">

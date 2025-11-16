@@ -75,6 +75,7 @@
       "processing": "Traitement en cours..."
     },
     "subscriptionError": "Échec de la création de la session de paiement",
+    "duplicateError": "Vous avez déjà souscrit à un plan d'essai et ne pouvez pas vous abonner à nouveau.",
     "currencyConflictError": "Vous avez déjà un abonnement en {existingCurrency}. Vous ne pouvez pas vous abonner en {requestedCurrency} en même temps.",
     "planDowngradeError": "Vous avez actuellement un abonnement {currentPlan}. La rétrogradation vers {requestedPlan} n'est pas autorisée.",
     "serverError": "Une erreur serveur inattendue s'est produite. Veuillez réessayer plus tard ou contacter le support si le problème persiste.",

@@ -75,6 +75,7 @@
       "processing": "Processing..."
     },
     "subscriptionError": "Failed to create checkout session",
+    "duplicateError": "You have already subscribed to a trial plan and cannot subscribe again.",
     "currencyConflictError": "You already have a subscription with {existingCurrency}. You cannot subscribe with {requestedCurrency} at the same time.",
     "planDowngradeError": "You currently have a {currentPlan} subscription. Downgrading to {requestedPlan} is not allowed.",
     "serverError": "An unexpected server error occurred. Please try again later or contact support if the problem persists.",

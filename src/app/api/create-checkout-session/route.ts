@@ -114,7 +114,6 @@ export async function POST(request: NextRequest) {
     let customerId = userDetail.stripeCustomerId;
     if (customerId) {
       customerId = userDetail.stripeCustomerId;
-      console.log(`✅ Found customerId in user data: ${customerId}`);
     } else {
       const customer = await stripe.customers.create({
         email: userDetail.email!,
@@ -139,7 +138,11 @@ export async function POST(request: NextRequest) {
       stripeCustomerId: customerId,
       currentEndAt: endDate.toISOString(),
       quota,
-      type: plan.type
+      type: plan.type,
+      currency: plan.currency,
+      previousMember: userDetail.membershipLevel || "",
+      previousQuota: parseFloat(userDetail.quota),
+      currentMember: plan.membershipLevel
     };
 
     let sessionId, url;
@@ -148,8 +151,8 @@ export async function POST(request: NextRequest) {
       // extra package
     }
 
-
     if (!userDetail.active) {
+      metadata.previousMember = "";
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
         client_reference_id: userId,
@@ -191,7 +194,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error: 'PLAN_DOWNGRADE_ERROR',
-          type: 'plan_downgrade_error'
+          type: 'plan_downgrade_error',
+          currentPlan: oldPlan?.membershipLevel
         },
         { status: 400 }
       );
@@ -252,8 +256,41 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    priceDiff = await getPriceDiff(userDetail, oldPlan!, plan);
+    if (oldPlan?.membershipLevel === 'trial') {
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId!,
+        client_reference_id: userId,
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        line_items: [{
+          price: priceId,
+          quantity: 1,
+        }],
+        phone_number_collection: { enabled: true },
+        mode: plan.isRecurring ? 'subscription' : 'payment',
+        payment_method_options: {
+          wechat_pay: {
+            client: 'web',
+          },
+        },
+        success_url: `${baseUrl}/dashboard`,
+        cancel_url: `${baseUrl}#pricing`,
+        metadata: metadata,
+        ...(plan.isRecurring && {
+          subscription_data: {
+            metadata: metadata
+          }
+        })
+      });
 
+      sessionId = session.id;
+      url = session.url;
+
+      return NextResponse.json({
+        sessionId, url
+      });
+    }
+
+    priceDiff = await getPriceDiff(userDetail, oldPlan!, plan);
     metadata.currentEndAt = priceDiff.newEndAt!.toISOString();
 
     const session = await stripe.checkout.sessions.create({

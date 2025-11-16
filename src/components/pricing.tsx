@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useSession } from 'next-auth/react';
+import { useUserData } from '@/hooks/useUserData';
 
 interface Plan {
   id: string;
@@ -50,6 +51,22 @@ export default function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [showCycleDialog, setShowCycleDialog] = useState(false);
   const [subscribingPlanId, setSubscribingPlanId] = useState<string | null>(null);
+
+  const {
+    userDetail,
+    isActive,
+    loading: userDataLoading,
+  } = useUserData();
+
+  function planToLevel(level: string): number {
+    const key = String(level).trim().toLowerCase();
+    const map: Record<string, number> = {
+      pro: 3,
+      plus: 2,
+      trial: 1,
+    };
+    return map[key] ?? 0;
+  }
 
   // Fetch frontpage plans
   useEffect(() => {
@@ -152,6 +169,18 @@ export default function Pricing() {
         return;
       }
 
+      if (userDetail?.membershipLevel && planToLevel(plan.membershipLevel) < planToLevel(userDetail?.membershipLevel)) {
+        const currentPlan = userDetail.membershipLevel;
+        const requestedPlan = plan.membershipLevel;
+        const errorMessage = t('planDowngradeError', {
+          currentPlan,
+          requestedPlan,
+          defaultValue: `You currently have a ${currentPlan} subscription. Downgrading to ${requestedPlan} is not allowed. Please cancel your current subscription first and then subscribe to the new plan.`
+        });
+        alert(errorMessage);
+        return;
+      }
+
       setSubscribingPlanId(plan.id);
 
       const priceId = selectedCycle?.stripePriceId || plan.stripePriceId;
@@ -228,10 +257,45 @@ export default function Pricing() {
   };
 
   const handleOneTimePay = (plan: Plan) => {
+
+    if (userDetail?.membershipLevel && planToLevel(plan.membershipLevel) < planToLevel(userDetail?.membershipLevel)) {
+      const currentPlan = userDetail.membershipLevel;
+      const requestedPlan = plan.membershipLevel;
+      const errorMessage = t('planDowngradeError', {
+        currentPlan,
+        requestedPlan,
+        defaultValue: `You currently have a ${currentPlan} subscription. Downgrading to ${requestedPlan} is not allowed. Please cancel your current subscription first and then subscribe to the new plan.`
+      });
+      alert(errorMessage);
+      return;
+    }
+
+    if (isActive && userDetail?.membershipLevel === plan.membershipLevel && plan.membershipLevel === 'trial') {
+      alert(t('duplicateError'));
+      return;
+    }
+
+    if (isActive && userDetail?.currency !== plan.currency) {
+      const existingCurrency = userDetail?.currency!;
+      const requestedCurrency = plan.currency.toUpperCase();
+      const errorMessage = t('currencyConflictError', {
+        existingCurrency,
+        requestedCurrency,
+        defaultValue: `You already have a subscription with ${existingCurrency}. You cannot subscribe with ${requestedCurrency} at the same time.`
+      });
+      alert(errorMessage);
+      return;
+    }
+
     handleSubscribe(plan);
   };
 
   const handlePlusSubscribe = () => {
+    if (isActive && userDetail?.membershipLevel !== 'trial') {
+      handleBillingPortal();
+      return;
+    }
+
     if (plusPlans.length > 0) {
       setSelectedPlan(plusPlans[0]); // Use the first plan as base
       setShowCycleDialog(true);
@@ -239,6 +303,11 @@ export default function Pricing() {
   };
 
   const handleProSubscribe = () => {
+    if (isActive && userDetail?.membershipLevel !== 'trial') {
+      handleBillingPortal();
+      return;
+    }
+
     if (proPlans.length > 0) {
       setSelectedPlan(proPlans[0]); // Use the first plan as base
       setShowCycleDialog(true);
@@ -259,7 +328,37 @@ export default function Pricing() {
     }
   };
 
-  if (loading) {
+  const handleBillingPortal = async () => {
+    try {
+      const stripeCustomerId = userDetail?.stripeCustomerId;
+      if (stripeCustomerId) {
+        const response = await fetch('/api/billing-portal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ stripeCustomerId }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch billing URL, status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.billingUrl) {
+          window.open(data.billingUrl);
+        } else {
+          console.error('Failed to get billing URL:', data.error);
+        }
+      }
+    } catch (error) {
+      console.error('Billing portal error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to open billing portal. Please try again.');
+    }
+  };
+
+  if (loading || userDataLoading) {
     return (
       <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
         <div className="max-w-7xl mx-auto">
@@ -433,7 +532,7 @@ export default function Pricing() {
                     {t('totalQuota')}
                   </div>
                   <div className="text-xl font-bold text-foreground">
-                    ${trialPlan.quota}
+                    ${parseFloat(trialPlan.quota).toFixed(2)}
                   </div>
                 </div>
 
@@ -535,7 +634,7 @@ export default function Pricing() {
                     {t('monthlyQuota')}
                   </div>
                   <div className="text-xl font-bold text-primary-foreground">
-                    ${plusPlans[0].quota}
+                    ${parseFloat(plusPlans[0].quota).toFixed(2)}
                   </div>
                 </div>
 
@@ -632,7 +731,7 @@ export default function Pricing() {
                     {t('monthlyQuota')}
                   </div>
                   <div className="text-xl font-bold text-foreground">
-                    ${proPlans[0].quota}
+                    ${parseFloat(proPlans[0].quota).toFixed(2)}
                   </div>
                 </div>
 
