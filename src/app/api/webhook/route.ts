@@ -241,24 +241,6 @@ async function createPaymentRecord(
   return null;
 }
 
-async function updateUserCustomerId(
-  userId: string,
-  customerId: string
-) {
-  const user = await getUserFromDBById(userId);
-
-  if (user && customerId && !user.stripeCustomerId) {
-    // 使用 user_service 更新用户的 Stripe 客户 ID
-    const updatedUser = await updateUserStripeCustomerIdService(user.id, customerId);
-
-    if (updatedUser) {
-      console.log(`Updated user ${userId} with Stripe customer ID: ${customerId}`);
-    } else {
-      console.error(`Failed to update user ${userId} with Stripe customer ID`);
-    }
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     // 验证webhook签名
@@ -296,21 +278,29 @@ export async function POST(request: NextRequest) {
             );
           }
 
-          if (previousMember === "trial" && currentMember !== "trial") {
-            const subscription = await getSubscriptionByUserId(userId);
-            if (subscription && subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd > now) {
-              const quotaUsed = await getTrialUserLastMonthUsage(userId, subscription.startDate!);
-              const quotaLeft = parseFloat(quota) - quotaUsed;
-              const topup = await createTopUpPurchaseFromCheckout({ userId, quota: quotaLeft.toString(), status: "active", endDate: subscription.currentPeriodEnd });
-              console.log("top up: ", topup);
+          if (type === 'extra') {
+            await Promise.all([
+              createTopUpPurchaseFromCheckout({ userId, quota, status: "active", endDate: new Date(currentEndAt) }),
+              createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type)
+            ]);
+          } else {
+            if (previousMember === "trial" && currentMember !== "trial") {
+              const subscription = await getSubscriptionByUserId(userId);
+              if (subscription && subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd > now) {
+                const quotaUsed = await getTrialUserLastMonthUsage(userId, subscription.startDate!);
+                const quotaLeft = parseFloat(quota) - quotaUsed;
+                const topup = await createTopUpPurchaseFromCheckout({ userId, quota: quotaLeft.toString(), status: "active", endDate: subscription.currentPeriodEnd });
+                console.log("top up: ", topup);
+              }
             }
+
+            await Promise.all([
+              // updateUserCustomerId(userId, stripeCustomerId),
+              createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type),
+              createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
+            ]);
           }
 
-          await Promise.all([
-            // updateUserCustomerId(userId, stripeCustomerId),
-            createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type),
-            createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
-          ]);
         } else if (session.mode === 'subscription') {
           console.log("nothing to do here");
 

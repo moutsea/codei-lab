@@ -318,12 +318,15 @@
     "upgradePlan": "Upgrade",
     "membershipLevel": "Membership Level",
     "topUp": "Top Up",
+    "topUpLeft": "+{quota} extra",
+    "topUpExpiresOn": "Expires on",
     "topUpDialog": {
       "title": "Top Up Your Account",
       "description": "Choose a top-up package. These packages are valid for one month.",
       "selectPlan": "Select Plan",
       "processing": "Processing...",
-      "confirmPurchase": "Confirm Purchase"
+      "confirmPurchase": "Confirm Purchase",
+      "validForOneMonth": "Valid for one month"
     },
     "billingPage": {
       "title": "Billing",

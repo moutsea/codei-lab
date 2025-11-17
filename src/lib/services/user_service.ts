@@ -1,8 +1,9 @@
 import { cache, cacheTTL } from '@/lib/cache';
 import { createUser, getUserByStripeCustomerId, getUserById, getUserByEmail, getUserDetailById, updateUserById, updateUserStripeCustomerId } from '@/db/queries';
+import { getTopUpPurchasesByUserId } from '@/db/queries/topup-purchases';
 import type { UserSelect } from '@/types/schema';
 import type { UserDetail } from '@/types/db';
-import type { AuthUserProfile } from '@/types';
+import type { AuthUserProfile, TopUpPurchaseSelect } from '@/types';
 import Stripe from 'stripe';
 
 // ========== User Cache Keys (Only for UserDetail) ==========
@@ -319,3 +320,36 @@ export const updateUserStripeCustomerIdService = async (
         return null;
     }
 };
+
+/**
+ * Get user's top-up record
+ */
+export const getUserTopUpRecord = async (userId: string): Promise<TopUpPurchaseSelect | null> => {
+    try {
+        const topUpRecords = await getTopUpPurchasesByUserId(userId);
+        console.log(`✅ Retrieved ${topUpRecords.length} top-up records for user ${userId}`);
+        return topUpRecords.length > 0 ? topUpRecords[0] : null;
+    } catch (error) {
+        console.error('Error getting user top-up record:', error);
+        return null;
+    }
+};
+
+
+async function updateUserCustomerId(
+    userId: string,
+    customerId: string
+) {
+    const user = await getUserFromDBById(userId);
+
+    if (user && customerId && !user.stripeCustomerId) {
+        // 使用 user_service 更新用户的 Stripe 客户 ID
+        const updatedUser = await updateUserStripeCustomerIdService(user.id, customerId);
+
+        if (updatedUser) {
+            console.log(`Updated user ${userId} with Stripe customer ID: ${customerId}`);
+        } else {
+            console.error(`Failed to update user ${userId} with Stripe customer ID`);
+        }
+    }
+}

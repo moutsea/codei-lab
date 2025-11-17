@@ -325,12 +325,15 @@
     "upgradePlan": "Mettre à Niveau",
     "membershipLevel": "Niveau d'Adhésion",
     "topUp": "Recharger",
+    "topUpLeft": "+{quota} extra",
+    "topUpExpiresOn": "Expire le",
     "topUpDialog": {
       "title": "Recharger Votre Compte",
       "description": "Choisissez un package de recharge. Ces packages sont valides pour un mois.",
       "selectPlan": "Sélectionner le Plan",
       "processing": "Traitement en cours...",
-      "confirmPurchase": "Confirmer l'Achat"
+      "confirmPurchase": "Confirmer l'Achat",
+      "validForOneMonth": "Valide pour un mois"
     },
     "billingPage": {
       "title": "Facturation",

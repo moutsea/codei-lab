@@ -37,8 +37,6 @@ interface DailyUsageItem {
 }
 
 // Use PlanWithPricing from usePlans hook
-
-
 export default function Dashboard() {
   const router = useRouter();
   const pathname = usePathname();
@@ -48,6 +46,7 @@ export default function Dashboard() {
   const {
     userDetail,
     usageData,
+    topUpRecord,
     isActive,
     quota,
     membershipLevel,
@@ -150,23 +149,18 @@ export default function Dashboard() {
   }, [selectedMonth, user?.id, isActive, fetchDailyUsageForMonth]);
 
 
-  const formatTokensString = (tokens: string) => {
-    const num = parseInt(tokens);
-    if (num >= 100000000) {
-      const value = (num / 100000000).toFixed(0);
-      return `${value}00M`;
-    } else if (num >= 10000000) {
-      const value = (num / 10000000).toFixed(0);
-      return `${value}0M`;
-    } else if (num >= 1000000) {
-      const value = (num / 1000000).toFixed(1);
-      return `${value}M`;
-    } else if (num >= 1000) {
-      const value = (num / 1000).toFixed(0);
-      return `${value}K`;
-    }
-    return num.toLocaleString();
+  const formatQuotaString = (quota: string) => {
+    return parseFloat(quota).toFixed(2);
   };
+
+  // Get remaining top-up quota from top-up record
+  const getRemainingTopUpQuota = () => {
+    if (!topUpRecord) return 0;
+
+    return parseInt(topUpRecord.quota || '0');
+  };
+
+  const remainingTopUpQuota = getRemainingTopUpQuota();
 
   const usagePercentage = (typeof tokenStats.total === 'number' && tokenStats.total > 0 && typeof tokenStats.used === 'number')
     ? (tokenStats.used / tokenStats.total) * 100
@@ -263,8 +257,6 @@ export default function Dashboard() {
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
 
-    // console.log(userDetail);
-
     return (
       <Dialog open={showTopUpDialog} onOpenChange={setShowTopUpDialog}>
         <DialogContent className="sm:max-w-[500px]">
@@ -292,10 +284,10 @@ export default function Dashboard() {
                     <div className="text-left">
                       <div className="font-medium">{plan.name}</div>
                       <div className="text-sm text-muted-foreground">
-                        ${formatTokensString(plan.quota)} quota
+                        ${formatQuotaString(plan.quota)} quota
                       </div>
                       <div className="text-xs text-muted-foreground mt-1">
-                        Valid for one month
+                        {t("topUpDialog.validForOneMonth")}
                       </div>
                     </div>
                     <div className="text-right">
@@ -365,14 +357,31 @@ export default function Dashboard() {
             <div className="text-sm text-muted-foreground mb-1">{t("monthlyQuota")}</div>
             <div className="flex items-center gap-3">
               <div className="text-2xl font-bold text-foreground">${tokenStats.total}</div>
-              <Button
-                variant="default"
-                className="ml-auto h-8 rounded-2xl button-themed px-3 text-sm"
-                onClick={() => setShowTopUpDialog(true)}
-              >
-                <Plus className="h-3 w-3 mr-1" />
-                {t("topUp")}
-              </Button>
+              {remainingTopUpQuota > 0 ? (
+                <div className="ml-auto flex items-center gap-2">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm"></div>
+                    <div className="relative inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-sm font-medium">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                      {t("topUpLeft", { quota: formatQuotaString(remainingTopUpQuota.toString()) })}
+                    </div>
+                    {/* Custom tooltip - appears immediately on hover */}
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                      {`${t("topUpExpiresOn")}: ${topUpRecord?.endDate ? new Date(topUpRecord.endDate).toLocaleDateString() : 'N/A'}`}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="default"
+                  className="ml-auto h-8 rounded-2xl button-themed px-3 text-sm"
+                  onClick={() => setShowTopUpDialog(true)}
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  {t("topUp")}
+                </Button>
+              )}
             </div>
           </div>
 

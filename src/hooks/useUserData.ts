@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { UserDetail } from '@/types';
+import { UserDetail, TopUpPurchaseSelect } from '@/types';
 
 
 interface UsageData {
@@ -27,6 +27,11 @@ interface UsageApiResponse {
   auth0Id: string;
 }
 
+interface TopUpApiResponse {
+  success: boolean;
+  data: TopUpPurchaseSelect | null;
+}
+
 type UseUserDataOptions = {
   enableCache?: boolean;
   enabled?: boolean; // enabled 也是可选的
@@ -40,6 +45,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
 
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [userDetail, setUserDetail] = useState<UserDetail | null>(null); // 主要 UserDetail 数据
+  const [topUpRecord, setTopUpRecord] = useState<TopUpPurchaseSelect | null>(null); // Top-up record
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -157,13 +163,37 @@ export function useUserData(options: UseUserDataOptions = {}) {
     }
   }, [user?.id]);
 
+  // 获取充值记录数据
+  const fetchTopUpData = useCallback(async (forceRefresh = false) => {
+    if (!user?.id) return;
+
+    try {
+      setError(null);
+
+      const response = await fetch(`/api/user/${user.id}/topup${forceRefresh ? '?refresh=true' : ''}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data: TopUpApiResponse = await response.json();
+      if (data.success) {
+        setTopUpRecord(data.data);
+        console.log(`Fetched top-up record: ${data.data ? data.data.id : 'null'}`);
+      }
+    } catch (err) {
+      console.error('Error fetching top-up data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch top-up data');
+    }
+  }, [user?.id]);
+
   // 获取所有数据
   const fetchAllData = useCallback(async (forceRefresh = false) => {
     await Promise.all([
       fetchUserData(forceRefresh),
-      fetchUsageData(forceRefresh)
+      fetchUsageData(forceRefresh),
+      fetchTopUpData(forceRefresh)
     ]);
-  }, [fetchUserData, fetchUsageData]);
+  }, [fetchUserData, fetchUsageData, fetchTopUpData]);
 
   // 用户登录时自动获取数据
   useEffect(() => {
@@ -182,6 +212,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
     // 主要数据：直接返回 UserDetail
     userDetail,
     usageData,
+    topUpRecord, // 更新：充值记录数据 (单个记录)
     // 便利属性：从 UserDetail 中提取的常用值
     isActive,
     quota: parseFloat(quota),
@@ -192,6 +223,7 @@ export function useUserData(options: UseUserDataOptions = {}) {
     refetch: (forceRefresh = true) => fetchAllData(forceRefresh),
     refetchUserData: (forceRefresh = true) => fetchUserData(forceRefresh),
     refetchUsageData: (forceRefresh = true) => fetchUsageData(forceRefresh),
+    refetchTopUpData: (forceRefresh = true) => fetchTopUpData(forceRefresh), // 更新：重新获取充值记录数据的函数
     fetchDailyUsageData, // 新增：获取每日使用数据的函数
   };
 }

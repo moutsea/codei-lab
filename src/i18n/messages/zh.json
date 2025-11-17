@@ -325,12 +325,15 @@
     "upgradePlan": "升级",
     "membershipLevel": "会员等级",
     "topUp": "充值",
+    "topUpLeft": "+{quota} 额外额度",
+    "topUpExpiresOn": "过期时间",
     "topUpDialog": {
       "title": "充值账户",
       "description": "选择充值套餐。这些套餐有效期为一个月。",
       "selectPlan": "选择套餐",
       "processing": "处理中...",
-      "confirmPurchase": "确认购买"
+      "confirmPurchase": "确认购买",
+      "validForOneMonth": "有效期一个月"
     },
     "billingPage": {
       "title": "账单",

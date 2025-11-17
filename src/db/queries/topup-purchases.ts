@@ -58,14 +58,23 @@ export async function getTopUpPurchaseById(id: number): Promise<TopUpPurchaseSel
 }
 
 /**
- * Get top-up purchases by user ID
+ * Get the most recent valid top-up purchase by user ID
  */
 export async function getTopUpPurchasesByUserId(userId: string): Promise<TopUpPurchaseSelect[]> {
+    const now = new Date();
+
     return await db()
         .select()
         .from(topUpPurchases)
-        .where(eq(topUpPurchases.userId, userId))
-        .orderBy(desc(topUpPurchases.createdAt));
+        .where(
+            and(
+                eq(topUpPurchases.userId, userId),
+                eq(topUpPurchases.status, 'active'),
+                gte(topUpPurchases.endDate, now)
+            )
+        )
+        .orderBy(desc(topUpPurchases.createdAt))
+        .limit(1);
 }
 
 /**

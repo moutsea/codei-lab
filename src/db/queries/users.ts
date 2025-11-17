@@ -1,5 +1,5 @@
 import { db } from "../index";
-import { users, subscriptions, plans, monthlyUserUsage, dailyUserUsage } from "../schema";
+import { users, subscriptions, plans, monthlyUserUsage } from "../schema";
 import { eq, and, desc, sql, gt, gte } from "drizzle-orm";
 import type { UserInsert, UserSelect } from "@/types";
 import type { UserDetail } from "@/types/db";

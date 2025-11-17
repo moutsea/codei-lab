@@ -63,7 +63,7 @@ async function getPriceDiff(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { planId, priceId, interval, userId, quota, currency } = body;
+    const { planId, priceId, interval, userId, quota, currency, type } = body;
 
     if (!planId || !priceId || !interval || !userId || !quota || !currency) {
       return NextResponse.json(
@@ -147,8 +147,45 @@ export async function POST(request: NextRequest) {
 
     let sessionId, url;
 
-    if (!plan.membershipLevel) {
+    if (type === 'extra') {
       // extra package
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId!,
+        client_reference_id: userId,
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        line_items: [{
+          price_data: {
+            currency: currency,
+            product_data: {
+              name: currency === 'USD'
+                ? `Top up for ${plan.name}\n Expiry date: ${endDate.toLocaleDateString().slice(0, 10)}`
+                : `${plan.name}加油包\n 到期时间：${endDate.toLocaleDateString().slice(0, 10)}`
+            },
+            unit_amount: plan.amount!
+          },
+          quantity: 1
+        }],
+        mode: 'payment',
+        payment_method_options: {
+          wechat_pay: {
+            client: 'web',
+          },
+        },
+        success_url: `${baseUrl}/dashboard`,
+        cancel_url: `${baseUrl}#pricing`,
+        metadata: metadata,
+        ...(plan.isRecurring && {
+          subscription_data: {
+            metadata: metadata
+          }
+        })
+      });
+      sessionId = session.id;
+      url = session.url;
+
+      return NextResponse.json({
+        sessionId, url
+      });
     }
 
     if (!userDetail.active) {
@@ -301,7 +338,7 @@ export async function POST(request: NextRequest) {
         price_data: {
           currency: currency,
           product_data: {
-            name: currency === 'usd'
+            name: currency === 'USD'
               ? `Upgrade ${plan.name} membership fee difference\n Membership expiry: ${priceDiff.newEndAt!.toISOString().slice(0, 10)}`
               : `升级${plan.name}会员费用差价\n 会员到期时间：${priceDiff.newEndAt!.toISOString().slice(0, 10)}`
           },
