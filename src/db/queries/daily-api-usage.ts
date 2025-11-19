@@ -1,6 +1,6 @@
 import { db, DbClient } from "../index";
-import { eq, and, gte, lte, sql } from "drizzle-orm";
-import { dailyApiUsage } from "@/db/schema";
+import { eq, and, gte, lte, sql, desc } from "drizzle-orm";
+import { dailyApiUsage, apiKeys } from "@/db/schema";
 import type { DailyApiUsageSelect } from "@/types/schema";
 
 /**
@@ -329,5 +329,139 @@ export async function dailyApiUsageExists(
   } catch (error) {
     console.error("Error checking daily API usage existence:", error);
     return false;
+  }
+}
+
+/**
+ * 根据用户ID获取分页的每日API使用量统计
+ * 返回聚合数据，支持分页和日期范围过滤
+ */
+export async function getDailyApiUsageStatsByUserIdPaginated(
+  userId: string,
+  startDate?: string,
+  endDate?: string,
+  limit: number = 30,
+  offset: number = 0
+): Promise<{
+  statistics: {
+    totalInputTokens: number;
+    totalCachedTokens: number;
+    totalOutputTokens: number;
+    totalQuotaUsed: string;
+    recordCount: number;
+    totalTokens: number;
+  };
+  pageData: Array<{
+    date: string;
+    totalTokens: number;
+    inputTokens: number;
+    cachedTokens: number;
+    outputTokens: number;
+    quotaUsed: string;
+    recordCount: number;
+  }>;
+  hasMore: boolean;
+  totalCount: number;
+}> {
+  try {
+    // 构建所有查询条件
+    const whereConditions = [eq(apiKeys.userId, userId)];
+
+    // 添加日期范围过滤
+    if (startDate) {
+      whereConditions.push(gte(dailyApiUsage.date, startDate));
+    }
+
+    if (endDate) {
+      whereConditions.push(lte(dailyApiUsage.date, endDate));
+    }
+
+    // 1. 获取总天数（与分页粒度一致）
+    const totalCountResult = await db()
+      .select({
+        totalCount: sql<number>`COUNT(DISTINCT ${dailyApiUsage.date})`
+      })
+      .from(dailyApiUsage)
+      .innerJoin(apiKeys, eq(dailyApiUsage.apikey, apiKeys.key))
+      .where(and(...whereConditions));
+
+    const totalCount = Number(totalCountResult[0]?.totalCount) || 0;
+
+    // 2. 获取总体统计
+    const statsResult = await db()
+      .select({
+        totalInputTokens: sql<number>`SUM(${dailyApiUsage.inputTokens})`,
+        totalCachedTokens: sql<number>`SUM(${dailyApiUsage.cachedTokens})`,
+        totalOutputTokens: sql<number>`SUM(${dailyApiUsage.outputTokens})`,
+        totalQuotaUsed: sql<string>`SUM(${dailyApiUsage.quotaUsed})`,
+        recordCount: sql<number>`COUNT(*)`,
+        totalTokens: sql<number>`SUM(${dailyApiUsage.inputTokens} + ${dailyApiUsage.cachedTokens} + ${dailyApiUsage.outputTokens})`,
+      })
+      .from(dailyApiUsage)
+      .innerJoin(apiKeys, eq(dailyApiUsage.apikey, apiKeys.key))
+      .where(and(...whereConditions))
+      .limit(1);
+
+    const statistics = {
+      totalInputTokens: Number(statsResult[0]?.totalInputTokens) || 0,
+      totalCachedTokens: Number(statsResult[0]?.totalCachedTokens) || 0,
+      totalOutputTokens: Number(statsResult[0]?.totalOutputTokens) || 0,
+      totalQuotaUsed: statsResult[0]?.totalQuotaUsed || "0",
+      recordCount: Number(statsResult[0]?.recordCount) || 0,
+      totalTokens: Number(statsResult[0]?.totalTokens) || 0,
+    };
+
+    // 3. 获取分页的聚合数据（按日期分组）
+    const paginatedResult = await db()
+      .select({
+        date: dailyApiUsage.date,
+        totalTokens: sql<number>`SUM(${dailyApiUsage.inputTokens} + ${dailyApiUsage.cachedTokens} + ${dailyApiUsage.outputTokens})`,
+        inputTokens: sql<number>`SUM(${dailyApiUsage.inputTokens})`,
+        cachedTokens: sql<number>`SUM(${dailyApiUsage.cachedTokens})`,
+        outputTokens: sql<number>`SUM(${dailyApiUsage.outputTokens})`,
+        quotaUsed: sql<string>`SUM(${dailyApiUsage.quotaUsed})`,
+        recordCount: sql<number>`COUNT(*)`,
+      })
+      .from(dailyApiUsage)
+      .innerJoin(apiKeys, eq(dailyApiUsage.apikey, apiKeys.key))
+      .where(and(...whereConditions))
+      .groupBy(dailyApiUsage.date)
+      .orderBy(dailyApiUsage.date)
+      .limit(limit)
+      .offset(offset);
+
+    const pageData = paginatedResult.map(row => ({
+      date: row.date || '',
+      totalTokens: Number(row.totalTokens) || 0,
+      inputTokens: Number(row.inputTokens) || 0,
+      cachedTokens: Number(row.cachedTokens) || 0,
+      outputTokens: Number(row.outputTokens) || 0,
+      quotaUsed: row.quotaUsed || "0",
+      recordCount: Number(row.recordCount) || 0,
+    }));
+
+    const hasMore = (offset + pageData.length) < totalCount;
+
+    return {
+      statistics,
+      pageData,
+      hasMore,
+      totalCount,
+    };
+  } catch (error) {
+    console.error("Error getting paginated daily API usage stats by user ID:", error);
+    return {
+      statistics: {
+        totalInputTokens: 0,
+        totalCachedTokens: 0,
+        totalOutputTokens: 0,
+        totalQuotaUsed: "0",
+        recordCount: 0,
+        totalTokens: 0,
+      },
+      pageData: [],
+      hasMore: false,
+      totalCount: 0,
+    };
   }
 }

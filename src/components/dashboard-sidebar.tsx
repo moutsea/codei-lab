@@ -1,5 +1,6 @@
 "use client";
 
+import type { ComponentType } from "react";
 import { useTranslations } from "next-intl";
 import {
   Sidebar,
@@ -11,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { CreditCard, Key, LayoutDashboard, User, Settings } from "lucide-react";
+import { Activity, CreditCard, Key, LayoutDashboard, User } from "lucide-react";
 
 interface DashboardSidebarProps {
   hasActiveSubscription?: boolean;
@@ -23,7 +24,7 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
   // Navigation item type
   interface NavigationItem {
     title: string;
-    icon: React.ComponentType<{ className?: string }>;
+    icon: ComponentType<{ className?: string }>;
     href: string;
   }
 
@@ -45,10 +46,15 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
       href: "/dashboard/billing",
     },
     {
+      title: t("usageLog.title"),
+      icon: Activity,
+      href: "/dashboard/usage-log",
+    },
+    {
       title: t("profile"),
       icon: User,
       href: "/dashboard/profile",
-    },
+    }
 
   ] : [
     {
@@ -56,6 +62,11 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
       icon: LayoutDashboard,
       href: "/dashboard",
     },
+    {
+      title: t("usageLog.title"),
+      icon: Activity,
+      href: "/dashboard/usage-log",
+    }
   ];
 
   return (
@@ -67,8 +78,8 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="ml-4 space-y-2">
-              {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
+              {navigationItems.map((item, index) => (
+                <SidebarMenuItem key={`${item.title}-${index}`}>
                   <SidebarMenuButton
                     asChild
                     className="h-12 w-[calc(100%-2rem)] mx-4 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
@@ -85,8 +96,6 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
-
       </SidebarContent>
     </Sidebar>
   );

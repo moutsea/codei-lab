@@ -373,7 +373,23 @@
     "month": "Mois",
     "dailyTokenUsage": "Utilisation Quotidienne des quota",
     "currentUsage": "Utilisation Actuelle",
-    "ofQuota": "du quota"
+    "ofQuota": "du quota",
+    "usageLog": {
+      "title": "Journal d'utilisation",
+      "subtitle": "Historique quotidien récent",
+      "loading": "Chargement du journal d'utilisation...",
+      "refresh": "Rafraîchir",
+      "error": "Impossible de charger le journal d'utilisation.",
+      "empty": "Aucune activité pour le moment.",
+      "totalTokensLabel": "Total des jetons",
+      "recordsCount": "{count} enregistrements",
+      "date": "Date",
+      "inputTokens": "Entrée : {value}",
+      "outputTokens": "Sortie : {value}",
+      "cachedTokens": "Cache : {value}",
+      "quotaUsed": "Quota utilisé : {value}",
+      "loadMore": "Charger plus"
+    }
   },
   "dashboard": {
     "title": "Tableau de Bord",
@@ -432,7 +448,7 @@
       "noKeysCreated": "Aucune clé créée",
       "yourMonthlyQuota": "Votre Quota Mensuel",
       "basedOnSubscription": "Basé sur votre plan d'abonnement",
-      "monthlyRequestLimit": "Limite de Demande Mensuelle (tokens)",
+      "monthlyRequestLimit": "Limite de quota mensuel (tokens)",
       "noLimit": "Sans Limite",
       "unlimitedQuota": "Quota Illimité",
       "unlimitedAccess": "Accès Illimité",

@@ -8,6 +8,9 @@ import {
     addTokensToMonthlyApiUsage,
 } from '@/db/queries/monthly-api-usage';
 import {
+    getDailyApiUsageStatsByUserIdPaginated,
+} from '@/db/queries/daily-api-usage';
+import {
     getRecentMonthlyUserUsage,
     addTokensToMonthlyUserUsage,
     getLastMonthUserUsage,
@@ -20,7 +23,6 @@ import type { ApiDetail, UserDetail } from '@/types/db';
 import { createOrUpdateUserDetailCache } from './user_service';
 import { db } from '@/db';
 import { addTokensToDailyApiUsage } from '@/db/queries/daily-api-usage';
-import { getSubscriptionByUserId } from '@/db/queries';
 import { currentSubscription } from '../utils';
 
 // ========== API Key Usage Cache ==========
@@ -236,4 +238,31 @@ export const getTrialUserLastMonthUsage = async (userId: string, startDate: Date
         return 0;
     }
     return parseFloat(usage.quotaUsed);
+}
+
+export const getDailyApiUsageStatsByUserIdPaginatedService = async (
+    userId: string,
+    startDate?: string,
+    endDate?: string,
+    limit: number = 30,
+    offset: number = 0
+) => {
+    try {
+        return await getDailyApiUsageStatsByUserIdPaginated(userId, startDate, endDate, limit, offset);
+    } catch (error) {
+        console.error('Error getting paginated daily API usage stats:', error);
+        return {
+            statistics: {
+                totalInputTokens: 0,
+                totalCachedTokens: 0,
+                totalOutputTokens: 0,
+                totalQuotaUsed: '0',
+                recordCount: 0,
+                totalTokens: 0,
+            },
+            pageData: [],
+            hasMore: false,
+            totalCount: 0,
+        };
+    }
 }

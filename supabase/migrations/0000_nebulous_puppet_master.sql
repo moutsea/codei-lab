@@ -10,6 +10,18 @@ CREATE TABLE "api_keys" (
 	CONSTRAINT "api_keys_key_unique" UNIQUE("key")
 );
 --> statement-breakpoint
+CREATE TABLE "daily_api_usage" (
+	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "daily_api_usage_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
+	"api_key" varchar(255),
+	"date" varchar(30),
+	"input_tokens" integer DEFAULT 0 NOT NULL,
+	"cached_tokens" integer DEFAULT 0 NOT NULL,
+	"output_tokens" integer DEFAULT 0 NOT NULL,
+	"quota_used" numeric(10, 4) DEFAULT '0' NOT NULL,
+	"updated_at" timestamp DEFAULT now(),
+	CONSTRAINT "unique_api_date" UNIQUE("api_key","date")
+);
+--> statement-breakpoint
 CREATE TABLE "daily_user_usage" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "daily_user_usage_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"user_id" varchar(100),
@@ -22,6 +34,17 @@ CREATE TABLE "daily_user_usage" (
 	CONSTRAINT "unique_user_date" UNIQUE("user_id","date")
 );
 --> statement-breakpoint
+CREATE TABLE "email_login_tokens" (
+	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "email_login_tokens_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
+	"email" varchar(255) NOT NULL,
+	"token_hash" varchar(255) NOT NULL,
+	"locale" varchar(10),
+	"created_at" timestamp DEFAULT now(),
+	"expires_at" timestamp NOT NULL,
+	"consumed_at" timestamp,
+	CONSTRAINT "email_login_tokens_token_hash_unique" UNIQUE("token_hash")
+);
+--> statement-breakpoint
 CREATE TABLE "monthly_api_usage" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "monthly_api_usage_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"api_key" varchar(255),
@@ -31,7 +54,7 @@ CREATE TABLE "monthly_api_usage" (
 	"output_tokens" integer DEFAULT 0 NOT NULL,
 	"quota_used" numeric(10, 4) DEFAULT '0' NOT NULL,
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "unique_api_date" UNIQUE("api_key","month")
+	CONSTRAINT "unique_api_month" UNIQUE("api_key","month")
 );
 --> statement-breakpoint
 CREATE TABLE "monthly_user_usage" (
@@ -50,16 +73,18 @@ CREATE TABLE "payments" (
 	"id" integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "payments_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1),
 	"user_id" varchar(100),
 	"subscription_id" varchar(255),
+	"topup_purchase_id" varchar(255),
 	"stripe_payment_intent_id" varchar(255),
 	"amount" numeric(10, 4) NOT NULL,
 	"currency" varchar(10) DEFAULT 'USD',
 	"status" varchar(50),
+	"type" varchar(50),
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "plans" (
 	"id" text PRIMARY KEY NOT NULL,
-	"membership_level" varchar(50) NOT NULL,
+	"membership_level" varchar(50),
 	"name" varchar(100) NOT NULL,
 	"description" text,
 	"stripe_product_id" varchar(255),
@@ -114,6 +139,7 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 ALTER TABLE "api_keys" ADD CONSTRAINT "api_keys_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "daily_api_usage" ADD CONSTRAINT "daily_api_usage_api_key_api_keys_key_fk" FOREIGN KEY ("api_key") REFERENCES "public"."api_keys"("key") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "daily_user_usage" ADD CONSTRAINT "daily_user_usage_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "monthly_api_usage" ADD CONSTRAINT "monthly_api_usage_api_key_api_keys_key_fk" FOREIGN KEY ("api_key") REFERENCES "public"."api_keys"("key") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "monthly_user_usage" ADD CONSTRAINT "monthly_user_usage_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

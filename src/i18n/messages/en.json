@@ -366,7 +366,23 @@
     "month": "Month",
     "dailyTokenUsage": "Daily Token Quota",
     "currentUsage": "Current Usage",
-    "ofQuota": "of quota"
+    "ofQuota": "of quota",
+    "usageLog": {
+      "title": "Usage Log",
+      "subtitle": "Recent daily usage records",
+      "loading": "Loading usage log...",
+      "refresh": "Refresh",
+      "error": "Unable to load usage log.",
+      "empty": "No usage records yet.",
+      "totalTokensLabel": "Total tokens",
+      "recordsCount": "{count} records",
+      "date": "Date",
+      "inputTokens": "Input: {value}",
+      "outputTokens": "Output: {value}",
+      "cachedTokens": "Cached: {value}",
+      "quotaUsed": "Quota used: {value}",
+      "loadMore": "Load more"
+    }
   },
   "dashboard": {
     "title": "Dashboard",
@@ -425,7 +441,7 @@
       "noKeysCreated": "No keys created",
       "yourMonthlyQuota": "Your Monthly Quota",
       "basedOnSubscription": "Based on your subscription plan",
-      "monthlyRequestLimit": "Monthly Request Limit (tokens)",
+      "monthlyRequestLimit": "Monthly Quota Limit (tokens)",
       "noLimit": "No Limit",
       "unlimitedQuota": "Unlimited Quota",
       "unlimitedAccess": "Unlimited Access",

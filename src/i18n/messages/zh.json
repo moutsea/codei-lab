@@ -373,7 +373,23 @@
     "month": "月份",
     "dailyTokenUsage": "每日额度使用情况",
     "currentUsage": "当前使用情况",
-    "ofQuota": "的配额"
+    "ofQuota": "的配额",
+    "usageLog": {
+      "title": "使用日志",
+      "subtitle": "最近的每日用量记录",
+      "loading": "正在加载使用日志...",
+      "refresh": "刷新",
+      "error": "无法加载使用日志。",
+      "empty": "暂无使用记录。",
+      "totalTokensLabel": "总令牌数",
+      "recordsCount": "{count} 条记录",
+      "date": "日期",
+      "inputTokens": "输入：{value}",
+      "outputTokens": "输出：{value}",
+      "cachedTokens": "缓存：{value}",
+      "quotaUsed": "已用配额：{value}",
+      "loadMore": "加载更多"
+    }
   },
   "dashboard": {
     "title": "控制台",
@@ -432,7 +448,7 @@
       "noKeysCreated": "未创建密钥",
       "yourMonthlyQuota": "您的月度配额",
       "basedOnSubscription": "基于您的订阅计划",
-      "monthlyRequestLimit": "月度请求限制 (tokens)",
+      "monthlyRequestLimit": "月度额度限制 (tokens)",
       "noLimit": "无限制",
       "unlimitedQuota": "无限配额",
       "unlimitedAccess": "无限制访问",

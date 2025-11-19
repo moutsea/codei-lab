@@ -15,7 +15,7 @@ interface ApiKey {
   key: string;
   createdAt: string;
   lastUsedAt: string | null;
-  requestLimit: number | null;
+  quota: number | null;
   tokensUsed: number;
   remainingQuota: number | null;
   expiredAt: string | null;
@@ -65,17 +65,15 @@ export default function ApiKeysPage() {
     }
   };
 
-  // 获取计划限制
   const getPlanLimits = (planName: string) => {
     const limits = {
-      'Lite': { maxKeys: 3 },
-      'Pro': { maxKeys: 10 },
-      'Team': { maxKeys: 50 }
+      'trial': { maxKeys: 3 },
+      'pro': { maxKeys: 50 },
+      'plus': { maxKeys: 10 }
     };
 
-    // 提取计划名称（去掉括号内容）
-    const basePlanName = planName.split('(')[0].trim();
-    return limits[basePlanName as keyof typeof limits] || limits['Lite'];
+    // const basePlanName = planName.split('(')[0].trim();
+    return limits[planName as keyof typeof limits] || limits['trial'];
   };
 
   // 获取 API Keys 数据
@@ -93,7 +91,22 @@ export default function ApiKeysPage() {
       }
 
       const data = await response.json();
-      setApiKeys(data.apiKeys || []);
+      const normalizedKeys: ApiKey[] = (data.apiKeys || []).map((key: any) => {
+        const quota = key.quota ? parseFloat(key.quota) : null;
+        const tokensUsed = key.tokensUsed || 0;
+        return {
+          id: key.id,
+          name: key.name,
+          key: key.key,
+          createdAt: key.createdAt,
+          lastUsedAt: key.lastUsedAt,
+          quota,
+          tokensUsed,
+          remainingQuota: quota !== null ? Math.max(0, quota - tokensUsed) : null,
+          expiredAt: key.expiredAt
+        };
+      });
+      setApiKeys(normalizedKeys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
       setError('Failed to load API keys');
@@ -166,7 +179,7 @@ export default function ApiKeysPage() {
 
     // 检查计划限制
     if (planInfo) {
-      const limits = getPlanLimits(planInfo.name);
+      const limits = getPlanLimits(planInfo.membershipLevel);
       if (apiKeys.length >= limits.maxKeys) {
         // 使用多语言支持的错误消息
         const basePlanName = planInfo.name.split('(')[0].trim();
@@ -194,17 +207,16 @@ export default function ApiKeysPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name: keyName, requestLimit, expiredAt }),
+        body: JSON.stringify({ name: keyName, quota: requestLimit, expiredAt }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to create API key');
       }
 
-      const newKey: ApiKey = await response.json();
       // 重新获取数据以确保缓存一致性
       await fetchApiKeys();
-      console.log('Created new API key:', newKey);
+      console.log('Created new API key');
     } catch (error) {
       console.error('Error creating API key:', error);
       setError(apiKeysT("createError"));
@@ -251,11 +263,14 @@ export default function ApiKeysPage() {
     }
   };
 
-  const getQuotaColor = (remainingQuota: number | null, requestLimit: number | null) => {
-    if (requestLimit === null || requestLimit === 0) {
+  const getQuotaColor = (remainingQuota: number | null, quotaLimit: number | null) => {
+    if (quotaLimit === null || quotaLimit === 0) {
       return 'bg-purple-100 text-purple-800';
     }
-    const percentage = (remainingQuota! / requestLimit) * 100;
+    if (remainingQuota === null || remainingQuota === undefined) {
+      return 'bg-purple-100 text-purple-800';
+    }
+    const percentage = (remainingQuota / quotaLimit) * 100;
     if (percentage > 50) {
       return 'bg-green-100 text-green-800';
     } else if (percentage > 20) {
@@ -374,7 +389,7 @@ export default function ApiKeysPage() {
   const startEditApiKey = (apiKey: ApiKey) => {
     setEditingKeyId(apiKey.id);
     setEditKeyName(apiKey.name);
-    setEditKeyRequestLimit(apiKey.requestLimit);
+    setEditKeyRequestLimit(apiKey.quota);
 
     // Convert expiration date back to period
     if (apiKey.expiredAt) {
@@ -426,7 +441,7 @@ export default function ApiKeysPage() {
         },
         body: JSON.stringify({
           name: editKeyName.trim(),
-          requestLimit: editKeyRequestLimit,
+          quota: editKeyRequestLimit,
           expiredAt: expiredAt
         }),
       });
@@ -499,7 +514,7 @@ export default function ApiKeysPage() {
                   <p className="text-2xl font-bold text-gray-900">{apiKeys.length}</p>
                   <p className="text-xs text-gray-500 mt-1">
                     {planInfo
-                      ? `${apiKeysT("ofPlanLimitPrefix")}${getPlanLimits(planInfo.name).maxKeys}${apiKeysT("ofPlanLimitSuffix")}`
+                      ? `${apiKeysT("ofPlanLimitPrefix")}${getPlanLimits(planInfo.membershipLevel).maxKeys}${apiKeysT("ofPlanLimitSuffix")}`
                       : apiKeysT("noPlanLimit")
                     }
                   </p>
@@ -523,7 +538,7 @@ export default function ApiKeysPage() {
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     {apiKeys.length > 0
-                      ? `${apiKeysT("ofTotalPrefix")}${formatTokens(apiKeys.reduce((sum, key) => sum + (key.requestLimit || 0), 0))}${apiKeysT("ofTotalSuffix")}`
+                      ? `${apiKeysT("ofTotalPrefix")}${formatTokens(apiKeys.reduce((sum, key) => sum + (key.quota || 0), 0))}${apiKeysT("ofTotalSuffix")}`
                       : apiKeysT("noKeysCreated")
                     }
                   </p>
@@ -580,7 +595,7 @@ export default function ApiKeysPage() {
                           {planInfo.name}
                         </div>
                         <span className="text-xs text-gray-500">
-                          ({apiKeys.length}/{getPlanLimits(planInfo.name).maxKeys} keys)
+                          ({apiKeys.length}/{getPlanLimits(planInfo.membershipLevel).maxKeys} keys)
                         </span>
                       </div>
                     ) : isActive ? (
@@ -595,7 +610,7 @@ export default function ApiKeysPage() {
               </div>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                disabled={planInfo ? apiKeys.length >= getPlanLimits(planInfo.name).maxKeys : false}
+                disabled={planInfo ? apiKeys.length >= getPlanLimits(planInfo.membershipLevel).maxKeys : false}
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4 mr-2" />
@@ -641,10 +656,10 @@ export default function ApiKeysPage() {
                             <Key className="h-4 w-4 text-gray-600" />
                           </div>
                           <h3 className="font-semibold text-gray-900 text-lg">{apiKey.name}</h3>
-                          <div className={`px-2 py-1 text-xs font-medium rounded-full ${getQuotaColor(apiKey.remainingQuota, apiKey.requestLimit)}`}>
-                            {apiKey.requestLimit === null || apiKey.requestLimit === 0
+                          <div className={`px-2 py-1 text-xs font-medium rounded-full ${getQuotaColor(apiKey.remainingQuota, apiKey.quota)}`}>
+                            {apiKey.quota === null || apiKey.quota === 0
                               ? apiKeysT("noLimit")
-                              : `${Math.round((apiKey.remainingQuota! / apiKey.requestLimit) * 100)}% quota left`
+                              : `${Math.round((apiKey.remainingQuota! / apiKey.quota) * 100)}% quota left`
                             }
                           </div>
                           <div className={`px-2 py-1 text-xs font-medium rounded-full border ${getExpirationStatus(apiKey.expiredAt).color}`}>
@@ -750,52 +765,52 @@ export default function ApiKeysPage() {
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium text-gray-700">Monthly Quota Usage</span>
                           <span className="text-xs text-gray-500">
-                            {apiKey.requestLimit === null
+                            {apiKey.quota === null
                               ? `${formatTokens(apiKey.tokensUsed)} / ${apiKeysT("noLimit")}`
-                              : `${formatTokens(apiKey.tokensUsed)} / ${formatTokens(apiKey.requestLimit)}`
+                              : `${formatTokens(apiKey.tokensUsed)} / ${formatTokens(apiKey.quota)}`
                             }
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
-                          {apiKey.requestLimit === null ? (
+                          {apiKey.quota === null ? (
                             <div className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 w-full"></div>
                           ) : (
                             <div
-                              className={`h-2 rounded-full transition-all duration-300 ${apiKey.requestLimit && apiKey.tokensUsed >= apiKey.requestLimit
+                              className={`h-2 rounded-full transition-all duration-300 ${apiKey.quota && apiKey.tokensUsed >= apiKey.quota
                                 ? 'bg-red-500'
-                                : apiKey.requestLimit && apiKey.tokensUsed >= apiKey.requestLimit * 0.8
+                                : apiKey.quota && apiKey.tokensUsed >= apiKey.quota * 0.8
                                   ? 'bg-yellow-500'
                                   : 'bg-green-500'
                                 }`}
-                              style={{ width: `${apiKey.requestLimit && apiKey.requestLimit > 0 ? Math.min((apiKey.tokensUsed / apiKey.requestLimit) * 100, 100) : 0}%` }}
+                              style={{ width: `${apiKey.quota && apiKey.quota > 0 ? Math.min((apiKey.tokensUsed / apiKey.quota) * 100, 100) : 0}%` }}
                             ></div>
                           )}
                         </div>
                         <div className="flex items-center justify-between mt-2">
-                          <span className={`text-xs font-medium ${apiKey.requestLimit === null || apiKey.requestLimit === 0
+                          <span className={`text-xs font-medium ${apiKey.quota === null || apiKey.quota === 0
                             ? 'text-purple-600'
-                            : apiKey.tokensUsed >= apiKey.requestLimit
+                            : apiKey.tokensUsed >= apiKey.quota
                               ? 'text-red-600'
-                              : apiKey.tokensUsed >= apiKey.requestLimit * 0.8
+                              : apiKey.tokensUsed >= apiKey.quota * 0.8
                                 ? 'text-yellow-600'
                                 : 'text-green-600'
                             }`}>
-                            {apiKey.requestLimit === null || apiKey.requestLimit === 0
+                            {apiKey.quota === null || apiKey.quota === 0
                               ? apiKeysT("unlimitedQuota")
                               : formatTokens(apiKey.remainingQuota!)
-                            } {apiKey.requestLimit !== null && apiKey.requestLimit > 0 && ' remaining'}
+                            } {apiKey.quota !== null && apiKey.quota > 0 && ' remaining'}
                           </span>
-                          <span className={`text-xs font-medium ${apiKey.requestLimit === null || apiKey.requestLimit === 0
+                          <span className={`text-xs font-medium ${apiKey.quota === null || apiKey.quota === 0
                             ? 'text-purple-600'
-                            : apiKey.tokensUsed >= apiKey.requestLimit
+                            : apiKey.tokensUsed >= apiKey.quota
                               ? 'text-red-600'
-                              : apiKey.tokensUsed >= apiKey.requestLimit * 0.8
+                              : apiKey.tokensUsed >= apiKey.quota * 0.8
                                 ? 'text-yellow-600'
                                 : 'text-green-600'
                             }`}>
-                            {apiKey.requestLimit === null || apiKey.requestLimit === 0
+                            {apiKey.quota === null || apiKey.quota === 0
                               ? `${apiKeysT("unlimitedAccess")}`
-                              : `${Math.round((apiKey.tokensUsed / apiKey.requestLimit) * 100)}% used`
+                              : `${Math.round((apiKey.tokensUsed / apiKey.quota) * 100)}% used`
                             }
                           </span>
                         </div>
@@ -926,7 +941,7 @@ export default function ApiKeysPage() {
                           : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                           }`}
                       >
-                        50K
+                        $10
                       </button>
                       <button
                         type="button"
@@ -936,7 +951,7 @@ export default function ApiKeysPage() {
                           : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                           }`}
                       >
-                        100K
+                        $20
                       </button>
                       <button
                         type="button"
@@ -946,7 +961,7 @@ export default function ApiKeysPage() {
                           : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                           }`}
                       >
-                        500K
+                        $50
                       </button>
                       <button
                         type="button"
@@ -956,7 +971,7 @@ export default function ApiKeysPage() {
                           : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                           }`}
                       >
-                        1M
+                        $100
                       </button>
                       <button
                         type="button"
@@ -1092,17 +1107,17 @@ export default function ApiKeysPage() {
                         </div>
                       </div>
                     )}
-                    <div className="flex gap-2 mt-3">
-                      {[50000, 100000, 500000, 1000000].map((limit) => (
+                    <div className="flex gap-2 mt-3 flex-wrap">
+                      {[{ amount: 50000, label: '$10' }, { amount: 100000, label: '$20' }, { amount: 500000, label: '$50' }, { amount: 1000000, label: '$100' }].map(({ amount, label }) => (
                         <button
-                          key={limit}
-                          onClick={() => setEditKeyRequestLimit(limit)}
-                          className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === limit
+                          key={amount}
+                          onClick={() => setEditKeyRequestLimit(amount)}
+                          className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === amount
                             ? "bg-purple-500 text-white"
                             : "bg-gray-100 hover:bg-gray-200 text-gray-700"
                             }`}
                         >
-                          {formatTokens(limit)}
+                          {label}
                         </button>
                       ))}
                       <button

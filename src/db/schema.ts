@@ -161,7 +161,7 @@ export const monthlyApiUsage = pgTable(
         updatedAt: timestamp("updated_at", { withTimezone: false }).defaultNow(),
     },
     (table) => [
-        unique("unique_api_date").on(table.apikey, table.month),
+        unique("unique_api_month").on(table.apikey, table.month),
     ]
 );
 
