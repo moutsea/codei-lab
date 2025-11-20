@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (userDetail?.currency !== currency) {
+    if (userDetail.currency !== "" && userDetail?.currency !== currency) {
       return NextResponse.json(
         {
           error: 'CURRENCY_CONFLICT',

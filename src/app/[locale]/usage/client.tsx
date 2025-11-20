@@ -6,7 +6,8 @@ import { CheckCircle, XCircle, AlertCircle, Search, Eye, EyeOff, Copy, Check } f
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatTokens, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { useUserData } from '@/hooks/useUserData';
 
 interface ApiKeyInfo {
   id: number;
@@ -14,20 +15,27 @@ interface ApiKeyInfo {
   key: string;
   createdAt: string;
   lastUsedAt: string | null;
-  requestLimit: number | null;
-  tokensUsed: number;
-  remainingQuota: number | null;
+  quota: number | null;
+  quotaUsed: number;
   expiredAt: string | null;
 }
 
 export function UsagePageClient() {
   const t = useTranslations('usage');
+  const { topUpRecord } = useUserData(); // Get top-up record data
   const [apiKey, setApiKey] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [apiKeyInfo, setApiKeyInfo] = useState<ApiKeyInfo | null>(null);
   const [copied, setCopied] = useState(false);
+
+  // Calculate total available quota (user quota + top-up quota)
+  const getTotalAvailableQuota = () => {
+    const userQuota = apiKeyInfo?.quota || 0; // This would come from user data if needed
+    const topUpQuota = topUpRecord ? parseFloat(topUpRecord.quota.toString()) : 0;
+    return userQuota + topUpQuota;
+  };
 
   const getExpirationStatus = (expiredAt: string | null) => {
     if (!expiredAt) {
@@ -128,10 +136,11 @@ export function UsagePageClient() {
     }
   };
 
-  
+
   const getQuotaUsagePercentage = () => {
-    if (!apiKeyInfo?.requestLimit) return 100;
-    return Math.min((apiKeyInfo.tokensUsed / apiKeyInfo.requestLimit) * 100, 100);
+    const totalQuota = getTotalAvailableQuota();
+    if (totalQuota === 0) return 100;
+    return Math.min((apiKeyInfo?.quotaUsed || 0) / totalQuota * 100, 100);
   };
 
   const getQuotaColor = () => {
@@ -251,21 +260,21 @@ export function UsagePageClient() {
                   </div>
                   <div className="space-y-4">
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.requestLimit')}</label>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.monthlyQuota')}</label>
                       <p className="text-foreground">
-                        {apiKeyInfo.requestLimit === null ? t('apiKeyInfo.unlimited') : formatTokens(apiKeyInfo.requestLimit)}
+                        ${getTotalAvailableQuota().toFixed(4)}
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.tokensUsed')}</label>
-                      <p className="text-foreground">{formatTokens(apiKeyInfo.tokensUsed)}</p>
+                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.quotaUsed')}</label>
+                      <p className="text-foreground">${(apiKeyInfo?.quotaUsed || 0).toFixed(4)}</p>
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.remainingQuota')}</label>
-                      <p className="text-foreground">
-                        {apiKeyInfo.remainingQuota === null ? t('apiKeyInfo.unlimited') : formatTokens(apiKeyInfo.remainingQuota)}
-                      </p>
-                    </div>
+                    {topUpRecord && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.topUpQuotaAvailable')}</label>
+                        <p className="text-foreground">${parseFloat(topUpRecord.quota).toFixed(4)}</p>
+                      </div>
+                    )}
                     <div>
                       <label className="text-sm font-medium text-muted-foreground">{t('apiKeyInfo.lastUsedAt')}</label>
                       <p className="text-foreground">
@@ -290,29 +299,30 @@ export function UsagePageClient() {
                 <CardDescription>{t('usageDetails.currentMonth')}</CardDescription>
               </CardHeader>
               <CardContent>
-                {apiKeyInfo.requestLimit ? (
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-medium text-foreground">{t('usageDetails.quotaUsage')}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {formatTokens(apiKeyInfo.tokensUsed)} / {formatTokens(apiKeyInfo.requestLimit)}
-                      </span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full transition-all duration-300 ${getQuotaColor()}`}
-                        style={{ width: `${getQuotaUsagePercentage()}%` }}
-                      ></div>
-                    </div>
-                    <div className="text-center text-sm text-muted-foreground">
-                      {Math.round(getQuotaUsagePercentage())}% {t('usageDetails.quotaUsage')}
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-foreground">{t('apiKeyInfo.quotaUsage')}</span>
+                    <span className="text-sm text-muted-foreground">
+                      ${(apiKeyInfo?.quotaUsed || 0).toFixed(4)} / ${getTotalAvailableQuota().toFixed(4)}
+                    </span>
                   </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>{t('apiKeyInfo.unlimited')}</p>
+                  <div className="w-full bg-muted rounded-full h-3">
+                    <div
+                      className={`h-3 rounded-full transition-all duration-300 ${getQuotaColor()}`}
+                      style={{ width: `${getQuotaUsagePercentage()}%` }}
+                    ></div>
                   </div>
-                )}
+                  <div className="text-center text-sm text-muted-foreground">
+                    {Math.round(getQuotaUsagePercentage())}% {t('apiKeyInfo.quotaUsage').toLowerCase()}
+                  </div>
+                  {topUpRecord && (
+                    <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div className="text-sm text-blue-700 dark:text-blue-300">
+                        <strong>{t('apiKeyInfo.topUpActive')}:</strong> ${parseFloat(topUpRecord.quota.toString()).toFixed(4)} available
+                      </div>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

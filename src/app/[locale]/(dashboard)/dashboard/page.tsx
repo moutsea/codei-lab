@@ -28,12 +28,17 @@ interface TokenStats {
 
 interface DailyUsage {
   date: string;
-  tokens: number;
+  cachedTokens: number;
+  inputTokens: number;
+  outputTokens: number;
 }
 
 interface DailyUsageItem {
   date: string;
-  totalTokens: number;
+  cachedTokens?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number; // Backward compatibility
 }
 
 // Use PlanWithPricing from usePlans hook
@@ -46,7 +51,7 @@ export default function Dashboard() {
   const {
     userDetail,
     usageData,
-    topUpRecord,
+    // topUpRecord,
     isActive,
     quota,
     membershipLevel,
@@ -77,9 +82,9 @@ export default function Dashboard() {
   useEffect(() => {
     if (usageData && quota !== undefined) {
       // 使用新的 usage data结构
-      const used = usageData.totalQuota || 0;
+      const used = usageData.totalQuotaUsed || 0;
       const total = quota || 30;
-      console.log(`Using requestLimit: ${total}, tokens used: ${used}, usagePercentage: ${total > 0 ? (used / total) * 100 : 0}%`);
+      // console.log(`Using requestLimit: ${total}, tokens used: ${used}, usagePercentage: ${total > 0 ? (used / total) * 100 : 0}%`);
       setTokenStats({
         total,
         used
@@ -124,13 +129,29 @@ export default function Dashboard() {
         formatLocalDate(endDate)
       );
 
-      console.log(`Fetched daily usage for ${year}-${month.toString().padStart(2, '0')}:`, dailyUsage);
+      // console.log(`Fetched daily usage for ${year}-${month.toString().padStart(2, '0')}:`, dailyUsage);
 
       // 转换数据格式以匹配 DailyUsage 接口
-      const formattedData: DailyUsage[] = dailyUsage?.map((item: DailyUsageItem) => ({
-        date: item.date,
-        tokens: item.totalTokens
-      })) || [];
+      const formattedData: DailyUsage[] = dailyUsage?.map((item: DailyUsageItem) => {
+        // Handle new structure with individual token types
+        if (item.cachedTokens !== undefined || item.inputTokens !== undefined || item.outputTokens !== undefined) {
+          return {
+            date: item.date,
+            cachedTokens: item.cachedTokens || 0,
+            inputTokens: item.inputTokens || 0,
+            outputTokens: item.outputTokens || 0
+          };
+        }
+
+        // Handle old structure with totalTokens - distribute it proportionally
+        const totalTokens = item.totalTokens || 0;
+        return {
+          date: item.date,
+          cachedTokens: Math.floor(totalTokens * 0.1),  // Assume 10% cached
+          inputTokens: Math.floor(totalTokens * 0.6),   // Assume 60% input
+          outputTokens: Math.floor(totalTokens * 0.3)  // Assume 30% output
+        };
+      }) || [];
 
       setDailyUsageData(formattedData);
     } catch (error) {
@@ -152,15 +173,6 @@ export default function Dashboard() {
   const formatQuotaString = (quota: string) => {
     return parseFloat(quota).toFixed(2);
   };
-
-  // Get remaining top-up quota from top-up record
-  const getRemainingTopUpQuota = () => {
-    if (!topUpRecord) return 0;
-
-    return parseInt(topUpRecord.quota || '0');
-  };
-
-  const remainingTopUpQuota = getRemainingTopUpQuota();
 
   const usagePercentage = (typeof tokenStats.total === 'number' && tokenStats.total > 0 && typeof tokenStats.used === 'number')
     ? (tokenStats.used / tokenStats.total) * 100
@@ -216,13 +228,13 @@ export default function Dashboard() {
   const handleUpgradePlan = async () => {
     // Wait for user data to be loaded before making decisions
     if (isLoading || loading || !userDetail) {
-      console.log('User data still loading, please wait...');
+      // console.log('User data still loading, please wait...');
       return;
     }
 
     // Check if user has an active one-payment plan (no subscription ID)
     if (isActive && !userDetail?.stripeSubscriptionId) {
-      console.log('User has active one-payment plan, opening non-recurring dialog');
+      // console.log('User has active one-payment plan, opening non-recurring dialog');
       setShowNonRecurringDialog(true);
       return;
     }
@@ -339,6 +351,9 @@ export default function Dashboard() {
     );
   }
 
+  // console.log(usageData);
+  console.log(userDetail);
+
   return (
     <DashboardLayout
       pageTitle={dt("title")}
@@ -357,17 +372,17 @@ export default function Dashboard() {
             <div className="text-sm text-muted-foreground mb-1">{t("monthlyQuota")}</div>
             <div className="flex items-center gap-3">
               <div className="text-2xl font-bold text-foreground">${tokenStats.total}</div>
-              {remainingTopUpQuota > 0 ? (
+              {parseFloat(userDetail?.topUpQuota!) > 0 ? (
                 <div className="ml-auto flex items-center gap-2">
                   <div className="relative group">
                     <div className="absolute inset-0 bg-green-500/20 rounded-full blur-sm"></div>
                     <div className="relative inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-700 text-sm font-medium">
                       <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-                      {t("topUpLeft", { quota: formatQuotaString(remainingTopUpQuota.toString()) })}
+                      {t("topUpLeft", { quota: userDetail?.topUpQuota! })}
                     </div>
                     {/* Custom tooltip - appears immediately on hover */}
                     <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                      {`${t("topUpExpiresOn")}: ${topUpRecord?.endDate ? new Date(topUpRecord.endDate).toLocaleDateString() : 'N/A'}`}
+                      {`${t("topUpExpiresOn")}: ${userDetail?.topUpExpred ? new Date(userDetail.topUpExpred).toLocaleDateString() : 'N/A'}`}
                       <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                     </div>
                   </div>
@@ -436,7 +451,6 @@ export default function Dashboard() {
             />
           </div>
         </div>
-
         {/* Daily Usage Chart */}
         <div className="bg-dashboard-card rounded-lg p-4">
           <h3 className="text-lg font-semibold text-foreground mb-2">{t("dailyTokenUsage")}</h3>

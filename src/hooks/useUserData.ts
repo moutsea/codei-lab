@@ -6,7 +6,7 @@ import { UserDetail, TopUpPurchaseSelect } from '@/types';
 interface UsageData {
   period: string;
   month: string;
-  totalQuota: number;
+  totalQuotaUsed: number;
   updatedAt: string | null;
 }
 

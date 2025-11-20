@@ -1,5 +1,5 @@
 import { db } from "../index";
-import { users, subscriptions, plans, monthlyUserUsage } from "../schema";
+import { users, subscriptions, plans, monthlyUserUsage, topUpPurchases } from "../schema";
 import { eq, and, desc, sql, gt, gte } from "drizzle-orm";
 import type { UserInsert, UserSelect } from "@/types";
 import type { UserDetail } from "@/types/db";
@@ -192,6 +192,18 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     .limit(1)
     .as("userLastSubscription");
 
+  const topUpRecord = db()
+    .select({
+      userId: topUpPurchases.userId,
+      topUpQuota: topUpPurchases.quota,
+      topUpExpred: topUpPurchases.endDate
+    })
+    .from(topUpPurchases)
+    .where(eq(topUpPurchases.userId, userId))
+    .orderBy(desc(topUpPurchases.createdAt))
+    .limit(1)
+    .as("topUpRecord");
+
   const result = await db()
     .select({
       userId: users.id,
@@ -206,6 +218,8 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
       currendEndAt: subscriptions.currentPeriodEnd,
       quota: plans.quota,
       quotaMonthlyUsed: sql<string>`COALESCE(${userLastSubscription.quotaUsed}, '0')`,
+      topUpQuota: sql<string> `COALESCE(${topUpRecord.topUpQuota}, '0')`,
+      topUpExpred: topUpRecord.topUpExpred,
       currency: plans.currency
     })
     .from(users)
@@ -216,6 +230,7 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     ))
     .leftJoin(plans, eq(subscriptions.planId, plans.id))
     .leftJoin(userLastSubscription, eq(users.id, userLastSubscription.userId))
+    .leftJoin(topUpRecord, eq(users.id, topUpRecord.userId))
     .where(eq(users.id, userId))
     .orderBy(desc(subscriptions.currentPeriodEnd))
     .limit(1);
@@ -235,10 +250,12 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
     planId: row.planId || undefined,
     membershipLevel: row.membershipLevel || undefined,
     active: row.active,
+    topUpQuota: row.topUpQuota,
+    topUpExpred: row.topUpExpred,
     currentEndAt: row.currendEndAt,
     quota: row.quota || "0",
     quotaMonthlyUsed: row.quotaMonthlyUsed || "0",
-    currency: row.currency || "USD"
+    currency: row.currency || ""
   };
 }
 

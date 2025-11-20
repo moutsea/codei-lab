@@ -52,6 +52,8 @@ export interface UserDetail {
   active?: boolean; // from subscription
   currentEndAt?: Date | null; // from subscription
   quota: string; // from plan
+  topUpQuota?: string | null;
+  topUpExpred?: Date | null;
   quotaMonthlyUsed?: string; // from monthly-user-usage table (quotaUsed field)
   currency: string;
 }

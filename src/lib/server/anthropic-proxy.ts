@@ -189,7 +189,6 @@ export async function createCodexProxy(
 
     const requestBody = {
       ...body,
-      // model: model,
     };
 
     const targetUrl = originalUrl.replace(
@@ -199,7 +198,6 @@ export async function createCodexProxy(
 
     const finalBody = { ...requestBody };
     headers.set("authorization", `Bearer ${authToken}`);
-    // headers.set("authorization", `Bearer test`);
 
     console.log(targetUrl);
 

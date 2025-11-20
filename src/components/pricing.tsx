@@ -206,7 +206,7 @@ export default function Pricing() {
 
         // Special handling for currency conflict
         if (errorData.error && errorData.error === 'CURRENCY_CONFLICT') {
-          const existingCurrency = errorData.existingCurrency || 'USD';
+          const existingCurrency = errorData.existingCurrency || 'CNY';
           const requestedCurrency = plan.currency.toUpperCase();
           errorMessage = t('currencyConflictError', {
             existingCurrency,
@@ -296,6 +296,18 @@ export default function Pricing() {
       return;
     }
 
+    if (isActive && userDetail?.membershipLevel === "trial" && userDetail.currency === "CNY") {
+      const existingCurrency = userDetail.currency || 'CNY';
+      const requestedCurrency = "USD";
+      const errorMessage = t('currencyConflictError', {
+        existingCurrency,
+        requestedCurrency,
+        defaultValue: `You already have a subscription with ${existingCurrency}. You cannot subscribe with ${requestedCurrency} at the same time.`
+      });
+      alert(errorMessage);
+      return;
+    }
+
     if (plusPlans.length > 0) {
       setSelectedPlan(plusPlans[0]); // Use the first plan as base
       setShowCycleDialog(true);
@@ -305,6 +317,18 @@ export default function Pricing() {
   const handleProSubscribe = () => {
     if (isActive && userDetail?.membershipLevel !== 'trial') {
       handleBillingPortal();
+      return;
+    }
+
+    if (isActive && userDetail?.membershipLevel === "trial" && userDetail.currency === "CNY") {
+      const existingCurrency = userDetail.currency || 'CNY';
+      const requestedCurrency = "USD";
+      const errorMessage = t('currencyConflictError', {
+        existingCurrency,
+        requestedCurrency,
+        defaultValue: `You already have a subscription with ${existingCurrency}. You cannot subscribe with ${requestedCurrency} at the same time.`
+      });
+      alert(errorMessage);
       return;
     }
 
@@ -567,7 +591,7 @@ export default function Pricing() {
                   onClick={() => handleOneTimePay(trialPlan)}
                   disabled={subscribingPlanId !== null}
                 >
-                  {subscribingPlanId === trialPlan.id ? (
+                  {subscribingPlanId !== null ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       {t('subscriptionDialog.processing')}

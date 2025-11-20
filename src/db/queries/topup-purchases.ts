@@ -299,13 +299,16 @@ export async function consumeTopUpQuota(userId: string, quotaToConsume: number):
         }
 
         const currentQuota = parseFloat(topUp.quota.toString()); // 确保 quota 是数字类型
-        const newQuota = Math.max(0, currentQuota - quotaToConsume); // 保证不为负数
 
-        // 更新 top-up 记录
-        await updateTopUpPurchase(topUp.id, {
-            quota: newQuota.toString(),
-            status: newQuota === 0 ? 'inactive' : topUp.status // quota 为 0 时标记为 inactive
-        });
+        if (currentQuota < quotaToConsume) {
+            await deleteTopUpPurchase(topUp.id);
+        } else {
+            const newQuota = Math.max(0, currentQuota - quotaToConsume); // 保证不为负数
+            await updateTopUpPurchase(topUp.id, {
+                quota: newQuota.toString(),
+                status: topUp.status
+            });
+        }
 
         return true;
     } catch (error) {

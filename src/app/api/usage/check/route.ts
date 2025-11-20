@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
     const usageData = await getApiKeyUsageByApiKeyWithCache(trimmedApiKey);
 
     // Get current month usage from usage data or fallback to 0
-    const currentMonthUsage = parseFloat(usageData?.quotaUsed!) || 0;
+    const quotaUsed = parseFloat(usageData?.quotaUsed!) || 0;
 
     // Calculate remaining quota
     const quota = keyData.quota ? parseInt(keyData.quota) : null;
     const remainingQuota = quota
-      ? Math.max(0, quota - currentMonthUsage)
+      ? Math.max(0, quota - quotaUsed)
       : null;
 
     return NextResponse.json({
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
       createdAt: keyData.createdAt ? keyData.createdAt.toISOString() : null,
       lastUsedAt: keyData.lastUsedAt ? keyData.lastUsedAt.toISOString() : null,
       quota: quota,
-      tokensUsed: currentMonthUsage,
+      quotaUsed,
       remainingQuota,
       expiredAt: keyData.expiredAt ? keyData.expiredAt.toISOString() : null,
       month: usageData?.month || `${currentMonth()}-1`,

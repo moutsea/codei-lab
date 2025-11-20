@@ -296,7 +296,12 @@
       "noLimit": "No Limit",
       "neverUsed": "Never Used",
       "noExpiration": "No Expiration",
-      "unlimited": "Unlimited"
+      "unlimited": "Unlimited",
+      "monthlyQuota": "Monthly Quota",
+      "quotaUsed": "Quota Used",
+      "topUpQuotaAvailable": "Top-up Quota Available",
+      "quotaUsage": "Quota Usage",
+      "topUpActive": "Top-up Active"
     },
     "usageDetails": {
       "title": "Usage Details",
@@ -318,7 +323,7 @@
     "upgradePlan": "Upgrade",
     "membershipLevel": "Membership Level",
     "topUp": "Top Up",
-    "topUpLeft": "+{quota} extra",
+    "topUpLeft": "+ ${quota} extra",
     "topUpExpiresOn": "Expires on",
     "topUpDialog": {
       "title": "Top Up Your Account",

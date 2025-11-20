@@ -157,10 +157,11 @@ export const getUserFromDBByStripeCustomerId = async (stripeCustomerId: string):
  */
 export const getUserDetailByIdWithCache = async (userId: string): Promise<UserDetail | null> => {
     // don't use cache in test stage
-    const userDetail = await getUserDetailFromCache(userId);
-    if (userDetail && userDetail.active) {
-        return userDetail;
-    }
+
+    // const userDetail = await getUserDetailFromCache(userId);
+    // if (userDetail && userDetail.active) {
+    //     return userDetail;
+    // }
 
     // Fallback to database
     try {
@@ -250,6 +251,8 @@ export const createOrUpdateUserDetailCache = async (userId: string, userDetail: 
                 active: userDetail.active !== undefined ? userDetail.active : existingDetail.active,
                 currentEndAt: userDetail.currentEndAt !== undefined ? userDetail.currentEndAt : existingDetail.currentEndAt,
                 quota: userDetail.quota !== undefined ? userDetail.quota : existingDetail.quota,
+                topUpQuota: userDetail.topUpQuota !== undefined ? userDetail.topUpQuota : existingDetail.topUpQuota,
+                topUpExpred: userDetail.topUpExpred !== undefined ? userDetail.topUpExpred : existingDetail.topUpExpred,
                 quotaMonthlyUsed: userDetail.quotaMonthlyUsed !== undefined ? userDetail.quotaMonthlyUsed : existingDetail.quotaMonthlyUsed,
             };
             console.log(`✅ Merged and updated user detail cache for userId: ${userId}`);
@@ -267,6 +270,8 @@ export const createOrUpdateUserDetailCache = async (userId: string, userDetail: 
                 active: userDetail.active || false,
                 currentEndAt: userDetail.currentEndAt !== undefined ? userDetail.currentEndAt : null,
                 quota: userDetail.quota!,
+                topUpQuota: userDetail.topUpQuota!,
+                topUpExpred: userDetail.topUpExpred!,
                 quotaMonthlyUsed: userDetail.quotaMonthlyUsed!,
                 currency: userDetail.currency!
             };

@@ -303,7 +303,12 @@
       "noLimit": "Sans Limite",
       "neverUsed": "Jamais Utilisé",
       "noExpiration": "Pas d'Expiration",
-      "unlimited": "Illimité"
+      "unlimited": "Illimité",
+      "monthlyQuota": "Quota Mensuel",
+      "quotaUsed": "Quota Utilisé",
+      "topUpQuotaAvailable": "Quota de Recharge Disponible",
+      "quotaUsage": "Utilisation du Quota",
+      "topUpActive": "Recharge Active"
     },
     "usageDetails": {
       "title": "Détails de l'Utilisation",
@@ -325,7 +330,7 @@
     "upgradePlan": "Mettre à Niveau",
     "membershipLevel": "Niveau d'Adhésion",
     "topUp": "Recharger",
-    "topUpLeft": "+{quota} extra",
+    "topUpLeft": "+ ${quota} extra",
     "topUpExpiresOn": "Expire le",
     "topUpDialog": {
       "title": "Recharger Votre Compte",

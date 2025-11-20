@@ -1,10 +1,12 @@
 "use client";
 
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 
 interface DailyUsageData {
   date: string;
-  tokens: number;
+  cachedTokens: number;
+  inputTokens: number;
+  outputTokens: number;
 }
 
 interface DailyUsageChartProps {
@@ -13,30 +15,88 @@ interface DailyUsageChartProps {
 }
 
 export function DailyUsageChart({ data, selectedMonth }: DailyUsageChartProps) {
-  // Format data for recharts
-  const chartData = data.map(item => {
-    const date = new Date(item.date);
+  // Generate all dates for the selected month
+  const generateAllDatesForMonth = (monthString: string) => {
+    const [year, month] = monthString.split('-').map(Number);
+    const dates = [];
+
+    // Get the number of days in the month (month is 1-12, so we use month for correct month)
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    // Generate all dates from 1st to last day of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      // Create date at noon to avoid timezone issues
+      const date = new Date(year, month - 1, day, 12, 0, 0); // month-1 because JS months are 0-indexed
+      const dateString = date.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+
+      dates.push({
+        date: dateString,
+        day: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        cachedTokens: 0,
+        inputTokens: 0,
+        outputTokens: 0
+      });
+    }
+
+    return dates;
+  };
+
+  // Create complete month data with all dates
+  const completeMonthData = generateAllDatesForMonth(selectedMonth);
+
+  // Merge actual usage data with complete month data
+  const chartData = completeMonthData.map(dateData => {
+    const usageItem = data.find(item => item.date === dateData.date);
+
+    // Debug logging for date matching
+    if (usageItem) {
+      console.log(`Found match: generated ${dateData.date} -> usage item ${usageItem.date}`);
+    }
+
     return {
-      day: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      tokens: item.tokens
+      day: dateData.day,
+      cachedTokens: usageItem?.cachedTokens || 0,
+      inputTokens: usageItem?.inputTokens || 0,
+      outputTokens: usageItem?.outputTokens || 0
     };
   });
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload, label }: {
     active?: boolean;
-    payload?: Array<{ value: number; name: string }>;
+    payload?: Array<{ value: number; name: string; color: string; payload: any }>;
     label?: string;
   }) => {
     if (active && payload && payload.length) {
+      const totalTokens = payload.reduce((sum, item) => sum + item.value, 0);
       return (
-        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-          <p className="text-sm font-medium text-gray-900">
+        <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg min-w-[200px]">
+          <p className="text-sm font-medium text-gray-900 mb-2">
             {label}
           </p>
-          <p className="text-sm text-blue-600">
-            {payload[0].value.toLocaleString()} tokens
-          </p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center justify-between text-sm">
+              <div className="flex items-center">
+                <div
+                  className="w-3 h-3 rounded-sm mr-2"
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-gray-600">
+                  {entry.name === 'cachedTokens' ? 'Cached Tokens' :
+                   entry.name === 'inputTokens' ? 'Input Tokens' : 'Output Tokens'}:
+                </span>
+              </div>
+              <span className="font-medium text-gray-900 ml-2">
+                {entry.value.toLocaleString()}
+              </span>
+            </div>
+          ))}
+          <div className="border-t border-gray-200 mt-2 pt-2">
+            <div className="flex items-center justify-between text-sm font-medium">
+              <span className="text-gray-900">Total:</span>
+              <span className="text-gray-900">{totalTokens.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
       );
     }
@@ -58,14 +118,7 @@ export function DailyUsageChart({ data, selectedMonth }: DailyUsageChartProps) {
     return formatTokens(value);
   };
 
-  // // Get month name for display
-  // const getMonthName = () => {
-  //   return new Date(selectedMonth + '-01').toLocaleDateString('en-US', {
-  //     month: 'long',
-  //     year: 'numeric'
-  //   });
-  // };
-
+  
   return (
     <div className="w-full mt-4">
       <ResponsiveContainer width="100%" height={400}>
@@ -93,15 +146,39 @@ export function DailyUsageChart({ data, selectedMonth }: DailyUsageChartProps) {
             tickFormatter={formatYAxisTick}
           />
           <Tooltip content={<CustomTooltip />} />
+          <Legend
+            formatter={(value) => {
+              switch(value) {
+                case 'cachedTokens': return 'Cached Tokens';
+                case 'inputTokens': return 'Input Tokens';
+                case 'outputTokens': return 'Output Tokens';
+                default: return value;
+              }
+            }}
+          />
           <Bar
-            dataKey="tokens"
+            dataKey="cachedTokens"
+            stackId="tokens"
+            fill="#10b981"
+            radius={[0, 0, 0, 0]}
+            name="cachedTokens"
+          />
+          <Bar
+            dataKey="inputTokens"
+            stackId="tokens"
             fill="#3b82f6"
+            radius={[0, 0, 0, 0]}
+            name="inputTokens"
+          />
+          <Bar
+            dataKey="outputTokens"
+            stackId="tokens"
+            fill="#8b5cf6"
             radius={[4, 4, 0, 0]}
-            barSize={20}
+            name="outputTokens"
           />
         </BarChart>
       </ResponsiveContainer>
-
     </div>
   );
 }

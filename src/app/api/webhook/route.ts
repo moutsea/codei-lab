@@ -268,6 +268,7 @@ export async function POST(request: NextRequest) {
           const type = session.metadata?.type;
           const quota = session.metadata?.quota;
           const previousMember = session.metadata?.previousMember;
+          const previousQuota = session.metadata?.previousQuota || "30";
           const currentMember = session.metadata?.currentMember;
 
           if (!userId || !stripeCustomerId || !planId || !currentEndAt || !currency || !type || !quota) {
@@ -288,14 +289,13 @@ export async function POST(request: NextRequest) {
               const subscription = await getSubscriptionByUserId(userId);
               if (subscription && subscription.status === 'active' && subscription.currentPeriodEnd && subscription.currentPeriodEnd > now) {
                 const quotaUsed = await getTrialUserLastMonthUsage(userId, subscription.startDate!);
-                const quotaLeft = parseFloat(quota) - quotaUsed;
+                const quotaLeft = parseFloat(previousQuota) - quotaUsed;
                 const topup = await createTopUpPurchaseFromCheckout({ userId, quota: quotaLeft.toString(), status: "active", endDate: subscription.currentPeriodEnd });
                 console.log("top up: ", topup);
               }
             }
 
             await Promise.all([
-              // updateUserCustomerId(userId, stripeCustomerId),
               createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type),
               createSubscriptionFromPlan(userId, planId, session.payment_status, stripeCustomerId, new Date(currentEndAt))
             ]);
@@ -343,8 +343,6 @@ export async function POST(request: NextRequest) {
 
         const userdetail: UserDetail = {
           userId: userId,
-          name: null,
-          email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId,
           quota,
@@ -405,8 +403,6 @@ export async function POST(request: NextRequest) {
 
         const userdetail: UserDetail = {
           userId: userId,
-          name: null,
-          email: null,
           stripeSubscriptionId: subscription.id,
           planId: planId!,
           currentEndAt: updates.currentPeriodEnd,
@@ -416,7 +412,6 @@ export async function POST(request: NextRequest) {
           currency
         }
 
-        console.log(userdetail);
         await createOrUpdateUserDetailCache(userId, userdetail);
 
         console.log(`Subscription updated: ${subscription.id}`);

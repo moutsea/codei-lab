@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createCodexProxy, createHealthCheck } from '@/lib/server/anthropic-proxy';
 
-// export async function POST(request: NextRequest) {
-//   return createAnthropicProxy(request, {
-//     endpointName: 'messages',
-//     requiresMessagesValidation: true
-//   });
-// }
-
 export async function POST(request: NextRequest) {
   try {
     const response = await createCodexProxy(request, {
@@ -17,12 +10,7 @@ export async function POST(request: NextRequest) {
 
     // 如果满足某些条件，返回 401
     if (response.status >= 400) {
-      // console.log(response);
       return response;
-      // return new NextResponse(
-      //   JSON.stringify(response.body),
-      //   { status: 401 }
-      // );
     }
 
     return new NextResponse(response.body, {
