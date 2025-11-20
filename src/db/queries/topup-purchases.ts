@@ -281,3 +281,35 @@ export async function countTopUpPurchasesByUser(userId: string): Promise<number>
 
     return result?.count || 0;
 }
+
+/**
+ * Consume quota from the most recent active top-up purchase for a user
+ * @param userId - The user ID to consume quota from
+ * @param quotaToConsume - The amount of quota to consume (number)
+ * @returns Promise<boolean> - true if quota was consumed, false if no active top-up found
+ */
+export async function consumeTopUpQuota(userId: string, quotaToConsume: number): Promise<boolean> {
+    try {
+        // 获取最新的 active top-up 记录
+        const [topUp] = await getTopUpPurchasesByUserId(userId); // 解构取第一个元素
+
+        if (!topUp) {
+            // 没有找到 active top-up
+            return false;
+        }
+
+        const currentQuota = parseFloat(topUp.quota.toString()); // 确保 quota 是数字类型
+        const newQuota = Math.max(0, currentQuota - quotaToConsume); // 保证不为负数
+
+        // 更新 top-up 记录
+        await updateTopUpPurchase(topUp.id, {
+            quota: newQuota.toString(),
+            status: newQuota === 0 ? 'inactive' : topUp.status // quota 为 0 时标记为 inactive
+        });
+
+        return true;
+    } catch (error) {
+        console.error('Error consuming top-up quota:', error);
+        throw error;
+    }
+}

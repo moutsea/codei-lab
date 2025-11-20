@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createAnthropicProxy, createHealthCheck } from '@/lib/server/anthropic-proxy';
+import { createCodexProxy, createHealthCheck } from '@/lib/server/anthropic-proxy';
 
 // export async function POST(request: NextRequest) {
 //   return createAnthropicProxy(request, {
@@ -10,7 +10,7 @@ import { createAnthropicProxy, createHealthCheck } from '@/lib/server/anthropic-
 
 export async function POST(request: NextRequest) {
   try {
-    const response = await createAnthropicProxy(request, {
+    const response = await createCodexProxy(request, {
       endpointName: 'messages',
       requiresMessagesValidation: true
     });

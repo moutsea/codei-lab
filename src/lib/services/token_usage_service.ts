@@ -24,6 +24,7 @@ import { createOrUpdateUserDetailCache } from './user_service';
 import { db } from '@/db';
 import { addTokensToDailyApiUsage } from '@/db/queries/daily-api-usage';
 import { currentSubscription } from '../utils';
+import { consumeTopUpQuota } from '@/db/queries/topup-purchases';
 
 // ========== API Key Usage Cache ==========
 const API_USAGE_CACHE_KEYS = {
@@ -151,6 +152,7 @@ export const addTokensToUsageService = async (
                 addTokensToMonthlyUserUsage(userId, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToMonthlyApiUsage(apiKey, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToDailyApiUsage(apiKey, date, inputTokens, cachedTokens, outputTokens, quotaUsed),
+                consumeTopUpQuota(userId, quotaUsed),
                 updateApiKeyByKey(apiKey, { lastUsedAt: new Date() })
             ]);
 

@@ -410,7 +410,7 @@
     },
     "apiKeys": {
       "title": "API Keys",
-      "description": "Manage your API keys for accessing Claude IDE services",
+      "description": "Manage your API keys for accessing Code I Lab",
       "create": "Create API Key",
       "createTitle": "Create New API Key",
       "createDescription": "Generate a new API key for your applications",
@@ -441,7 +441,7 @@
       "noKeysCreated": "No keys created",
       "yourMonthlyQuota": "Your Monthly Quota",
       "basedOnSubscription": "Based on your subscription plan",
-      "monthlyRequestLimit": "Monthly Quota Limit (tokens)",
+      "monthlyRequestLimit": "Monthly Quota Limit",
       "noLimit": "No Limit",
       "unlimitedQuota": "Unlimited Quota",
       "unlimitedAccess": "Unlimited Access",

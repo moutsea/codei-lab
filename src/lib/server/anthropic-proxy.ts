@@ -1,40 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  anthropicHelloWorldResponse,
-  anthropicApikeyInvalidResponse,
-  anthropicApikey401Response,
-  anthropicApiLimitExceedResponse,
-  anthropicUserLimitExceedResponse,
-  anthropicUserSubscriptionInvalidResponse,
+  codexHelloWorldResponse,
+  codexApikeyInvalidResponse,
+  codexApikey401Response,
+  codexApiLimitExceedResponse,
+  codexUserLimitExceedResponse,
+  codexUserSubscriptionInvalidResponse,
 } from '@/lib/server/utils'
-import { extractApiKeyFromHeaders } from '@/lib/utils'
+import { currentDate, currentMonth, currentSubscription, extractApiKeyFromHeaders } from '@/lib/utils'
 import type { ApiDetail } from '@/types/db'
-import { addTokensToUsageService, updateApiKeyTokenUsage } from '@/lib/services/token_usage_service'
+import { addTokensToUsageService } from '@/lib/services/token_usage_service'
 import { UserDetail } from '@/types';
+import { getApiKeyUsageByApiKeyWithCache, validateApiKey } from '../services/api_key_service';
+import { getUserDetailByIdWithCache } from '../services/user_service';
 
 export interface ProxyOptions {
   endpointName: string;
   requiresMessagesValidation?: boolean;
 }
 
-function getDiscount(userData: UserDetail) {
-  // 获取 userData 中的 membershipLevel
-  const membershipLevel = userData.membershipLevel;
-
-  // 根据 membershipLevel 返回不同的折扣
-  switch (membershipLevel) {
-    case 'Lite':
-      return 1.0;  // Lite 会员不折扣
-    case 'Pro':
-      return 0.9;  // Pro 会员享受 10% 折扣
-    case 'Team':
-      return 0.85; // Team 会员享受 15% 折扣
-    default:
-      return 1.0;  // 默认返回 1.0，即没有折扣
-  }
-}
-
-function calculateTotalTokens(responseText: string, discount: number = 1.0): number {
+function calculateTotalTokens(responseText: string): {
+  totalInputTokens: number;
+  totalCacheReadTokens: number;
+  totalOutputTokens: number;
+  quota: number;
+} {
   try {
     const lines = responseText.split('\n');
     let totalInputTokens = 0;
@@ -45,7 +35,12 @@ function calculateTotalTokens(responseText: string, discount: number = 1.0): num
     const dataLines = lines.filter(line => line.startsWith('data:'));
 
     if (dataLines.length === 0) {
-      return 0;
+      return {
+        totalInputTokens: 0,
+        totalCacheReadTokens: 0,
+        totalOutputTokens: 0,
+        quota: 0
+      };
     }
 
     for (const dataLine of dataLines) {
@@ -75,36 +70,41 @@ function calculateTotalTokens(responseText: string, discount: number = 1.0): num
       }
     }
 
-    // If no valid usage information was found, return 0
-    if (totalInputTokens === 0 && totalOutputTokens === 0 && totalCacheReadTokens === 0) {
-      return 0;
-    }
+    totalInputTokens -= totalCacheReadTokens;
+    const inputPrice = parseFloat(process.env.CODEX_INPUT_PRICE!);
+    const outputPrice = parseFloat(process.env.CODEX_OUTPUT_PRICE!);
+    const quota = inputPrice * totalInputTokens / 1000000.0 + inputPrice * totalCacheReadTokens / 10000000.0 + outputPrice * totalOutputTokens / 1000000.0;
+    console.log(`Token calculation: input=${totalInputTokens}, output=${totalOutputTokens}, cache_read=${totalCacheReadTokens}, quota=${quota.toFixed(4)}`);
 
-    const totalValidTokens = totalInputTokens + totalOutputTokens - totalCacheReadTokens;
-    const totalTokens = Math.floor((totalValidTokens + totalCacheReadTokens * 0.1) * discount);
-
-    console.log(`Token calculation: input=${totalInputTokens}, output=${totalOutputTokens}, cache_read=${totalCacheReadTokens}, discount=${discount}, total=${totalTokens}`);
-
-    return totalTokens;
+    return {
+      totalInputTokens,
+      totalCacheReadTokens,
+      totalOutputTokens,
+      quota
+    };
   } catch (error) {
     console.error('Error in calculateTotalTokens:', error);
-    return 0;
+    return {
+      totalInputTokens: 0,
+      totalCacheReadTokens: 0,
+      totalOutputTokens: 0,
+      quota: 0
+    };
   }
 }
 
-// async function apiTokenUsageUpdate(
-//   res: string,
-//   discount: number,
-//   apiData: ApiDetail,
-//   userData: UserDetail,
-//   apiKey: string,
-//   userId: string
-// ) {
-//   const totalTokens = calculateTotalTokens(res, discount);
-//   await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentMonth(), userData, totalTokens);
-// }
+async function apiTokenUsageUpdate(
+  res: string,
+  apiData: ApiDetail,
+  userData: UserDetail,
+  apiKey: string,
+  userId: string
+) {
+  const totalTokens = calculateTotalTokens(res);
+  await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentSubscription(new Date(userData.startDate!)), userData, totalTokens.totalInputTokens, totalTokens.totalCacheReadTokens, totalTokens.totalOutputTokens, totalTokens.quota);
+}
 
-export async function createAnthropicProxy(
+export async function createCodexProxy(
   request: NextRequest,
   options: ProxyOptions = { endpointName: 'messages', requiresMessagesValidation: true }
 ) {
@@ -136,49 +136,45 @@ export async function createAnthropicProxy(
     ];
     blockedHeaders.forEach((h) => headers.delete(h));
 
-    // console.log("=====request headers=====", headers);
-
     const apiKey = extractApiKeyFromHeaders(headers);
 
-    // console.log("=====api key=====", apiKey);
+    if (!apiKey || apiKey === process.env.LOCAL_CODEX_API_TEST!) {
+      return await codexHelloWorldResponse();
+    }
 
-    // if (!apiKey || apiKey === process.env.LOCAL_ANTHROPIC_API_TEST!) {
-    return await anthropicHelloWorldResponse();
-    // }
+    if (!await validateApiKey(apiKey)) {
+      return await codexApikeyInvalidResponse();
+    }
 
-    // if (!await validateApiKey(apiKey)) {
-    //   return await anthropicApikeyInvalidResponse();
-    // }
+    const apiData = await getApiKeyUsageByApiKeyWithCache(apiKey);
 
-    // const apiData = await getApiKeyUsageByApiKeyWithCache(apiKey);
+    if (!apiData) {
+      return await codexApikey401Response();
+    }
 
-    // if (!apiData) {
-    //   return await anthropicApikey401Response();
-    // }
+    if (apiData.quota && parseFloat(apiData.quotaUsed) > parseFloat(apiData.quota)) {
+      return await codexApiLimitExceedResponse();
+    }
 
-    // if (apiData.requestLimit && apiData.apiMonthlyUsed > apiData.requestLimit) {
-    //   return await anthropicApiLimitExceedResponse();
-    // }
+    const userId = apiData.userId;
 
-    // const userId = apiData.userId;
+    const userData = await getUserDetailByIdWithCache(userId!);
 
-    // const userData = await getUserDetailByIdWithCache(userId!);
+    if (!userData) {
+      return await codexApikey401Response();
+    }
 
-    // if (!userData) {
-    //   return await anthropicApikey401Response();
-    // }
+    if (!userData.active) {
+      return await codexUserSubscriptionInvalidResponse();
+    }
 
-    // if (!userData.active) {
-    //   return await anthropicUserSubscriptionInvalidResponse();
-    // }
+    if (userData.quotaMonthlyUsed! > userData.quota) {
+      return await codexUserLimitExceedResponse();
+    }
 
-    // if (userData.tokenMonthlyUsed! > userData.requestLimit) {
-    //   return await anthropicUserLimitExceedResponse();
-    // }
-
-    const authToken = process.env.ANTHROPIC_AUTH_TOKEN!;
-    const baseUrl = process.env.ANTHROPIC_BASE_URL!;
-    const model = process.env.ANTHROPIC_MODEL!;
+    const authToken = process.env.CODEX_AUTH_TOKEN!;
+    const baseUrl = process.env.CODEX_BASE_URL!;
+    // const model = process.env.codex_MODEL!;
 
     let body;
     try {
@@ -193,17 +189,17 @@ export async function createAnthropicProxy(
 
     const requestBody = {
       ...body,
-      model: model,
+      // model: model,
     };
 
     const targetUrl = originalUrl.replace(
-      process.env.LOCAL_ANTHROPIC_API!,
+      process.env.LOCAL_CODEX_API!,
       baseUrl
     );
 
     const finalBody = { ...requestBody };
-    // headers.set("authorization", `Bearer ${authToken}`);
-    headers.set("authorization", `Bearer test`);
+    headers.set("authorization", `Bearer ${authToken}`);
+    // headers.set("authorization", `Bearer test`);
 
     console.log(targetUrl);
 
@@ -215,11 +211,7 @@ export async function createAnthropicProxy(
 
     const responseText = await response.text();
 
-    // calculateTotalTokens(responseText);
-
-    // const discount = getDiscount(userData);
-
-    // await apiTokenUsageUpdate(responseText, 1.0, apiData, userData, apiKey, userId!);
+    await apiTokenUsageUpdate(responseText, apiData, userData, apiKey, userId!);
 
     if (!response.ok) {
       try {
@@ -253,9 +245,9 @@ export async function createAnthropicProxy(
 export function createHealthCheck(endpointName: string) {
   return async function GET() {
     try {
-      const authToken = process.env.ANTHROPIC_AUTH_TOKEN;
-      const baseUrl = process.env.ANTHROPIC_BASE_URL;
-      const model = process.env.ANTHROPIC_MODEL;
+      const authToken = process.env.codex_AUTH_TOKEN;
+      const baseUrl = process.env.codex_BASE_URL;
+      const model = process.env.codex_MODEL;
 
       return NextResponse.json({
         status: 'ok',

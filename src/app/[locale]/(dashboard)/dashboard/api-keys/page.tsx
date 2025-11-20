@@ -92,8 +92,9 @@ export default function ApiKeysPage() {
 
       const data = await response.json();
       const normalizedKeys: ApiKey[] = (data.apiKeys || []).map((key: any) => {
+        // Work with dollar amounts directly
         const quota = key.quota ? parseFloat(key.quota) : null;
-        const tokensUsed = key.tokensUsed || 0;
+        const quotaUsed = key.quotaUsed || 0;
         return {
           id: key.id,
           name: key.name,
@@ -101,8 +102,8 @@ export default function ApiKeysPage() {
           createdAt: key.createdAt,
           lastUsedAt: key.lastUsedAt,
           quota,
-          tokensUsed,
-          remainingQuota: quota !== null ? Math.max(0, quota - tokensUsed) : null,
+          tokensUsed: quotaUsed, // Reuse the field but store quota used instead
+          remainingQuota: quota !== null ? Math.max(0, quota - quotaUsed) : null,
           expiredAt: key.expiredAt
         };
       });
@@ -144,7 +145,7 @@ export default function ApiKeysPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
-  const [newKeyRequestLimit, setNewKeyRequestLimit] = useState<number | null>(100000); // Default 100K tokens
+  const [newKeyRequestLimit, setNewKeyRequestLimit] = useState<number | null>(20); // Default $20
   const [newKeyExpirationPeriod, setNewKeyExpirationPeriod] = useState<string>(""); // "" = no expire
   const [visibleKeys, setVisibleKeys] = useState<Set<number>>(new Set());
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -190,10 +191,10 @@ export default function ApiKeysPage() {
 
     // 立即关闭弹窗并保存名称和quota
     const keyName = newKeyName.trim();
-    const requestLimit = newKeyRequestLimit;
+    const requestLimit = newKeyRequestLimit; // Already in dollars
     const expiredAt = getExpirationDateFromPeriod(newKeyExpirationPeriod);
     setNewKeyName("");
-    setNewKeyRequestLimit(100000); // Reset to default
+    setNewKeyRequestLimit(20); // Reset to default $20
     setNewKeyExpirationPeriod(""); // Reset to empty
     setShowCreateModal(false);
 
@@ -289,16 +290,11 @@ export default function ApiKeysPage() {
     });
   };
 
-  const formatTokens = (tokens: number | null | undefined) => {
-    if (tokens === null || tokens === undefined) {
+  const formatDollars = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined) {
       return '0';
     }
-    if (tokens >= 1000000) {
-      return `${(tokens / 1000000).toFixed(1)}M`;
-    } else if (tokens >= 1000) {
-      return `${(tokens / 1000).toFixed(1)}K`;
-    }
-    return tokens.toString();
+    return `$${amount}`;
   };
 
   // Helper function to check if API key is expired
@@ -498,7 +494,7 @@ export default function ApiKeysPage() {
   return (
     <DashboardLayout
       pageTitle={t("apiKeys")}
-      pageSubtitle="Manage your API keys for accessing Claude IDE services"
+      pageSubtitle="Manage your API keys for accessing Code I Lab"
       hasActiveSubscription={isActive}
     >
       <div className="max-w-7xl mx-auto space-y-8">
@@ -506,65 +502,64 @@ export default function ApiKeysPage() {
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Total API Keys Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-card text-card-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{apiKeysT("totalApiKeys")}</p>
-                  <p className="text-2xl font-bold text-gray-900">{apiKeys.length}</p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-sm font-medium text-muted-foreground">{apiKeysT("totalApiKeys")}</p>
+                  <p className="text-2xl font-bold text-foreground">{apiKeys.length}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     {planInfo
                       ? `${apiKeysT("ofPlanLimitPrefix")}${getPlanLimits(planInfo.membershipLevel).maxKeys}${apiKeysT("ofPlanLimitSuffix")}`
                       : apiKeysT("noPlanLimit")
                     }
                   </p>
                 </div>
-                <div className="p-3 bg-blue-100 rounded-lg">
-                  <Key className="h-6 w-6 text-blue-600" />
+                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <Key className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Total API Keys Quota Used Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-card text-card-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{apiKeysT("apiKeysQuotaUsed")}</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {/* {formatTokens(apiKeys.reduce((sum, key) => sum + key.tokensUsed, 0))} */}
-                    {userDetail?.quotaMonthlyUsed}
+                  <p className="text-sm font-medium text-muted-foreground">{apiKeysT("apiKeysQuotaUsed")}</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    ${userDetail?.quotaMonthlyUsed || 0}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {apiKeys.length > 0
-                      ? `${apiKeysT("ofTotalPrefix")}${formatTokens(apiKeys.reduce((sum, key) => sum + (key.quota || 0), 0))}${apiKeysT("ofTotalSuffix")}`
+                      ? `${apiKeysT("ofTotalPrefix")}$${apiKeys.reduce((sum, key) => sum + (key.quota || 0), 0)}${apiKeysT("ofTotalSuffix")}`
                       : apiKeysT("noKeysCreated")
                     }
                   </p>
                 </div>
-                <div className="p-3 bg-green-100 rounded-lg">
-                  <BarChart3 className="h-6 w-6 text-green-600" />
+                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <BarChart3 className="h-6 w-6 text-green-600 dark:text-green-400" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* User Monthly Quota Card */}
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg bg-card text-card-foreground">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{apiKeysT("yourMonthlyQuota")}</p>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-sm font-medium text-muted-foreground">{apiKeysT("yourMonthlyQuota")}</p>
+                  <p className="text-2xl font-bold text-foreground">
                     ${quota || 30}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {apiKeysT("basedOnSubscription")}
                   </p>
                 </div>
-                <div className="p-3 bg-purple-100 rounded-lg">
-                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
               </div>
             </CardContent>
@@ -572,17 +567,17 @@ export default function ApiKeysPage() {
         </div>
 
         {/* API Keys List */}
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 shadow-lg bg-card text-card-foreground">
           <CardHeader className="pb-4">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg">
                   <Key className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg text-gray-900">{apiKeysT("title")}</CardTitle>
+                  <CardTitle className="text-lg text-foreground">{apiKeysT("title")}</CardTitle>
                   <div className="flex items-center gap-2 mt-1">
-                    <CardDescription className="text-gray-600">{apiKeysT("description")}</CardDescription>
+                    <CardDescription className="text-muted-foreground">{apiKeysT("description")}</CardDescription>
                     {loadingPlanInfo ? (
                       <div className="flex items-center gap-2">
                         <div className="animate-pulse px-2 py-1 bg-gray-200 text-gray-200 text-xs font-medium rounded-full">
@@ -591,7 +586,7 @@ export default function ApiKeysPage() {
                       </div>
                     ) : planInfo ? (
                       <div className="flex items-center gap-2">
-                        <div className="px-2 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-medium rounded-full">
+                        <div className="px-2 py-1 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 text-white text-xs font-medium rounded-full">
                           {planInfo.name}
                         </div>
                         <span className="text-xs text-gray-500">
@@ -611,7 +606,7 @@ export default function ApiKeysPage() {
               <Button
                 onClick={() => setShowCreateModal(true)}
                 disabled={planInfo ? apiKeys.length >= getPlanLimits(planInfo.membershipLevel).maxKeys : false}
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-300 dark:hover:to-blue-400 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {apiKeysT("create")}
@@ -648,14 +643,14 @@ export default function ApiKeysPage() {
                 )}
 
                 {apiKeys.map((apiKey) => (
-                  <div key={apiKey.id} className={`bg-gray-50 rounded-xl p-6 border ${deletingKeyId === apiKey.id ? 'border-orange-200 bg-orange-50' : 'border-gray-200'} ${deletingKeyId === apiKey.id ? '' : 'hover:shadow-md'} transition-all duration-200`}>
+                  <div key={apiKey.id} className={`bg-card dark:bg-secondary/20 rounded-xl p-6 border ${deletingKeyId === apiKey.id ? 'border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20' : 'border-border'} ${deletingKeyId === apiKey.id ? '' : 'hover:shadow-md'} transition-all duration-200`}>
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <div className="p-1.5 bg-white rounded-lg shadow-sm">
-                            <Key className="h-4 w-4 text-gray-600" />
+                          <div className="p-1.5 bg-card dark:bg-accent/50 rounded-lg shadow-sm border border-border">
+                            <Key className="h-4 w-4 text-foreground" />
                           </div>
-                          <h3 className="font-semibold text-gray-900 text-lg">{apiKey.name}</h3>
+                          <h3 className="font-semibold text-foreground text-lg">{apiKey.name}</h3>
                           <div className={`px-2 py-1 text-xs font-medium rounded-full ${getQuotaColor(apiKey.remainingQuota, apiKey.quota)}`}>
                             {apiKey.quota === null || apiKey.quota === 0
                               ? apiKeysT("noLimit")
@@ -680,14 +675,14 @@ export default function ApiKeysPage() {
                             </div>
                           )}
                         </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
                           <div className="flex items-center space-x-1">
                             <div className="w-2 h-2 rounded-full bg-green-500"></div>
                             <span>{apiKeysT("created")}: {formatDate(apiKey.createdAt)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <BarChart3 className="h-3 w-3" />
-                            <span>Tokens used: {formatTokens(apiKey.tokensUsed)}</span>
+                            <span>Quota used: ${apiKey.tokensUsed}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Clock className="h-3 w-3" />
@@ -761,19 +756,19 @@ export default function ApiKeysPage() {
                     </div>
                     <div className="space-y-3">
                       {/* Quota Progress Bar */}
-                      <div className={`bg-white rounded-lg p-4 border border-gray-200 ${isExpired(apiKey.expiredAt) ? 'opacity-50' : ''}`}>
+                      <div className={`bg-card dark:bg-secondary/20 rounded-lg p-4 border border-border ${isExpired(apiKey.expiredAt) ? 'opacity-50' : ''}`}>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700">Monthly Quota Usage</span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-sm font-medium text-foreground">Monthly Quota Usage</span>
+                          <span className="text-xs text-muted-foreground">
                             {apiKey.quota === null
-                              ? `${formatTokens(apiKey.tokensUsed)} / ${apiKeysT("noLimit")}`
-                              : `${formatTokens(apiKey.tokensUsed)} / ${formatTokens(apiKey.quota)}`
+                              ? `$${apiKey.tokensUsed} / ${apiKeysT("noLimit")}`
+                              : `$${apiKey.tokensUsed} / $${apiKey.quota}`
                             }
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-muted rounded-full h-2">
                           {apiKey.quota === null ? (
-                            <div className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 w-full"></div>
+                            <div className="h-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 w-full"></div>
                           ) : (
                             <div
                               className={`h-2 rounded-full transition-all duration-300 ${apiKey.quota && apiKey.tokensUsed >= apiKey.quota
@@ -788,25 +783,25 @@ export default function ApiKeysPage() {
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <span className={`text-xs font-medium ${apiKey.quota === null || apiKey.quota === 0
-                            ? 'text-purple-600'
+                            ? 'text-purple-600 dark:text-purple-400'
                             : apiKey.tokensUsed >= apiKey.quota
-                              ? 'text-red-600'
+                              ? 'text-red-600 dark:text-red-400'
                               : apiKey.tokensUsed >= apiKey.quota * 0.8
-                                ? 'text-yellow-600'
-                                : 'text-green-600'
+                                ? 'text-yellow-600 dark:text-yellow-400'
+                                : 'text-green-600 dark:text-green-400'
                             }`}>
                             {apiKey.quota === null || apiKey.quota === 0
                               ? apiKeysT("unlimitedQuota")
-                              : formatTokens(apiKey.remainingQuota!)
+                              : `$${apiKey.remainingQuota}`
                             } {apiKey.quota !== null && apiKey.quota > 0 && ' remaining'}
                           </span>
                           <span className={`text-xs font-medium ${apiKey.quota === null || apiKey.quota === 0
-                            ? 'text-purple-600'
+                            ? 'text-purple-600 dark:text-purple-400'
                             : apiKey.tokensUsed >= apiKey.quota
-                              ? 'text-red-600'
+                              ? 'text-red-600 dark:text-red-400'
                               : apiKey.tokensUsed >= apiKey.quota * 0.8
-                                ? 'text-yellow-600'
-                                : 'text-green-600'
+                                ? 'text-yellow-600 dark:text-yellow-400'
+                                : 'text-green-600 dark:text-green-400'
                             }`}>
                             {apiKey.quota === null || apiKey.quota === 0
                               ? `${apiKeysT("unlimitedAccess")}`
@@ -816,20 +811,20 @@ export default function ApiKeysPage() {
                         </div>
                       </div>
                       {/* API Key Display */}
-                      <div className="bg-white rounded-lg p-4 border border-gray-200">
+                      <div className="bg-card dark:bg-secondary/20 rounded-lg p-4 border border-border">
                         <div className="flex items-center justify-between">
-                          <div className="font-mono text-sm text-gray-700">
+                          <div className="font-mono text-sm text-foreground">
                             {visibleKeys.has(apiKey.id) ? (
                               <div className="flex items-center space-x-2">
                                 <span>{apiKey.key}</span>
-                                <div className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+                                <div className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded">
                                   Visible
                                 </div>
                               </div>
                             ) : (
                               <div className="flex items-center space-x-2">
-                                <span className="text-gray-400">sk-proj-xxxxxxxxxxxxxxxxxxxx</span>
-                                <div className="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded">
+                                <span className="text-muted-foreground">sk-proj-xxxxxxxxxxxxxxxxxxxx</span>
+                                <div className="px-2 py-1 bg-muted text-muted-foreground text-xs font-medium rounded">
                                   Hidden
                                 </div>
                               </div>
@@ -842,11 +837,11 @@ export default function ApiKeysPage() {
                 ))}
                 {apiKeys.length === 0 && (
                   <div className="text-center py-12">
-                    <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                      <Key className="h-8 w-8 text-gray-400" />
+                    <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                      <Key className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">{apiKeysT("noApiKeys")}</h3>
-                    <p className="text-gray-500">{apiKeysT("noApiKeysDescription")}</p>
+                    <h3 className="text-lg font-medium text-foreground mb-2">{apiKeysT("noApiKeys")}</h3>
+                    <p className="text-muted-foreground">{apiKeysT("noApiKeysDescription")}</p>
                   </div>
                 )}
               </div>
@@ -864,16 +859,16 @@ export default function ApiKeysPage() {
             onClick={() => setShowCreateModal(false)}
           />
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 animate-in zoom-in duration-200">
-              <div className="p-6 border-b border-gray-100">
+            <div className="bg-card text-card-foreground rounded-2xl shadow-2xl w-full max-w-md border border-border animate-in zoom-in duration-200">
+              <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg">
                       <Plus className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">{apiKeysT("createTitle")}</h2>
-                      <p className="text-sm text-gray-600 mt-1">{apiKeysT("createDescription")}</p>
+                      <h2 className="text-xl font-semibold text-foreground">{apiKeysT("createTitle")}</h2>
+                      <p className="text-sm text-muted-foreground mt-1">{apiKeysT("createDescription")}</p>
                     </div>
                   </div>
                   <Button
@@ -893,7 +888,7 @@ export default function ApiKeysPage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       API Key Name
                     </label>
                     <input
@@ -901,20 +896,20 @@ export default function ApiKeysPage() {
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
                       placeholder={apiKeysT("namePlaceholder")}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                      className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-muted-foreground"
                       autoFocus
                     />
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Choose a descriptive name to help you identify this API key
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       {apiKeysT("monthlyRequestLimit")}
                     </label>
                     {newKeyRequestLimit === null ? (
-                      <div className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 text-gray-700 font-medium">
+                      <div className="w-full border border-border rounded-lg px-4 py-3 bg-muted text-foreground font-medium">
                         {apiKeysT("noLimit")}
                       </div>
                     ) : (
@@ -923,52 +918,52 @@ export default function ApiKeysPage() {
                           type="number"
                           value={newKeyRequestLimit}
                           onChange={(e) => setNewKeyRequestLimit(Math.max(1, parseInt(e.target.value) || 0))}
-                          min="1000"
-                          max="10000000"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          min="1"
+                          max="2000" // $2000
+                          className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                         />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
-                          {formatTokens(newKeyRequestLimit)}
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">
+                          ${newKeyRequestLimit}
                         </div>
                       </div>
                     )}
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
                       <button
                         type="button"
-                        onClick={() => setNewKeyRequestLimit(50000)}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 50000
+                        onClick={() => setNewKeyRequestLimit(10)} // $10
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 10
                           ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         $10
                       </button>
                       <button
                         type="button"
-                        onClick={() => setNewKeyRequestLimit(100000)}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 100000
+                        onClick={() => setNewKeyRequestLimit(20)} // $20
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 20
                           ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         $20
                       </button>
                       <button
                         type="button"
-                        onClick={() => setNewKeyRequestLimit(500000)}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 500000
+                        onClick={() => setNewKeyRequestLimit(50)} // $50
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 50
                           ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         $50
                       </button>
                       <button
                         type="button"
-                        onClick={() => setNewKeyRequestLimit(1000000)}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 1000000
+                        onClick={() => setNewKeyRequestLimit(100)} // $100
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === 100
                           ? "bg-blue-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         $100
@@ -978,25 +973,25 @@ export default function ApiKeysPage() {
                         onClick={() => setNewKeyRequestLimit(null)}
                         className={`px-3 py-1 text-xs rounded-md transition-colors ${newKeyRequestLimit === null
                           ? "bg-purple-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         {apiKeysT("noLimit")}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       {apiKeysT("quotaDescription")}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       {apiKeysT("expirationDateOptional")}
                     </label>
                     <select
                       value={newKeyExpirationPeriod}
                       onChange={(e) => setNewKeyExpirationPeriod(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900"
+                      className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">{apiKeysT("noExpire") || "No Expiration"}</option>
                       <option value="1m">{apiKeysT("oneMonth") || "1 Month"}</option>
@@ -1004,14 +999,14 @@ export default function ApiKeysPage() {
                       <option value="6m">{apiKeysT("sixMonths") || "6 Months"}</option>
                       <option value="1y">{apiKeysT("oneYear") || "1 Year"}</option>
                     </select>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       {apiKeysT("periodDescription") || "Choose when the API key should expire. Keys will expire at 00:00:00 on the selected date."}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 bg-gray-50 rounded-b-2xl border-t border-gray-100">
+              <div className="p-6 bg-muted/50 rounded-b-2xl border-t border-border">
                 <div className="flex gap-3 justify-end">
                   <Button
                     variant="outline"
@@ -1023,7 +1018,7 @@ export default function ApiKeysPage() {
                   <Button
                     onClick={createNewApiKey}
                     disabled={!newKeyName.trim()}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-300 dark:hover:to-blue-400 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     {apiKeysT("create")}
@@ -1044,16 +1039,16 @@ export default function ApiKeysPage() {
             onClick={cancelEditApiKey}
           />
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 animate-in zoom-in duration-200">
-              <div className="p-6 border-b border-gray-100">
+            <div className="bg-card text-card-foreground rounded-2xl shadow-2xl w-full max-w-md border border-border animate-in zoom-in duration-200">
+              <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg">
                       <Edit className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">{apiKeysT("editTitle") || "Edit API Key"}</h2>
-                      <p className="text-sm text-gray-600 mt-1">{apiKeysT("editDescription") || "Update your API key settings"}</p>
+                      <h2 className="text-xl font-semibold text-foreground">{apiKeysT("editTitle") || "Edit API Key"}</h2>
+                      <p className="text-sm text-muted-foreground mt-1">{apiKeysT("editDescription") || "Update your API key settings"}</p>
                     </div>
                   </div>
                   <Button
@@ -1071,7 +1066,7 @@ export default function ApiKeysPage() {
               <div className="p-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       {apiKeysT("nameLabel") || "API Key Name"}
                     </label>
                     <input
@@ -1079,17 +1074,17 @@ export default function ApiKeysPage() {
                       value={editKeyName}
                       onChange={(e) => setEditKeyName(e.target.value)}
                       placeholder={apiKeysT("namePlaceholder") || "Enter a descriptive name for this key"}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 placeholder-gray-400"
+                      className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-muted-foreground"
                       autoFocus
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {apiKeysT("monthlyRequestLimit") || "Monthly Request Limit (tokens)"}
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      {apiKeysT("monthlyRequestLimit") || "Monthly Request Limit ($)"}
                     </label>
                     {editKeyRequestLimit === null ? (
-                      <div className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 text-gray-700 font-medium">
+                      <div className="w-full border border-border rounded-lg px-4 py-3 bg-muted text-foreground font-medium">
                         {apiKeysT("noLimit")}
                       </div>
                     ) : (
@@ -1098,51 +1093,79 @@ export default function ApiKeysPage() {
                           type="number"
                           value={editKeyRequestLimit}
                           onChange={(e) => setEditKeyRequestLimit(Math.max(1, parseInt(e.target.value) || 0))}
-                          min="1000"
-                          max="10000000"
-                          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                          min="1"
+                          max="2000" // $2000
+                          className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 [-moz-appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                         />
-                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm">
-                          {formatTokens(editKeyRequestLimit)}
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm">
+                          ${editKeyRequestLimit}
                         </div>
                       </div>
                     )}
                     <div className="flex gap-2 mt-3 flex-wrap">
-                      {[{ amount: 50000, label: '$10' }, { amount: 100000, label: '$20' }, { amount: 500000, label: '$50' }, { amount: 1000000, label: '$100' }].map(({ amount, label }) => (
-                        <button
-                          key={amount}
-                          onClick={() => setEditKeyRequestLimit(amount)}
-                          className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === amount
-                            ? "bg-purple-500 text-white"
-                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                            }`}
-                        >
-                          {label}
-                        </button>
-                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setEditKeyRequestLimit(10)} // $10
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === 10
+                          ? "bg-purple-500 text-white"
+                          : "bg-muted hover:bg-accent text-foreground"
+                          }`}
+                      >
+                        $10
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditKeyRequestLimit(20)} // $20
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === 20
+                          ? "bg-purple-500 text-white"
+                          : "bg-muted hover:bg-accent text-foreground"
+                          }`}
+                      >
+                        $20
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditKeyRequestLimit(50)} // $50
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === 50
+                          ? "bg-purple-500 text-white"
+                          : "bg-muted hover:bg-accent text-foreground"
+                          }`}
+                      >
+                        $50
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditKeyRequestLimit(100)} // $100
+                        className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === 100
+                          ? "bg-purple-500 text-white"
+                          : "bg-muted hover:bg-accent text-foreground"
+                          }`}
+                      >
+                        $100
+                      </button>
                       <button
                         onClick={() => setEditKeyRequestLimit(null)}
                         className={`px-3 py-1 text-xs rounded-md transition-colors ${editKeyRequestLimit === null
                           ? "bg-purple-500 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-muted hover:bg-accent text-foreground"
                           }`}
                       >
                         {apiKeysT("noLimit")}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">
-                      {apiKeysT("quotaDescription") || "Set the monthly token limit for this API key"}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {apiKeysT("quotaDescription") || "Set the monthly quota limit for this API key"}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       {apiKeysT("expirationDateOptional") || "Expiration Date (Optional)"}
                     </label>
                     <select
                       value={editKeyExpirationPeriod}
                       onChange={(e) => setEditKeyExpirationPeriod(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900"
+                      className="w-full border border-border rounded-lg px-4 py-3 bg-background text-foreground focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">{apiKeysT("noExpire") || "No Expiration"}</option>
                       <option value="1m">{apiKeysT("oneMonth") || "1 Month"}</option>
@@ -1150,14 +1173,14 @@ export default function ApiKeysPage() {
                       <option value="6m">{apiKeysT("sixMonths") || "6 Months"}</option>
                       <option value="1y">{apiKeysT("oneYear") || "1 Year"}</option>
                     </select>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       {apiKeysT("periodDescription") || "Choose when the API key should expire. Keys will expire at 00:00:00 on the selected date."}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 bg-gray-50 rounded-b-2xl border-t border-gray-100">
+              <div className="p-6 bg-muted/50 rounded-b-2xl border-t border-border">
                 <div className="flex gap-3 justify-end">
                   <Button
                     variant="outline"
@@ -1169,7 +1192,7 @@ export default function ApiKeysPage() {
                   <Button
                     onClick={() => updateApiKey(editingKeyId)}
                     disabled={!editKeyName.trim() || updatingKey !== null}
-                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-300 dark:hover:to-blue-400 text-white shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {updatingKey === editingKeyId ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -1194,15 +1217,15 @@ export default function ApiKeysPage() {
             onClick={() => setDeleteConfirm(null)}
           />
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 animate-in zoom-in duration-200">
-              <div className="p-6 border-b border-gray-100">
+            <div className="bg-card text-card-foreground rounded-2xl shadow-2xl w-full max-w-md border border-border animate-in zoom-in duration-200">
+              <div className="p-6 border-b border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-red-100 rounded-lg">
-                      <Trash2 className="h-5 w-5 text-red-600" />
+                    <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                      <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className="text-lg font-semibold text-foreground">
                         {apiKeysT("deleteConfirmTitle")}
                       </h3>
                     </div>
@@ -1219,11 +1242,11 @@ export default function ApiKeysPage() {
               </div>
 
               <div className="p-6">
-                <p className="text-gray-600 mb-4">
+                <p className="text-muted-foreground mb-4">
                   {getDeleteConfirmMessage(deleteConfirm.name)}
                 </p>
 
-                <p className="text-sm text-red-600 mb-6 font-medium">
+                <p className="text-sm text-red-600 dark:text-red-400 mb-6 font-medium">
                   {apiKeysT("deleteConfirmWarning")}
                 </p>
 

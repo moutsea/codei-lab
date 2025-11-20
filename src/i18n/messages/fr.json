@@ -417,7 +417,7 @@
     },
     "apiKeys": {
       "title": "Clés API",
-      "description": "Gérez vos clés API pour accéder aux services Claude IDE",
+      "description": "Gérez vos clés API pour accéder aux Code I Lab",
       "create": "Créer une Clé API",
       "createTitle": "Créer une Nouvelle Clé API",
       "createDescription": "Générez une nouvelle clé API pour vos applications",
@@ -448,7 +448,7 @@
       "noKeysCreated": "Aucune clé créée",
       "yourMonthlyQuota": "Votre Quota Mensuel",
       "basedOnSubscription": "Basé sur votre plan d'abonnement",
-      "monthlyRequestLimit": "Limite de quota mensuel (tokens)",
+      "monthlyRequestLimit": "Limite de quota mensuel",
       "noLimit": "Sans Limite",
       "unlimitedQuota": "Quota Illimité",
       "unlimitedAccess": "Accès Illimité",

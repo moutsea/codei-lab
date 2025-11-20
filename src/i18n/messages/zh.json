@@ -417,7 +417,7 @@
     },
     "apiKeys": {
       "title": "API 密钥",
-      "description": "管理您用于访问 Claude IDE 服务的 API 密钥",
+      "description": "管理您用于访问 Code I Lab 的 API 密钥",
       "create": "创建 API 密钥",
       "createTitle": "创建新 API 密钥",
       "createDescription": "为您的应用程序生成新的 API 密钥",
@@ -448,7 +448,7 @@
       "noKeysCreated": "未创建密钥",
       "yourMonthlyQuota": "您的月度配额",
       "basedOnSubscription": "基于您的订阅计划",
-      "monthlyRequestLimit": "月度额度限制 (tokens)",
+      "monthlyRequestLimit": "月度额度限制",
       "noLimit": "无限制",
       "unlimitedQuota": "无限配额",
       "unlimitedAccess": "无限制访问",

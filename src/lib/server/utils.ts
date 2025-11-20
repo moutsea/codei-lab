@@ -39,7 +39,7 @@ function mapStatusToOpenAIError(status: number): { type: OpenAIErrorType; code: 
     }
 }
 
-export async function anthropicTemplateResponse(text: string, status: number = 200, opts?: ErrorOptions) {
+export async function codexTemplateResponse(text: string, status: number = 403, opts?: ErrorOptions) {
     const mapped = mapStatusToOpenAIError(status);
     const body: OpenAIErrorBody = {
         error: {
@@ -59,31 +59,31 @@ export async function anthropicTemplateResponse(text: string, status: number = 2
     });
 }
 
-export async function anthropicHelloWorldResponse() {
-    return await anthropicTemplateResponse("", 403);
+export async function codexHelloWorldResponse() {
+    return await codexTemplateResponse("Hello! How can I help you with your software engineering tasks today? If you're unexpected to see this, pls check your configure.");
 }
 
-export async function anthropicApikeyInvalidResponse() {
-    return await anthropicTemplateResponse("Invalid key! Your api-key is invalid or expired");
+export async function codexApikeyInvalidResponse() {
+    return await codexTemplateResponse("Invalid key! Your api-key is invalid or expired");
 }
 
-export async function anthropicApikey401Response() {
-    return await anthropicTemplateResponse("Unexpected error, pls contact us by email: cfjwlchangji@gmail.com");
+export async function codexApikey401Response() {
+    return await codexTemplateResponse("Unexpected error, pls contact us by email: cfjwlchangji@gmail.com");
 }
 
-export async function anthropicApiLimitExceedResponse() {
-    return await anthropicTemplateResponse("reach the limit of api-key's quota, consider enlarge the quota or upgrade: https://claudeide.net/dashboard/api-keys");
+export async function codexApiLimitExceedResponse() {
+    return await codexTemplateResponse("reach the limit of api-key's quota, consider enlarge the quota or upgrade: https://www.codeilab.com/dashboard/api-keys");
 }
 
-export async function anthropicUserLimitExceedResponse() {
-    return await anthropicTemplateResponse("reach the limit of user's quota, consider upgrade your plan: https://claudeide.net/dashboard");
+export async function codexUserLimitExceedResponse() {
+    return await codexTemplateResponse("reach the limit of user's quota, consider upgrade your plan: https://www.codeilab.com/dashboard");
 }
 
-export async function anthropicUserSubscriptionInvalidResponse() {
-    return await anthropicTemplateResponse("subscription is invalid, consider update your plan: https://claudeide.net/dashboard");
+export async function codexUserSubscriptionInvalidResponse() {
+    return await codexTemplateResponse("subscription is invalid, consider update your plan: https://www.codeilab.com/#pricing");
 }
 
-export async function anthropicWrongBaseUrl() {
-    return await anthropicTemplateResponse("wrong parameter! pls check value of your ANTHROPIC_BASE_URL");
+export async function codexWrongBaseUrl() {
+    return await codexTemplateResponse("wrong parameter! pls check value of your codex_BASE_URL");
 }
 
