@@ -284,6 +284,37 @@ export async function POST(request: NextRequest) {
               createTopUpPurchaseFromCheckout({ userId, quota, status: "active", endDate: new Date(currentEndAt) }),
               createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type)
             ]);
+
+          } else if (type === 'renew') {
+            const existingSubscription = getUserSubscriptionByUserId(userId)
+
+            if (!existingSubscription) {
+              console.error(`Subscription not found: ${userId}`);
+              return NextResponse.json(
+                { error: 'Subscription not found' },
+                { status: 404 }
+              );
+            }
+
+            const updates = {
+              currentPeriodEnd: new Date(currentEndAt),
+              renewsAt: new Date(currentEndAt)
+            };
+
+            const userdetail: UserDetail = {
+              userId: userId,
+              planId: planId!,
+              currentEndAt: updates.currentPeriodEnd,
+              quota,
+              stripeCustomerId,
+              currency
+            }
+
+            await Promise.all([
+              updateSubscriptionByUserId(userId, updates),
+              createOrUpdateUserDetailCache(userId, userdetail),
+              createPayment(userId, planId, session.payment_intent as string, session.amount_total!, session.currency, session.payment_status, type)
+            ]);
           } else {
             if (previousMember === "trial" && currentMember !== "trial") {
               const subscription = await getSubscriptionByUserId(userId);

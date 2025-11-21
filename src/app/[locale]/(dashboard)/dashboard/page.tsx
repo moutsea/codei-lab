@@ -61,6 +61,7 @@ export default function Dashboard() {
 
   const {
     extraPlans,
+    renewPlans,
     isLoading: plansLoading,
   } = usePlans();
 
@@ -93,9 +94,10 @@ export default function Dashboard() {
   }, [usageData, quota]);
 
   const [selectedMonth, setSelectedMonth] = useState(new Date()); // Date object for react-datepicker
-  const [showNonRecurringDialog, setShowNonRecurringDialog] = useState(false);
   const [showTopUpDialog, setShowTopUpDialog] = useState(false);
+  const [showRenewDialog, setShowRenewDialog] = useState(false);
   const [topUpPlanId, setTopUpPlanId] = useState<string | null>(null);
+  const [renewPlanId, setRenewPlanId] = useState<string | null>(null);
 
   // 获取特定月份的每日使用数据
   const fetchDailyUsageForMonth = useCallback(async (date: Date) => {
@@ -225,20 +227,49 @@ export default function Dashboard() {
     }
   };
 
-  const handleUpgradePlan = async () => {
-    // Wait for user data to be loaded before making decisions
-    if (isLoading || loading || !userDetail) {
-      // console.log('User data still loading, please wait...');
-      return;
-    }
+  const handleRenew = async (plan: PlanWithPricing) => {
+    try {
+      if (!user?.email) {
+        window.location.assign("/login");
+        return;
+      }
 
-    // Check if user has an active one-payment plan (no subscription ID)
-    if (isActive && !userDetail?.stripeSubscriptionId) {
-      // console.log('User has active one-payment plan, opening non-recurring dialog');
-      setShowNonRecurringDialog(true);
-      return;
-    }
+      setRenewPlanId(plan.id);
 
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: plan.id,
+          priceId: plan.stripePriceId,
+          interval: plan.interval,
+          userId: user.id,
+          quota: plan.quota,
+          currency: plan.currency,
+          currentEndAt: userDetail?.currentEndAt,
+          type: 'renew' // Mark as renew
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.open(url);
+    } catch (error) {
+      console.error('Renew error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to process renew. Please try again.');
+    } finally {
+      setRenewPlanId(null);
+      setShowRenewDialog(false);
+    }
+  };
+
+  const handleRenewForUSD = async () => {
     try {
       const response = await fetch('/api/billing-portal', {
         method: 'POST',
@@ -261,10 +292,106 @@ export default function Dashboard() {
     }
   };
 
+  const handleRenewClick = () => {
+    const userCurrency = userDetail?.currency?.toUpperCase();
+
+    if (userCurrency === 'CNY') {
+      setShowRenewDialog(true);
+    } else if (userCurrency === 'USD') {
+      handleRenewForUSD();
+    }
+  };
+
+  const handleBillingPortal = async () => {
+    try {
+      const stripeCustomerId = userDetail?.stripeCustomerId;
+      if (stripeCustomerId) {
+        const response = await fetch('/api/billing-portal', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ stripeCustomerId }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch billing URL, status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.billingUrl) {
+          window.open(data.billingUrl);
+        } else {
+          console.error('Failed to get billing URL:', data.error);
+        }
+      }
+    } catch (error) {
+      console.error('Billing portal error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to open billing portal. Please try again.');
+    }
+  };
+
+  const handleUpgradePlan = async () => {
+    // Wait for user data to be loaded before making decisions
+    if (isLoading || loading || !userDetail) {
+      // console.log('User data still loading, please wait...');
+      return;
+    }
+
+    // Check if user has an active one-payment plan (no subscription ID)
+    if (isActive && userDetail?.currency === 'USD') {
+      // console.log('User has active one-payment plan, opening non-recurring dialog');
+      handleBillingPortal();
+      return;
+    }
+
+    try {
+      // const response = await fetch('/api/billing-portal', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({ stripeCustomerId: userDetail?.stripeCustomerId }),
+      // });
+
+      // if (!response.ok) {
+      //   throw new Error('Failed to create billing portal session');
+      // }
+
+      // const { billingUrl } = await response.json();
+      // window.location.href = billingUrl;
+
+    } catch (error) {
+      console.error('Error creating billing portal session:', error);
+      alert('Failed to open billing portal. Please try again later.');
+    }
+  };
+
   // Filter extra plans by user currency (extraPlans are already filtered by type='extra' from the hook)
   const extraPlansForUser = extraPlans?.filter(plan =>
     plan.currency.toLowerCase() === userDetail?.currency?.toLowerCase()
   ) || [];
+
+  // Filter renew plans by user currency and membership level, then sort by interval (monthly, quarterly, yearly)
+  const renewPlansForUser = renewPlans
+    ?.filter(plan =>
+      plan.currency.toLowerCase() === userDetail?.currency?.toLowerCase() &&
+      plan.name.toLowerCase().includes(userDetail?.membershipLevel?.toLowerCase() || '')
+    )
+    ?.sort((a, b) => {
+      // Sort by interval: month (1) < quarter (2) < year (3)
+      const intervalOrder: { [key: string]: number } = {
+        'month': 1,
+        'quarter': 2,
+        'year': 3
+      };
+
+      const aInterval = a.interval?.toLowerCase() || '';
+      const bInterval = b.interval?.toLowerCase() || '';
+
+      return (intervalOrder[aInterval] || 999) - (intervalOrder[bInterval] || 999);
+    }) || [];
 
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
@@ -320,6 +447,60 @@ export default function Dashboard() {
     );
   };
 
+  const RenewDialog = () => {
+    const dialogT = useTranslations('sidebar.renewDialog');
+
+    return (
+      <Dialog open={showRenewDialog} onOpenChange={setShowRenewDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{dialogT('title')}</DialogTitle>
+            <DialogDescription>
+              {dialogT('description')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            {renewPlansForUser.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No renew packages available for your membership level ({userDetail?.membershipLevel}) and currency ({userDetail?.currency}).
+              </div>
+            ) : (
+              renewPlansForUser.map((plan) => (
+                <Button
+                  key={plan.id}
+                  variant="outline"
+                  className="justify-start h-auto p-4"
+                  onClick={() => handleRenew(plan)}
+                  disabled={renewPlanId !== null}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <div className="text-left">
+                      <div className="font-medium">{plan.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        ${formatQuotaString(plan.quota)} quota
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {dialogT('renewSubscription')}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold">
+                        {plan.currency.toUpperCase()} ${(plan.amount / 100).toFixed(2)}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {dialogT('selectPlan')}
+                      </div>
+                    </div>
+                  </div>
+                </Button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   // Show loading while checking authentication or fetching data
   if (isLoading || loading) {
     return (
@@ -352,7 +533,7 @@ export default function Dashboard() {
   }
 
   // console.log(usageData);
-  console.log(userDetail);
+  // console.log(dailyUsageData);
 
   return (
     <DashboardLayout
@@ -402,8 +583,21 @@ export default function Dashboard() {
 
           <div className="bg-dashboard-card rounded-lg p-4">
             <div className="text-sm text-muted-foreground mb-1">{t("subscriptionEndDate")}</div>
-            <div className="text-2xl font-bold text-primary">
-              {userDetail?.currentEndAt ? new Date(userDetail.currentEndAt).toLocaleDateString() : dt("noSubscription")}
+            <div className="flex items-center gap-3">
+              <div className="text-2xl font-bold text-primary">
+                {userDetail?.currentEndAt ? new Date(userDetail.currentEndAt).toLocaleDateString() : dt("noSubscription")}
+              </div>
+              {
+                userDetail?.currency?.toUpperCase() === 'CNY' && (
+                  <Button
+                    variant="default"
+                    className="h-8 rounded-2xl button-themed px-3 text-sm cursor-pointer"
+                    onClick={handleRenewClick}
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    {t("renew")}
+                  </Button>
+                )}
             </div>
           </div>
 
@@ -416,7 +610,7 @@ export default function Dashboard() {
               {membershipLevel !== 'pro' && (
                 <Button
                   variant="default"
-                  className="h-10 rounded-2xl button-themed px-4"
+                  className="h-10 rounded-2xl button-themed px-4 cursor-pointer"
                   onClick={handleUpgradePlan}
                 >
                   {/* <ArrowUp className="h-4 w-4 mr-2" /> */}
@@ -470,6 +664,7 @@ export default function Dashboard() {
       </div>
 
       <TopUpDialog />
+      <RenewDialog />
     </DashboardLayout>
   );
 }

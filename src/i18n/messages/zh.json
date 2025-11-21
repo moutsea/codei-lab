@@ -330,6 +330,7 @@
     "upgradePlan": "升级",
     "membershipLevel": "会员等级",
     "topUp": "充值",
+    "renew": "续订",
     "topUpLeft": "+ ${quota} 额外额度",
     "topUpExpiresOn": "过期时间",
     "topUpDialog": {
@@ -339,6 +340,14 @@
       "processing": "处理中...",
       "confirmPurchase": "确认购买",
       "validForOneMonth": "有效期一个月"
+    },
+    "renewDialog": {
+      "title": "续订您的订阅",
+      "description": "为您的会员选择续订计划。",
+      "selectPlan": "选择套餐",
+      "processing": "处理中...",
+      "confirmPurchase": "确认购买",
+      "renewSubscription": "续订订阅"
     },
     "billingPage": {
       "title": "账单",

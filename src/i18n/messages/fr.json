@@ -330,6 +330,7 @@
     "upgradePlan": "Mettre à Niveau",
     "membershipLevel": "Niveau d'Adhésion",
     "topUp": "Recharger",
+    "renew": "Renouveler",
     "topUpLeft": "+ ${quota} extra",
     "topUpExpiresOn": "Expire le",
     "topUpDialog": {
@@ -339,6 +340,14 @@
       "processing": "Traitement en cours...",
       "confirmPurchase": "Confirmer l'Achat",
       "validForOneMonth": "Valide pour un mois"
+    },
+    "renewDialog": {
+      "title": "Renouveler Votre Abonnement",
+      "description": "Choisissez un plan de renouvellement pour votre adhésion.",
+      "selectPlan": "Sélectionner le Plan",
+      "processing": "Traitement en cours...",
+      "confirmPurchase": "Confirmer l'Achat",
+      "renewSubscription": "Renouveler l'abonnement"
     },
     "billingPage": {
       "title": "Facturation",

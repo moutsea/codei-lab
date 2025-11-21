@@ -323,6 +323,7 @@
     "upgradePlan": "Upgrade",
     "membershipLevel": "Membership Level",
     "topUp": "Top Up",
+    "renew": "Renew",
     "topUpLeft": "+ ${quota} extra",
     "topUpExpiresOn": "Expires on",
     "topUpDialog": {
@@ -332,6 +333,14 @@
       "processing": "Processing...",
       "confirmPurchase": "Confirm Purchase",
       "validForOneMonth": "Valid for one month"
+    },
+    "renewDialog": {
+      "title": "Renew Your Subscription",
+      "description": "Choose a renewal plan for your membership.",
+      "selectPlan": "Select Plan",
+      "processing": "Processing...",
+      "confirmPurchase": "Confirm Purchase",
+      "renewSubscription": "Renew subscription"
     },
     "billingPage": {
       "title": "Billing",

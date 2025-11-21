@@ -63,7 +63,7 @@ async function getPriceDiff(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { planId, priceId, interval, userId, quota, currency, type } = body;
+    const { planId, priceId, interval, userId, quota, currency, type, currentEndAt } = body;
 
     if (!planId || !priceId || !interval || !userId || !quota || !currency) {
       return NextResponse.json(
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
       console.log(`✅ Created new Stripe customer: ${customerId}`);
     }
 
-    const endDate = new Date();
+    const endDate = currentEndAt ? new Date(currentEndAt) : new Date();
     endDate.setDate(endDate.getDate() + intervalToDays(plan.interval));
 
     const metadata = {
@@ -147,7 +147,16 @@ export async function POST(request: NextRequest) {
 
     let sessionId, url;
 
-    if (type === 'extra') {
+    if (type === 'extra' || type === 'renew') {
+      let name: string = "";
+
+      if (type === 'extra') {
+        name = currency === 'USD'
+          ? `Top up for ${plan.name}\n Expiry date: ${endDate.toLocaleDateString().slice(0, 10)}`
+          : `${plan.name}加油包\n 到期时间：${endDate.toLocaleDateString().slice(0, 10)}`;
+      } else {
+        name = `${plan.name}\n 到期时间：${endDate.toLocaleDateString().slice(0, 10)}`
+      }
       // extra package
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
@@ -157,9 +166,7 @@ export async function POST(request: NextRequest) {
           price_data: {
             currency: currency,
             product_data: {
-              name: currency === 'USD'
-                ? `Top up for ${plan.name}\n Expiry date: ${endDate.toLocaleDateString().slice(0, 10)}`
-                : `${plan.name}加油包\n 到期时间：${endDate.toLocaleDateString().slice(0, 10)}`
+              name
             },
             unit_amount: plan.amount!
           },
