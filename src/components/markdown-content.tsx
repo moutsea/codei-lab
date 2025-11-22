@@ -159,7 +159,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
     ),
     li: ({ children }) => <li className="leading-7 pl-1">{children}</li>,
     blockquote: ({ children }) => (
-      <blockquote className="mb-4 pl-6 ml-2 border-l-4 border-primary italic text-muted-foreground bg-primary/10 py-3 rounded-r-lg">
+      <blockquote className="mb-4 pl-6 ml-2 border-l-4 border-primary italic text-muted-foreground bg-primary/10 dark:bg-primary/5 py-3 rounded-r-lg">
         {children}
       </blockquote>
     ),
@@ -186,7 +186,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
       </div>
     ),
     th: ({ children }) => (
-      <th className="border border-border px-4 py-2 bg-muted font-semibold text-left">
+      <th className="border border-border px-4 py-2 bg-muted dark:bg-[#212121] font-semibold text-left">
         {children}
       </th>
     ),
@@ -219,7 +219,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
         </CodeBlockWithLineNumbers>
       ) : (
         <code
-          className={`${className ?? ''} bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-red-600 dark:text-red-400`}
+          className={`${className ?? ''} bg-gray-100 dark:bg-[#212121] px-1.5 py-0.5 rounded text-sm font-mono text-red-600 dark:text-red-400`}
           {...props}
         >
           {children}
@@ -229,7 +229,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
   } satisfies Components; // ← 关键：这里做类型校验+推断
 
   return (
-    <div className={`max-w-none space-y-6 text-foreground pl-4 pr-4 ${className}`}>
+    <div className={`max-w-none space-y-6 text-foreground pl-4 pr-4 bg-background dark:bg-[#212121] ${className}`}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={renderers}>
         {content}
       </ReactMarkdown>

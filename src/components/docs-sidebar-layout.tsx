@@ -62,12 +62,12 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
     <Sidebar
       variant="inset"
       collapsible="offcanvas"
-      className="bg-card border-r border-border pl-8 pt-18 overflow-x-hidden"
+      className="bg-card dark:bg-[#212121] border-r border-border pl-8 pt-18 overflow-x-hidden"
     >
-      <SidebarContent className="bg-card overflow-y-auto overflow-x-hidden">
+      <SidebarContent className="bg-card dark:bg-[#212121] overflow-y-auto overflow-x-hidden">
         {Object.entries(groupedDocs).map(([category, docs]) => (
           <SidebarGroup key={category}>
-            <SidebarGroupLabel className="px-3 py-3 text-foreground">
+            <SidebarGroupLabel className="px-3 py-3 text-foreground bg-card dark:bg-[#212121]">
               <div className="flex items-center gap-2">
                 <FolderOpen className="w-4 h-4 text-primary" />
                 <span className="text-sm font-semibold">
@@ -75,7 +75,7 @@ function DocumentSidebar({ documents, currentCategory, currentSlug }: {
                 </span>
               </div>
             </SidebarGroupLabel>
-            <SidebarGroupContent className="bg-card">
+            <SidebarGroupContent className="bg-card dark:bg-[#212121]">
               <SidebarMenu>
                 {docs.map((doc) => {
                   const isActive = currentCategory === doc.category && currentSlug === doc.slug;
@@ -126,7 +126,7 @@ export function DocsSidebarLayout({
         currentSlug={currentSlug}
       />
       <SidebarInset>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 dark:bg-[#212121]">
           <div className="flex items-center gap-2">
             <SidebarTrigger className="-ml-1" />
           </div>

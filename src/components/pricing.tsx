@@ -5,7 +5,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Star, Zap, Users, CheckCircle, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -510,90 +510,96 @@ export default function Pricing() {
   };
 
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 section-themed">
+    <section className="py-24 px-4 sm:px-6 lg:px-8 section-themed">
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
+          <div className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium mb-6">
+            <Star className="w-4 h-4 mr-2" />
+            {t('allPlansInclude')}: {t('securePayment')}, {t('instantAccess')}, {t('cancelAnytime')}
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
             {t('title')}
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
             {t('subtitle')}
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto items-start">
           {/* Trial Card */}
           {trialPlan && (
-            <Card className="transition-all duration-300 hover:shadow-xl bg-card border border-border">
-              <CardHeader className="text-center pb-4">
-                <div className="mb-4 text-center flex justify-center text-primary">
-                  <Zap className="w-8 h-8" />
+            <div className="relative group">
+              <div className="bg-[#f8f8f8] dark:bg-card rounded-2xl p-8 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-2xl mb-6">
+                    <Zap className="w-8 h-8 text-gray-600 dark:text-gray-300" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Trial
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {t('trialSubtitle')}
+                  </p>
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">
-                  Trial
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {t('trialSubtitle')}
-                </p>
-              </CardHeader>
 
-              <CardContent className="space-y-6">
                 {/* Price */}
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-1 text-foreground">
-                    ${(trialPlan.amount / 100).toFixed(2)}
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center mb-2">
+                    <span className="text-5xl font-bold text-gray-900 dark:text-white">
+                      ${(trialPlan.amount / 100).toFixed(2)}
+                    </span>
                   </div>
-                  <div className="text-lg font-normal text-muted-foreground">
+                  <p className="text-gray-600 dark:text-gray-300">
                     {t('forOneWeek', { duration: getIntervalLabel(trialPlan.interval) })}
-                  </div>
-                </div>
-
-                {/* Quota */}
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm font-medium mb-1 text-muted-foreground">
-                    {t('totalQuota')}
-                  </div>
-                  <div className="text-xl font-bold text-foreground">
-                    ${parseFloat(trialPlan.quota).toFixed(2)}
-                  </div>
+                  </p>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-muted-foreground">
+                <div className="space-y-4 mb-8">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
                     {t('featuresList')}
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('validityPeriod')}: {t('sevenDays')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('aiModel')}: gpt-5-codex</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('totalQuota')}: $30</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 3 })}</span>
-                    </div>
-                  </div>
+                  </h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('validityPeriod')}:</strong> {t('sevenDays')}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('aiModel')}:</strong> gpt-5-codex
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('totalQuota')}:</strong> ${parseFloat(trialPlan.quota).toFixed(2)}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('apiKeysQuota')}:</strong> {t('apiKeysCount', { count: 3 })}
+                      </span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* CTA Button */}
                 <Button
-                  className="w-full cursor-pointer py-3 text-base font-semibold"
+                  className="w-full py-4 text-base font-semibold bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   onClick={() => handleOneTimePay(trialPlan)}
                   disabled={subscribingPlanId !== null}
                 >
                   {subscribingPlanId !== null ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       {t('subscriptionDialog.processing')}
                     </>
                   ) : (
@@ -603,100 +609,106 @@ export default function Pricing() {
 
                 {/* CNY Payment Link */}
                 {trialCnyPlan && (
-                  <Button
-                    className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
-                    variant="ghost"
-                    onClick={() => handleOneTimePay(trialCnyPlan)}
-                    disabled={subscribingPlanId !== null}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
-                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
-                      <span>支付宝或微信支付</span>
-                    </div>
-                  </Button>
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Button
+                      className="w-full py-3 text-sm border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-xl transition-all duration-200"
+                      variant="outline"
+                      onClick={() => handleOneTimePay(trialCnyPlan)}
+                      disabled={subscribingPlanId !== null}
+                    >
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <Image src="/alipay.png" alt="支付宝" width={18} height={18} className="h-4 w-auto" />
+                          <Image src="/wxpay.png" alt="微信支付" width={18} height={18} className="h-4 w-auto" />
+                        </div>
+                        <span>支付宝或微信支付</span>
+                      </div>
+                    </Button>
+                  </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
-          {/* Plus Card */}
+          {/* Plus Card - Featured */}
           {plusPlans.length > 0 && (
-            <Card className="relative transition-all duration-300 hover:shadow-xl ring-4 ring-primary/20 scale-105 bg-primary text-primary-foreground">
-              {/* Featured Badge */}
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                <Star className="w-4 h-4" />
-                {t('featuredBadge') || 'Most Popular'}
+            <div className="relative group scale-105">
+              {/* Featured badge */}
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full text-sm font-semibold shadow-lg">
+                  <Star className="w-4 h-4 mr-2" />
+                  {t('featuredBadge') || 'Most Popular'}
+                </div>
               </div>
 
-              <CardHeader className="text-center pb-4">
-                <div className="mb-4 text-center flex justify-center text-primary-foreground">
-                  <Users className="w-8 h-8" />
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 shadow-lg">
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl mb-6 shadow-lg">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Plus
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
+                    {t('plusSubtitle')}
+                  </p>
                 </div>
-                <CardTitle className="text-2xl font-bold text-primary-foreground">
-                  Plus
-                </CardTitle>
-                <p className="text-sm text-primary-foreground/80 mt-2">
-                  {t('plusSubtitle')}
-                </p>
-              </CardHeader>
 
-              <CardContent className="space-y-6">
                 {/* Price */}
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-1 text-primary-foreground">
-                    ${(plusPlans[0].amount / 100).toFixed(2)}
-                    <span className="text-lg font-normal text-primary-foreground/70">
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center mb-2">
+                    <span className="text-5xl font-bold text-gray-900 dark:text-white">
+                      ${(plusPlans[0].amount / 100).toFixed(2)}
+                    </span>
+                    <span className="text-xl text-gray-600 dark:text-gray-300 ml-2">
                       /{getIntervalLabel(plusPlans[0].interval)}
                     </span>
                   </div>
                 </div>
 
-                {/* Quota */}
-                <div className="text-center p-4 rounded-lg bg-primary-foreground/10">
-                  <div className="text-sm font-medium mb-1 text-primary-foreground/80">
-                    {t('monthlyQuota')}
-                  </div>
-                  <div className="text-xl font-bold text-primary-foreground">
-                    ${parseFloat(plusPlans[0].quota).toFixed(2)}
-                  </div>
-                </div>
-
                 {/* Features */}
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-primary-foreground/80">
+                <div className="space-y-4 mb-8">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
                     {t('featuresList')}
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
-                      <span>{t('validityPeriod')}: {t('thirtyDays')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
-                      <span>{t('aiModel')}: gpt-5-codex</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
-                      <span>{t('monthlyQuota')}: $100</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-primary-foreground'} />
-                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 10 })}</span>
-                    </div>
-                  </div>
+                  </h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-200">
+                        <strong>{t('validityPeriod')}:</strong> {t('thirtyDays')}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-200">
+                        <strong>{t('aiModel')}:</strong> gpt-5-codex
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-200">
+                        <strong>{t('monthlyQuota')}:</strong> ${parseFloat(plusPlans[0].quota).toFixed(2)}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700 dark:text-gray-200">
+                        <strong>{t('apiKeysQuota')}:</strong> {t('apiKeysCount', { count: 10 })}
+                      </span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* CTA Button */}
                 <Button
-                  className="w-full cursor-pointer py-3 text-base font-semibold bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                  variant="secondary"
+                  className="w-full py-4 text-base font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   onClick={handlePlusSubscribe}
                   disabled={subscribingPlanId !== null}
                 >
                   {subscribingPlanId !== null ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       {t('subscriptionDialog.processing')}
                     </>
                   ) : (
@@ -706,93 +718,98 @@ export default function Pricing() {
 
                 {/* CNY Payment Link */}
                 {plusCnyPlan && (
-                  <Button
-                    className="w-full cursor-pointer py-2 text-sm border-0 "
-                    variant="ghost"
-                    onClick={() => handleOneTimePay(plusCnyPlan)}
-                    disabled={subscribingPlanId !== null}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
-                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
-                      <span>支付宝或微信支付</span>
-                    </div>
-                  </Button>
+                  <div className="mt-4 pt-4 border-t border-blue-200 dark:border-purple-700">
+                    <Button
+                      className="w-full py-3 text-sm border-blue-300 dark:border-purple-600 hover:border-blue-400 dark:hover:border-purple-500 text-blue-700 dark:text-purple-300 hover:bg-blue-50 dark:hover:bg-purple-900/20 rounded-xl transition-all duration-200"
+                      variant="outline"
+                      onClick={() => handleOneTimePay(plusCnyPlan)}
+                      disabled={subscribingPlanId !== null}
+                    >
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <Image src="/alipay.png" alt="支付宝" width={18} height={18} className="h-4 w-auto" />
+                          <Image src="/wxpay.png" alt="微信支付" width={18} height={18} className="h-4 w-auto" />
+                        </div>
+                        <span>支付宝或微信支付</span>
+                      </div>
+                    </Button>
+                  </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Pro Card */}
           {proPlans.length > 0 && (
-            <Card className="transition-all duration-300 hover:shadow-xl bg-card border border-border">
-              <CardHeader className="text-center pb-4">
-                <div className="mb-4 text-center flex justify-center text-primary">
-                  <Star className="w-8 h-8" />
+            <div className="relative group">
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-2xl p-8 border border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                {/* Header */}
+                <div className="text-center mb-8">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-700 dark:to-pink-700 rounded-2xl mb-6">
+                    <Star className="w-8 h-8 text-purple-600 dark:text-purple-300" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                    Pro
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {t('proSubtitle')}
+                  </p>
                 </div>
-                <CardTitle className="text-2xl font-bold text-foreground">
-                  Pro
-                </CardTitle>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {t('proSubtitle')}
-                </p>
-              </CardHeader>
 
-              <CardContent className="space-y-6">
                 {/* Price */}
-                <div className="text-center">
-                  <div className="text-4xl font-bold mb-1 text-foreground">
-                    ${(proPlans[0].amount / 100).toFixed(2)}
-                    <span className="text-lg font-normal text-muted-foreground">
+                <div className="text-center mb-8">
+                  <div className="flex items-baseline justify-center mb-2">
+                    <span className="text-5xl font-bold text-gray-900 dark:text-white">
+                      ${(proPlans[0].amount / 100).toFixed(2)}
+                    </span>
+                    <span className="text-xl text-gray-600 dark:text-gray-300 ml-2">
                       /{getIntervalLabel(proPlans[0].interval)}
                     </span>
                   </div>
                 </div>
 
-                {/* Quota */}
-                <div className="text-center p-4 rounded-lg bg-muted">
-                  <div className="text-sm font-medium mb-1 text-muted-foreground">
-                    {t('monthlyQuota')}
-                  </div>
-                  <div className="text-xl font-bold text-foreground">
-                    ${parseFloat(proPlans[0].quota).toFixed(2)}
-                  </div>
-                </div>
-
                 {/* Features */}
-                <div className="space-y-3">
-                  <div className="text-sm font-medium text-muted-foreground">
+                <div className="space-y-4 mb-8">
+                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
                     {t('featuresList')}
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('validityPeriod')}: {t('thirtyDays')}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('aiModel')}: gpt-5-codex</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('monthlyQuota')}: $500</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className={'w-4 h-4 text-green-500'} />
-                      <span>{t('apiKeysQuota')}: {t('apiKeysCount', { count: 50 })}</span>
-                    </div>
-                  </div>
+                  </h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('validityPeriod')}:</strong> {t('thirtyDays')}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('aiModel')}:</strong> gpt-5-codex
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('monthlyQuota')}:</strong> ${parseFloat(proPlans[0].quota).toFixed(2)}
+                      </span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="w-5 h-5 text-purple-500 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-600 dark:text-gray-300">
+                        <strong>{t('apiKeysQuota')}:</strong> {t('apiKeysCount', { count: 50 })}
+                      </span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* CTA Button */}
                 <Button
-                  className="w-full cursor-pointer py-3 text-base font-semibold"
+                  className="w-full py-4 text-base font-semibold bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   onClick={handleProSubscribe}
                   disabled={subscribingPlanId !== null}
                 >
                   {subscribingPlanId !== null ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                       {t('subscriptionDialog.processing')}
                     </>
                   ) : (
@@ -802,21 +819,25 @@ export default function Pricing() {
 
                 {/* CNY Payment Link */}
                 {proCnyPlan && (
-                  <Button
-                    className="w-full cursor-pointer py-2 text-sm border-0 bg-background/50 hover:bg-primary hover:text-white"
-                    variant="ghost"
-                    onClick={() => handleOneTimePay(proCnyPlan)}
-                    disabled={subscribingPlanId !== null}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Image src="/alipay.png" alt="支付宝" width={20} height={20} className="h-5 w-auto" />
-                      <Image src="/wxpay.png" alt="微信支付" width={20} height={20} className="h-5 w-auto" />
-                      <span>支付宝或微信支付</span>
-                    </div>
-                  </Button>
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <Button
+                      className="w-full py-3 text-sm border-purple-300 dark:border-purple-600 hover:border-purple-400 dark:hover:border-purple-500 text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl transition-all duration-200"
+                      variant="outline"
+                      onClick={() => handleOneTimePay(proCnyPlan)}
+                      disabled={subscribingPlanId !== null}
+                    >
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <Image src="/alipay.png" alt="支付宝" width={18} height={18} className="h-4 w-auto" />
+                          <Image src="/wxpay.png" alt="微信支付" width={18} height={18} className="h-4 w-auto" />
+                        </div>
+                        <span>支付宝或微信支付</span>
+                      </div>
+                    </Button>
+                  </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
         </div>
 

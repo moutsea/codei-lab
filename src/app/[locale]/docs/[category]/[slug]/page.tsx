@@ -104,7 +104,7 @@ export default async function DocPage({ params }: PageProps) {
             currentCategory={category}
             currentSlug={slug}
           >
-            <div className="max-w-6xl bg-card p-6 rounded-lg">
+            <div className="max-w-6xl bg-card dark:bg-[#212121] p-6 rounded-lg">
               {/* Breadcrumb Navigation */}
               <nav className="flex items-center space-x-2 text-sm text-muted-foreground mb-8">
                 <Link href="/" className="flex items-center gap-1 hover:text-foreground">
