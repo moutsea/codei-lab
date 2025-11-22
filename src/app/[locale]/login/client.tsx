@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface LoginButtonClientProps {
-  provider: 'google' | 'github' | 'microsoft';
+  provider: 'google' | 'github' | 'microsoft-entra-id';
 }
 
 interface EmailLoginFormProps {
@@ -70,7 +70,7 @@ export function LoginButtonClient({ provider }: LoginButtonClientProps) {
           ),
           className: 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-300'
         };
-      case 'microsoft':
+      case 'microsoft-entra-id':
         return {
           name: 'Microsoft',
           icon: (
