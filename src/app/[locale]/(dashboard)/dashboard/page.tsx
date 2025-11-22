@@ -62,6 +62,7 @@ export default function Dashboard() {
   const {
     extraPlans,
     renewPlans,
+    payPlans,
     isLoading: plansLoading,
   } = usePlans();
 
@@ -96,8 +97,10 @@ export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = useState(new Date()); // Date object for react-datepicker
   const [showTopUpDialog, setShowTopUpDialog] = useState(false);
   const [showRenewDialog, setShowRenewDialog] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [topUpPlanId, setTopUpPlanId] = useState<string | null>(null);
   const [renewPlanId, setRenewPlanId] = useState<string | null>(null);
+  const [upgradePlanId, setUpgradePlanId] = useState<string | null>(null);
 
   // 获取特定月份的每日使用数据
   const fetchDailyUsageForMonth = useCallback(async (date: Date) => {
@@ -332,6 +335,47 @@ export default function Dashboard() {
     }
   };
 
+  const handleUpgrade = async (plan: PlanWithPricing) => {
+    try {
+      if (!user?.email) {
+        window.location.assign("/login");
+        return;
+      }
+
+      setUpgradePlanId(plan.id);
+
+      const response = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId: plan.id,
+          priceId: plan.stripePriceId,
+          interval: plan.interval,
+          userId: user.id,
+          quota: plan.quota,
+          currency: plan.currency,
+          type: 'pay' // Mark as one-time payment
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+      window.open(url);
+    } catch (error) {
+      console.error('Upgrade error:', error);
+      alert(error instanceof Error ? error.message : 'Failed to process upgrade. Please try again.');
+    } finally {
+      setUpgradePlanId(null);
+      setShowUpgradeDialog(false);
+    }
+  };
+
   const handleUpgradePlan = async () => {
     // Wait for user data to be loaded before making decisions
     if (isLoading || loading || !userDetail) {
@@ -339,33 +383,20 @@ export default function Dashboard() {
       return;
     }
 
-    // Check if user has an active one-payment plan (no subscription ID)
-    if (isActive && userDetail?.currency === 'USD') {
+    const userCurrency = userDetail?.currency?.toUpperCase();
+
+    // For USD users, check if they have an active one-payment plan (no subscription ID)
+    if (isActive && userCurrency === 'USD') {
       // console.log('User has active one-payment plan, opening non-recurring dialog');
       handleBillingPortal();
       return;
     }
 
-    try {
-      // const response = await fetch('/api/billing-portal', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({ stripeCustomerId: userDetail?.stripeCustomerId }),
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error('Failed to create billing portal session');
-      // }
-
-      // const { billingUrl } = await response.json();
-      // window.location.href = billingUrl;
-
-    } catch (error) {
-      console.error('Error creating billing portal session:', error);
-      alert('Failed to open billing portal. Please try again later.');
+    if (userCurrency === 'CNY') {
+      setShowUpgradeDialog(true);
+      return;
     }
+
   };
 
   // Filter extra plans by user currency (extraPlans are already filtered by type='extra' from the hook)
@@ -392,6 +423,14 @@ export default function Dashboard() {
 
       return (intervalOrder[aInterval] || 999) - (intervalOrder[bInterval] || 999);
     }) || [];
+
+  // Filter upgrade plans for CNY users (type === 'pay', currency === 'CNY')
+  const upgradePlansForUser = payPlans?.filter(plan =>
+    plan.currency.toLowerCase() === 'cny' &&
+    (userDetail?.membershipLevel === 'trial'
+      ? plan.name.toLowerCase().includes('plus') || plan.name.toLowerCase().includes('pro')
+      : plan.name.toLowerCase().includes('pro'))
+  ) || [];
 
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
@@ -487,6 +526,60 @@ export default function Dashboard() {
                       <div className="font-bold">
                         {plan.currency.toUpperCase()} ${(plan.amount / 100).toFixed(2)}
                       </div>
+                      <div className="text-sm text-muted-foreground">
+                        {dialogT('selectPlan')}
+                      </div>
+                    </div>
+                  </div>
+                </Button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  const UpgradeDialog = () => {
+    const dialogT = useTranslations('sidebar.upgradeDialog');
+
+    return (
+      <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>{dialogT('title')}</DialogTitle>
+            <DialogDescription>
+              {dialogT('description')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            {upgradePlansForUser.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No upgrade packages available for your membership level ({userDetail?.membershipLevel}) and currency (CNY).
+              </div>
+            ) : (
+              upgradePlansForUser.map((plan) => (
+                <Button
+                  key={plan.id}
+                  variant="outline"
+                  className="justify-start h-auto p-4"
+                  onClick={() => handleUpgrade(plan)}
+                  disabled={upgradePlanId !== null}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <div className="text-left">
+                      <div className="font-medium">{plan.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        ${formatQuotaString(plan.quota)} quota
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {dialogT('oneTimePayment')}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      {/* <div className="font-bold">
+                        {plan.currency.toUpperCase()} ${(plan.amount / 100).toFixed(2)}
+                      </div> */}
                       <div className="text-sm text-muted-foreground">
                         {dialogT('selectPlan')}
                       </div>
@@ -665,6 +758,7 @@ export default function Dashboard() {
 
       <TopUpDialog />
       <RenewDialog />
+      <UpgradeDialog />
     </DashboardLayout>
   );
 }

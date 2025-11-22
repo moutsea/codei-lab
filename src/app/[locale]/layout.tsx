@@ -32,7 +32,7 @@ export async function generateMetadata({
   const realLocale = normalizeLocale(locale)
   const prefix = getLocalePrefix(realLocale)
   const canonical = `${siteUrl}${prefix || '/'}`
-  const ogImage = `${siteUrl}/og.jpg`
+  const ogImage = `${siteUrl}/og.png`
 
   // 生成 hreflang 映射
   const alternatesLanguages = SUPPORTED_LOCALES.reduce<Record<string, string>>((acc, l) => {
@@ -45,8 +45,6 @@ export async function generateMetadata({
   const alternateOgLocales = SUPPORTED_LOCALES.filter(l => l !== locale).map(l => OG_LOCALE_MAP[l])
 
   return {
-    // （可省略）如需覆盖，可再次设定；否则沿用 root 的 metadataBase
-    // metadataBase: new URL(siteUrl),
 
     title: {
       template: L10N.titleTemplate[realLocale],      // 本地化模板
@@ -61,7 +59,7 @@ export async function generateMetadata({
     },
 
     openGraph: {
-      siteName: 'Claude-ide',
+      siteName: 'Code I Lab',
       type: 'website',
       title: L10N.ogTitle[realLocale],
       description: L10N.ogDesc[realLocale],
@@ -71,7 +69,7 @@ export async function generateMetadata({
           url: ogImage,
           width: 1200,
           height: 630,
-          alt: 'Claude-ide - Affordable AI Coding Assistance for Developers',
+          alt: 'Code I Lab – Cheaper Codex Alternative for Code I',
         },
       ],
       locale: OG_LOCALE_MAP[realLocale],

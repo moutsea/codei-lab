@@ -29,4 +29,4 @@ export interface PlanWithPricing {
 }
 
 export type BillingInterval = 'month' | 'quarter' | 'year';
-export type PlanType = 'frontpage' | 'renew' | 'extra';
+export type PlanType = 'frontpage' | 'renew' | 'extra' | 'pay';

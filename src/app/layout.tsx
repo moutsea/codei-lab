@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   // 全局只放“与语言无关”的部分
   metadataBase: new URL(getSiteUrl()),
   robots: 'index, follow, max-image-preview:large',
-  authors: [{ name: 'Claude-ide Team' }],
-  creator: 'Claude-ide Team',
-  publisher: 'Claude-ide',
+  authors: [{ name: 'CodeI Team' }],
+  creator: 'CodeI Team',
+  publisher: 'CodeI Lab',
   category: 'Technology',
   verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '' },
 }

@@ -342,6 +342,14 @@
       "confirmPurchase": "Confirm Purchase",
       "renewSubscription": "Renew subscription"
     },
+    "upgradeDialog": {
+      "title": "Upgrade Your Plan",
+      "description": "Choose an upgrade plan for your membership.",
+      "selectPlan": "Select Plan",
+      "processing": "Processing...",
+      "confirmPurchase": "Confirm Purchase",
+      "oneTimePayment": "One-time payment"
+    },
     "billingPage": {
       "title": "Billing",
       "subtitle": "Payment History",

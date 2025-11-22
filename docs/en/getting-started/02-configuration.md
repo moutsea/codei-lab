@@ -1,83 +1,95 @@
 # Configuration
 
+## Universal setup (Windows / macOS / Linux)
 
-## Setting up Environment Parameters
+### 1. Create the configuration directory
 
-#### If you're using MacOS or Linux
+Create a `.codex` folder inside your home directory:
 
-Add the code below into your `~/.zshrc` or `~/.bashrc`
+- macOS / Linux: `~/.codex`
+- Windows: `C:\\Users\\<YourUserName>\\.codex`
 
-```bash
-export ANTHROPIC_BASE_URL="https://www.claudeide.net/api/anthropic"
-export ANTHROPIC_AUTH_TOKEN="test" # replace it with your real api-key after you get subscribed
-export API_TIMEOUT_MS=600000
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+If the folder already exists you can reuse it.
+
+### 2. Create `config.toml`
+
+Inside `.codex`, create a file named `config.toml` and paste the following:
+
+```toml
+model_provider = "codeilab"
+model = "gpt-5.1"
+model_reasoning_effort = "high"
+disable_response_storage = true
+
+[model_providers.codeilab]
+name = "codeilab"
+base_url = "https://www.codeilab.com/api/codex"
+wire_api = "responses"
+requires_openai_auth = true
+
+[features]
+web_search_request = true
 ```
 
-Then run: `source ~/.zshrc`
+You can adjust the `model` field if you want to target a different model later.
 
-Or run code below one by one
+### 3. Create `auth.json`
 
-```bash
-# if you're using bash terminal, replace the ~/.zshrc below to ~/.bashrc
-echo 'export ANTHROPIC_BASE_URL="https://www.claudeide.net/api/anthropic"' >> ~/.zshrc
-echo 'export ANTHROPIC_AUTH_TOKEN="test"' >> ~/.zshrc
-echo 'export API_TIMEOUT_MS=600000' >> ~/.zshrc
-echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.zshrc
+In the same directory create `auth.json`:
 
-source ~/.zshrc 
+```json
+{
+  "OPENAI_API_KEY": "test"
+}
 ```
 
-#### If you're using Windows
+After you subscribe, replace the placeholder with your real key.
 
-You can refer to this page for how to set up environment variables: [set (environment variable)](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
+### 4. Launch the Codex CLI
 
-```bash
-set ANTHROPIC_BASE_URL=https://www.claudeide.net/api/anthropic
-set ANTHROPIC_AUTH_TOKEN=test
-set API_TIMEOUT_MS=600000
-set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-```
-
-
-## Start-up Claude code
-
-Enter your project path, and using `claude-ide`
+Change into your project directory and run `codex`:
 
 ```bash
 cd your-project
-claude
+codex
 ```
 
-You will get:
+If the CLI is configured correctly you’ll see an output similar to the screenshot below, which means the request reached our servers:
 
-![](/claude_test.png)
+![](/codex_test.png)
 
-You can also use plugin `claude` inside your vscode or other IDE. If you get asked for config like this:
+You may also see a message such as:
 
-![](/claude_code_error.png)
+```
+unexpected status 403 Forbidden: {"error":{"message":"Hello! How can I help you with your software engineering tasks today?"}}
+```
 
-That means your configuration is not set up correctly, pls check again.
+That is expected during the initial handshake and confirms connectivity.
 
-## Subscribe
+### 5. Subscribe and manage API keys
 
-After you get subscribed here: [pricing](/#pricing)
-
-You can create your real api-key, and you can also set up quota and expire time for sharing it to your team mates.
+Visit the [pricing](/#pricing) page to subscribe. After subscribing you can create multiple API keys in the dashboard, set individual quotas, and define expiration dates for teammates.
 
 ![](/create_api_key.png)
 
-Click the copy button
+Click the copy button:
 
 ![](/copy_api_key.png)
 
-Replace the `ANTHROPIC_AUTH_TOKEN` key with the real value.
+Update `auth.json` with your real key value:
 
-```bash
-export ANTHROPIC_AUTH_TOKEN="sk-proj-xxxx"
-
-# or 
-
-echo 'export ANTHROPIC_AUTH_TOKEN="sk-proj-xxxx"' >> ~/.zshrc
-source ~/.zshrc
+```json
+{
+  "OPENAI_API_KEY": "sk-proj-xxxxxxx"
+}
 ```
+
+Save the file—`codex` will load the new key automatically the next time you run it.
+
+### 6. Use the VS Code extension
+
+Install the official Codex extension from the VS Code marketplace (make sure you pick the one with the official badge):
+
+![](/vscode_codex.png)
+
+The extension automatically reads `config.toml` and `auth.json`, so no extra setup is required. If VS Code prompts you for configuration, double-check the steps above.

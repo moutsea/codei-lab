@@ -1,18 +1,17 @@
-# Api Usage Examine
+# API Usage Overview
 
+### If you are a subscriber
 
-### If you're subscribed
-
-Once you’ve subscribed, you can easily monitor your account’s overall token usage directly from the dashboard.
+After subscribing, the dashboard surfaces your overall monthly usage at a glance:
 
 ![](/dashboard.png)
 
-You can also view detailed analytics for each individual API key — including usage statistics, quota management, and expiration settings — all in one place.
+You can also drill into each API key to review detailed metrics, quota assignments, and expiration dates:
 
-![](/api_key_page.png)
+![](/apikey_page.png)
 
-### If you get shared api-key from other people
+### If you are using a shared API key
 
-If you’re using an API key shared by someone else, you can still track its usage in the **Usage** section, accessible from the top navigation bar.
+Even if someone shared an API key with you, you can open the **Usage** page (top navigation) to see live consumption for that key:
 
 ![](/usage_page.png)

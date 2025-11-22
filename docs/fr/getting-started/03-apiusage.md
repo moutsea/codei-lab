@@ -1,17 +1,17 @@
-# Aperçu de l’utilisation de l’API
+# Vue d’ensemble de l’usage API
 
-### Pour les abonnés
+### Pour les utilisateurs abonnés
 
-Une fois abonné, vous pouvez facilement consulter l’utilisation globale de vos jetons (tokens) depuis le tableau de bord.
+Une fois abonné, le tableau de bord affiche immédiatement votre consommation mensuelle globale :
 
 ![](/dashboard.png)
 
-Vous avez également accès à des statistiques détaillées pour chaque clé API — y compris les données d’utilisation, la gestion des quotas et la date d’expiration — le tout dans une interface claire et centralisée.
+Vous pouvez également consulter chaque clé API individuellement pour voir les statistiques détaillées, la gestion du quota et les dates d’expiration :
 
-![](/api_key_page.png)
+![](/apikey_page.png)
 
-### Pour les clés API partagées
+### Pour les utilisateurs d’une clé partagée
 
-Si vous utilisez une clé API partagée par un autre utilisateur, vous pouvez suivre son utilisation depuis la section **Usage**, accessible dans la barre de navigation supérieure.
+Si vous utilisez une clé partagée, ouvrez simplement la page **Usage** via la barre de navigation supérieure pour suivre son utilisation en temps réel :
 
 ![](/usage_page.png)

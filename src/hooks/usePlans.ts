@@ -7,15 +7,18 @@ export function usePlans() {
   const [frontpagePlans, setFrontpagePlans] = useState<PlanWithPricing[]>([]);
   const [renewPlans, setRenewPlans] = useState<PlanWithPricing[]>([]);
   const [extraPlans, setExtraPlans] = useState<PlanWithPricing[]>([]);
+  const [payPlans, setPayPlans] = useState<PlanWithPricing[]>([]);
   const [loading, setLoading] = useState<Record<PlanType, boolean>>({
     frontpage: true,
     renew: true,
     extra: true,
+    pay: true,
   });
   const [error, setError] = useState<Record<PlanType, string | null>>({
     frontpage: null,
     renew: null,
     extra: null,
+    pay: null,
   });
   const [selectedInterval, setSelectedInterval] = useState<BillingInterval>('month');
   const isInitialMount = useRef(true);
@@ -42,6 +45,9 @@ export function usePlans() {
         case 'extra':
           setExtraPlans(plans);
           break;
+        case 'pay':
+          setPayPlans(plans);
+          break;
       }
     } catch (err) {
       console.error(`Error fetching ${type} plans:`, err);
@@ -61,6 +67,9 @@ export function usePlans() {
         case 'extra':
           setExtraPlans([]);
           break;
+        case 'pay':
+          setPayPlans([]);
+          break;
       }
     } finally {
       setLoading(prev => ({ ...prev, [type]: false }));
@@ -73,6 +82,7 @@ export function usePlans() {
       fetchPlansByType('frontpage', forceRefresh),
       fetchPlansByType('renew', forceRefresh),
       fetchPlansByType('extra', forceRefresh),
+      fetchPlansByType('pay', forceRefresh),
     ]);
   }, [fetchPlansByType]);
 
@@ -103,7 +113,7 @@ export function usePlans() {
   };
 
   // Check if any plan type is loading
-  const isAnyLoading = loading.frontpage || loading.renew || loading.extra;
+  const isAnyLoading = loading.frontpage || loading.renew || loading.extra || loading.pay;
 
   // Get combined loading state for backward compatibility
   const loadingState = isAnyLoading;
@@ -113,6 +123,7 @@ export function usePlans() {
     frontpagePlans,
     renewPlans,
     extraPlans,
+    payPlans,
     loading,
     error,
 
@@ -125,6 +136,7 @@ export function usePlans() {
       frontpage: loading.frontpage,
       renew: loading.renew,
       extra: loading.extra,
+      pay: loading.pay,
     },
 
     // Individual error states for specific plan types
@@ -132,6 +144,7 @@ export function usePlans() {
       frontpage: error.frontpage,
       renew: error.renew,
       extra: error.extra,
+      pay: error.pay,
     },
 
     selectedInterval,
@@ -144,6 +157,7 @@ export function usePlans() {
     refetchFrontpage: () => fetchPlansByType('frontpage', true),
     refetchRenew: () => fetchPlansByType('renew', true),
     refetchExtra: () => fetchPlansByType('extra', true),
+    refetchPay: () => fetchPlansByType('pay', true),
     refetchAll: () => fetchPlans(true),
   };
 }

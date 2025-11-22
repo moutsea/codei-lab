@@ -21,6 +21,10 @@ export async function GET(request: NextRequest) {
         plans = await getPlansFromDBByType('renew');
         break;
 
+      case 'pay':
+        plans = await getPlansFromDBByType('pay');
+        break;
+
       default:
         return NextResponse.json(
           { error: 'Invalid type parameter. Must be: frontpage, extra, or renew' },

@@ -1,5 +1,5 @@
 import { Pathnames } from 'next-intl/routing';
-export const locales = ['en', 'zh', 'fr'] as const;
+export const locales = ['en', 'zh', 'fr', 'ko', 'ja'] as const;
 export const defaultLocale = 'en';
 
 // Pathnames configuration removed - using automatic routing with localePrefix: 'as-needed'
@@ -10,7 +10,9 @@ export const localePrefix = 'as-needed';
 export const localeNames: Record<string, string> = {
     en: "English",
     zh: "中文",
-    fr: "Français"
+    fr: "Français",
+    ko: "한국어",
+    ja: "日本語"
 };
 
 
@@ -30,7 +32,9 @@ export const getLanguageByLang = (lang: string) => {
     const languages = [
         { code: "en-US", lang: "en", language: "English", languageInChineseSimple: "英语" },
         { code: "zh-CN", lang: "zh", language: "简体中文", languageInChineseSimple: "简体中文" },
-        { code: "fr-FR", lang: "fr", language: "Français", languageInChineseSimple: "法语" }
+        { code: "fr-FR", lang: "fr", language: "Français", languageInChineseSimple: "法语" },
+        { code: "ko-KR", lang: "ko", language: "한국어", languageInChineseSimple: "韩语" },
+        { code: "ja-JP", lang: "ja", language: "日本語", languageInChineseSimple: "日语" }
     ];
 
     for (let i = 0; i < languages.length; i++) {

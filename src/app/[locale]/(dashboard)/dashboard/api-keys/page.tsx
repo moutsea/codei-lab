@@ -462,17 +462,6 @@ export default function ApiKeysPage() {
     }
   };
 
-  const getDeleteConfirmMessage = (keyName: string) => {
-    switch (locale) {
-      case 'zh':
-        return `确定要删除API密钥 "${keyName}" 吗？此操作无法撤销。`;
-      case 'fr':
-        return `Êtes-vous sûr de vouloir supprimer la clé API "${keyName}" ? Cette action ne peut pas être annulée.`;
-      default:
-        return `Are you sure you want to delete the API key "${keyName}"? This action cannot be undone.`;
-    }
-  };
-
   // Show loading while checking authentication or subscription status
   if (isLoading) {
     return (
@@ -587,7 +576,7 @@ export default function ApiKeysPage() {
                     ) : planInfo ? (
                       <div className="flex items-center gap-2">
                         <div className="px-2 py-1 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 text-white text-xs font-medium rounded-full">
-                          {planInfo.name}
+                          {planInfo.membershipLevel} plan
                         </div>
                         <span className="text-xs text-gray-500">
                           ({apiKeys.length}/{getPlanLimits(planInfo.membershipLevel).maxKeys} keys)
@@ -1243,7 +1232,7 @@ export default function ApiKeysPage() {
 
               <div className="p-6">
                 <p className="text-muted-foreground mb-4">
-                  {getDeleteConfirmMessage(deleteConfirm.name)}
+                  {apiKeysT("deleteConfirmMessage", { name: deleteConfirm.name })}
                 </p>
 
                 <p className="text-sm text-red-600 dark:text-red-400 mb-6 font-medium">

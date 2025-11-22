@@ -158,10 +158,10 @@ export const getUserFromDBByStripeCustomerId = async (stripeCustomerId: string):
 export const getUserDetailByIdWithCache = async (userId: string): Promise<UserDetail | null> => {
     // don't use cache in test stage
 
-    // const userDetail = await getUserDetailFromCache(userId);
-    // if (userDetail && userDetail.active) {
-    //     return userDetail;
-    // }
+    const userDetail = await getUserDetailFromCache(userId);
+    if (userDetail && userDetail.active) {
+        return userDetail;
+    }
 
     // Fallback to database
     try {

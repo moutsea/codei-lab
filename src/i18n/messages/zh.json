@@ -349,6 +349,14 @@
       "confirmPurchase": "确认购买",
       "renewSubscription": "续订订阅"
     },
+    "upgradeDialog": {
+      "title": "升级您的计划",
+      "description": "为您的会员选择升级计划。",
+      "selectPlan": "选择套餐",
+      "processing": "处理中...",
+      "confirmPurchase": "确认购买",
+      "oneTimePayment": "一次性付款"
+    },
     "billingPage": {
       "title": "账单",
       "subtitle": "支付历史",

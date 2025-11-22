@@ -4,19 +4,18 @@
 
 Node.js is a JavaScript runtime built on Chrome's V8 engine that enables server-side scripting and the building of scalable network applications.
 
-To install Node.js, download the installer from the official website (https://nodejs.org
-), run the setup file, and follow the installation prompts.
+To install Node.js, download the installer from the official website (https://nodejs.org), run the setup file, and follow the installation prompts.
 
 Alternatively, you can use a package manager like brew on macOS or apt on Linux.
 
-#### use brew in MacOS
+#### Use Homebrew on macOS
 
 ```bash
 # for MacOS, if you already have brew installed
 brew install node
 ```
 
-#### use apt in Linux
+#### Use apt on Linux
 
 ```bash
 # for Linux, use apt to install Node.js
@@ -24,7 +23,7 @@ sudo apt install nodejs
 sudo apt install npm
 ```
 
-#### download and install directly in Windows
+#### Download and install directly on Windows
 
 Visit the Node.js official website: [nodejs.org](https://nodejs.org/en)
 

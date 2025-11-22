@@ -196,16 +196,9 @@
       "usage": "API Utilisation"
     },
     "wealsobuilt": {
-      "title": "We also built",
-      "cs61b": "CS open courses",
+      "title": "Nous avons également construit",
+      "cs61b": "Cours CS ouverts",
       "claudeide": "Claude Code IDE"
-    },
-    "company": {
-      "title": "Entreprise",
-      "about": "À propos",
-      "blog": "Blog",
-      "careers": "Carrières",
-      "contact": "Contact"
     },
     "copyright": "Code I Lab",
     "allRightsReserved": "Tous droits réservés",
@@ -348,6 +341,14 @@
       "processing": "Traitement en cours...",
       "confirmPurchase": "Confirmer l'Achat",
       "renewSubscription": "Renouveler l'abonnement"
+    },
+    "upgradeDialog": {
+      "title": "Mettre à niveau votre plan",
+      "description": "Choisissez un plan de mise à niveau pour votre adhésion.",
+      "selectPlan": "Sélectionner le plan",
+      "processing": "Traitement en cours...",
+      "confirmPurchase": "Confirmer l'achat",
+      "oneTimePayment": "Paiement unique"
     },
     "billingPage": {
       "title": "Facturation",

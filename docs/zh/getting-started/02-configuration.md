@@ -1,67 +1,74 @@
 # 配置
 
-## 设置环境参数
+## 通用配置（适用于 Windows / macOS / Linux）
 
-#### 如果你使用的是 MacOS 或 Linux
+### 1. 创建配置目录
 
-将下列代码添加到你的 `~/.zshrc` 或 `~/.bashrc` 文件中
+在用户主目录下创建 `.codex` 文件夹：
 
-```bash
-export ANTHROPIC_BASE_URL="https://www.claudeide.net/api/anthropic"
-export ANTHROPIC_AUTH_TOKEN="test" # 获取订阅后请替换为你的真实 api-key
-export API_TIMEOUT_MS=600000
-export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+- macOS / Linux：`~/.codex`
+- Windows：`C:\\Users\\你的用户名\\.codex`
+
+目录存在即可，无需重复创建。
+
+### 2. 创建 `config.toml`
+
+在 `.codex` 目录中新增 `config.toml`，粘贴以下内容：
+
+```toml
+model_provider = "codeilab"
+model = "gpt-5.1"
+model_reasoning_effort = "high"
+disable_response_storage = true
+
+[model_providers.codeilab]
+name = "codeilab"
+base_url = "https://www.codeilab.com/api/codex"
+wire_api = "responses"
+requires_openai_auth = true
+
+[features]
+web_search_request = true
 ```
 
-然后运行：`source ~/.zshrc`
+如需更换模型，只需调整 `model` 字段即可。
 
-或者逐行执行：
+### 3. 创建 `auth.json`
 
-```bash
-# 如果你使用 bash 终端，请将 ~/.zshrc 替换为 ~/.bashrc
-echo 'export ANTHROPIC_BASE_URL="https://www.claudeide.net/api/anthropic"' >> ~/.zshrc
-echo 'export ANTHROPIC_AUTH_TOKEN="test"' >> ~/.zshrc
-echo 'export API_TIMEOUT_MS=600000' >> ~/.zshrc
-echo 'export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1' >> ~/.zshrc
+仍在 `.codex` 目录下创建 `auth.json`：
 
-source ~/.zshrc 
+```json
+{
+  "OPENAI_API_KEY": "test"
+}
 ```
 
-#### 如果你使用的是 Windows
+后续订阅完成后，把值替换为真实密钥即可。
 
-你可以参考此页面了解如何设置环境变量： [set (environment variable)](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/set_1)
+### 4. 启动 Codex CLI
 
-```bash
-set ANTHROPIC_BASE_URL=https://www.claudeide.net/api/anthropic
-set ANTHROPIC_AUTH_TOKEN=test
-set API_TIMEOUT_MS=600000
-set CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-```
-
-## 启动 Claude 代码环境
-
-进入你的项目路径，并使用 `claude-ide`
+进入你的项目目录并运行 `codex`：
 
 ```bash
 cd your-project
-claude
+codex
 ```
 
-你将看到：
+若看到类似输出，则表示 CLI 已正确读取配置并成功连通服务器：
 
-![](/claude_test.png)
+![](/codex_test.png)
 
-你也可以在你的 VSCode 或其他 IDE 中使用 claude 插件。如果你遇到类似以下的配置提示：
+终端可能提示：
 
-![](/claude_code_error.png)
+```
+unexpected status 403 Forbidden: {"error":{"message":"Hello! How can I help you with your software engineering tasks today?"}}
+```
 
-这意味着你的配置没有正确设置，请重新检查。
+这是正常现象，说明请求已抵达服务器。
 
-## 订阅
+### 5. 订阅与 API Key
 
-在此页面完成订阅：[pricing](/#pricing)
-
-你可以创建真实的 api-key，还可以设置配额和过期时间以便与团队成员共享。
+打开 [pricing](/#pricing) 页面完成订阅。订阅后可在控制台创建多个 API Key，并为每个 Key 设置配额及过期时间，方便团队共享。
 
 ![](/create_api_key.png)
 
@@ -69,13 +76,20 @@ claude
 
 ![](/copy_api_key.png)
 
-将 `ANTHROPIC_AUTH_TOKEN` 的值替换为真实密钥。
+将 `auth.json` 中的 `OPENAI_API_KEY` 替换为真实值：
 
-```bash
-export ANTHROPIC_AUTH_TOKEN="sk-proj-xxxx"
-
-# 或者
-
-echo 'export ANTHROPIC_AUTH_TOKEN="sk-proj-xxxx"' >> ~/.zshrc
-source ~/.zshrc
+```json
+{
+  "OPENAI_API_KEY": "sk-proj-xxxxxxx"
+}
 ```
+
+保存后下次运行 `codex` 会自动读取新的密钥。
+
+### 6. 在 VS Code 中使用
+
+在 VS Code 插件市场安装官方 Codex 插件（注意选择带官方标识的版本）：
+
+![](/vscode_codex.png)
+
+VS Code 会自动读取 `config.toml` 和 `auth.json`，无需额外配置。若插件提示缺少配置，请检查上述步骤是否完成。

@@ -1,0 +1,575 @@
+{
+  "navigation": {
+    "home": "홈",
+    "document": "문서",
+    "usage": "API 사용량",
+    "pricing": "요금제",
+    "faq": "자주 묻는 질문",
+    "contact": "연락처",
+    "language": "언어",
+    "current": "현재"
+  },
+  "userMenu": {
+    "dashboard": "대시보드",
+    "profile": "프로필",
+    "billing": "결제",
+    "logout": "로그아웃"
+  },
+  "pricingSection": {
+    "title": "플랜 선택",
+    "nonlogin": "구독하려면 로그인해주세요",
+    "subtitle": "다양한 요구사항을 가진 개발자를 위한 유연한 가격 플랜. 개인 학습부터 팀 협업까지, 항상 적합한 플랜이 있습니다",
+    "featuredBadge": "가장 인기",
+    "trialSubtitle": "주간 체험 카드, 시도해보고, 갑작스러운 요구사항 처리",
+    "plusSubtitle": "플러스 월간 카드, 일반적인 R&D 워크로드 커버",
+    "proSubtitle": "프로 월간 카드, 고빈도 개발/팀 사용",
+    "cta": "시작하기",
+    "ctaFeatured": "지금 시작",
+    "mostPopular": "가장 인기",
+    "includesQuota": "쿼터 포함",
+    "includesRequests": "월간 요청",
+    "requests": "요청",
+    "month": "월",
+    "quarter": "분기",
+    "year": "년",
+    "week": "주",
+    "allPlansInclude": "모든 플랜 포함:",
+    "securePayment": "안전한 결제",
+    "instantAccess": "즉시 접근",
+    "cancelAnytime": "언제든지 취소",
+    "loadError": "가격 플랜 로드 실패: {{error}}",
+    "retry": "재시도",
+    "noPlansTitle": "사용 가능한 플랜 없음",
+    "noPlansDescription": "나중에 다시 확인하거나 지원팀에 문의하세요.",
+    "features": "기능",
+    "claudeModel": "Claude Sonnet 4.5 모델",
+    "apiKeys": "{{count}}개의 개별 API 키",
+    "tokensOff": "{{percent}}% 토큰 할인",
+    "allModels": "모든 AI 모델",
+    "prioritySupport": "우선 지원",
+    "apiAccess": "API 접근",
+    "billing": {
+      "monthly": "월간",
+      "quarterly": "분기별",
+      "yearly": "연간",
+      "weekly": "주간",
+      "quarterlyDiscount": "15% 할인",
+      "yearlyDiscount": "30% 할인"
+    },
+    "monthlyQuota": "월간 쿼터",
+    "totalQuota": "총 쿼터",
+    "forOneWeek": "일주일간",
+    "validityPeriod": "유효 기간",
+    "featuresList": "기능 목록",
+    "aiModel": "모델",
+    "sevenDays": "7일",
+    "thirtyDays": "30일",
+    "apiKeysQuota": "API 키 제한",
+    "apiKeysCount": "{count}개의 개별 API 키",
+    "subscriptionDialog": {
+      "title": "구독 주기 선택",
+      "description": "{planName}의 선호하는 청구 주기를 선택하세요",
+      "billedEvery": "{interval}마다 청구",
+      "perInterval": "{interval}당",
+      "cancel": "취소",
+      "processing": "처리 중..."
+    },
+    "subscriptionError": "체크아웃 세션 생성 실패",
+    "duplicateError": "이미 체험 플랜에 구독했으며 다시 구독할 수 없습니다.",
+    "currencyConflictError": "이미 {existingCurrency} 구독이 있습니다. 동시에 {requestedCurrency}로 구독할 수 없습니다.",
+    "planDowngradeError": "현재 {currentPlan} 구독이 있습니다. {requestedPlan}으로의 다운그레이드는 허용되지 않습니다.",
+    "serverError": "예상치 못한 서버 오류가 발생했습니다. 문제가 계속되면 나중에 다시 시도하거나 지원팀에 문의하세요.",
+    "stripeError": "결제 처리 오류가 발생했습니다({errorType}). 결제 정보를 확인하고 다시 시도하세요."
+  },
+  "pricingModal": {
+    "upgrade": "구독",
+    "title": "계정 업그레이드"
+  },
+  "tokenPricing": {
+    "eyebrow": "가격표",
+    "title": "공식 토큰 가격",
+    "description": "백만 토큰당 입력, 버퍼 입력, 출력 토큰 가격을 비교합니다.",
+    "unit": "/M 토큰",
+    "cards": {
+      "input": {
+        "title": "입력 토큰"
+      },
+      "buffered": {
+        "title": "버퍼 입력 토큰",
+        "helper": "90% 할인"
+      },
+      "output": {
+        "title": "출력 토큰"
+      }
+    }
+  },
+  "hero": {
+    "title": "Code I Lab",
+    "subtitle": "개발자를 위한 저렴한 OpenAI Codex API 접근. 유연한 가격 플랜과 기존 개발 워크플로우에 대한 원활한 통합으로 강력한 코드 생성을 경험하세요.",
+    "cta": "시작하기",
+    "learnMore": "더 알아보기",
+    "readDoc": "문서 읽기",
+    "installNodeJs": "설치",
+    "nodeJsLinkText": "Node.js 18+",
+    "thenRun": "그런 다음 실행"
+  },
+  "productFeatures": {
+    "title": "Code I는 코드하는 everywhere에서 실행됩니다",
+    "features": {
+      "cli": {
+        "title": "Code i CLI",
+        "description": "프롬프트에서 풀 리퀘스트까지 몇 분 만에. 터미널에서 Codex를 사용하여 새 기능을 ship하고, 버그를 수정하고, 해결책을 브레인스토밍하거나 다음 작업을 처리하세요."
+      },
+      "ide": {
+        "title": "Code i IDE 확장",
+        "description": "VSCode, Cursor 및 기타 IDE에서 Codex와 파트너십을 맺으세요. 변경사항을 미리보고, 타겟팅된 편집을 하고, 아이디어에서 구현까지 흐름을 유지하세요."
+      },
+      "cloud": {
+        "title": "Code i 클라우드",
+        "description": "흐름을 유지하기 위해 클라우드에서 Codex에 작업을 위임하세요. Codex는 안전한 샌드박스에 리포지토리를 로드하고, 로컬에서 검토, 병합 또는 계속 작업할 수 있는 코드를 생성합니다."
+      }
+    }
+  },
+  "productWorkflows": {
+    "title": "Code I는 핵심 워크플로우에 연결되어 전체 팀을 가속화합니다",
+    "workflows": {
+      "codeReview": {
+        "title": "GitHub에서 코드 리뷰",
+        "content": "새로운 PR을 자동으로 리뷰하고 수동 리뷰를 위해 @codex를 태그하세요. PR 의도와 변경사항을 비교하고, 필요한 경우 코드를 실행하여 상세한 리뷰를 제공합니다."
+      },
+      "slackTasks": {
+        "title": "Slack에서 작업 할당",
+        "content": "Codex는 Slack에서 바로 질문에 답하고, 버그를 수정하고, 아이디어를 탐색합니다. 대화에서 컨텍스트를 자동으로 가져와 올바른 리포지토리를 선택하고 작업을 시작합니다."
+      },
+      "sdk": {
+        "title": "Code I SDK",
+        "content": "GitHub Actions 및 내부 도구에 Codex를 포함하여 CI/CD, 코드 유지보수, 이슈 관리 및 기타 프로세스를 자동화합니다."
+      }
+    }
+  },
+  "useCases": {
+    "title": "작동 방식",
+    "step1": {
+      "title": "터미널 또는 IDE에서 설정",
+      "description": "Codex CLI 또는 IDE 확장을 다운로드하고 API 키 획득을 위해 구독하세요."
+    },
+    "step2": {
+      "title": "코드 리포지토리로 이동",
+      "description": "로컬 리포지토리에서 IDE나 터미널을 열고 Codex를 시작하세요."
+    },
+    "step3": {
+      "title": "첫 번째 작업 실행",
+      "description": "리포지토리에 대해 Codex와 채팅하거나 새 기능을 구현하거나 버그를 수정하도록 요청하세요."
+    },
+    "step4": {
+      "title": "Codex이 작업하도록 하기",
+      "description": "Codex은 작업을 완료하기 위해 리포지토리를 독립적으로 탐색합니다. 코드 변경을 수락하거나 작업이 완료될 때까지 계속 진행하세요."
+    }
+  },
+  "plans": {
+    "lite": {
+      "name": "Lite",
+      "price": 9.9,
+      "quota_tokens": 10000000,
+      "description": "학생과 취미 개발자용. 월간 약 1000만 토큰의 엔트리 레벨 접근."
+    },
+    "pro": {
+      "name": "Pro",
+      "price": 39,
+      "quota_tokens": 50000000,
+      "description": "개인 개발자에게 최고의 가치. 일상적인 코딩 작업을 위한 월간 약 5000만 토큰."
+    },
+    "team": {
+      "name": "Team",
+      "price": 99,
+      "quota_tokens": 200000000,
+      "description": "스타트업과 소규모 팀용. 높은 비용 효율성으로 월간 약 2억 토큰."
+    }
+  },
+  "footer": {
+    "description": "개발자를 위한 저렴한 OpenAI Codex API 접근. Code i Lab은 비용 효율적인 코드 생성 도구를 제공하여 개발 워크플로우를 가속화하고 생산성을 향상시킵니다.",
+    "product": {
+      "title": "제품",
+      "features": "기능",
+      "pricing": "요금제",
+      "documentation": "문서",
+      "usage": "API 사용량"
+    },
+    "wealsobuilt": {
+      "title": "우리가 또한 구축한 것",
+      "cs61b": "CS 개방 과정",
+      "claudeide": "Claude Code IDE"
+    },
+    "copyright": "Code I Lab",
+    "allRightsReserved": "모든 권리 보유",
+    "privacy": "개인정보 보호정책",
+    "terms": "서비스 약관",
+    "cookies": "쿠키 정책"
+  },
+  "faq": {
+    "title": "자주 묻는 질문",
+    "subtitle": "Code i에 대한 일반적인 질문의 답변을 찾고 저렴한 OpenAI Codex API 접근을 시작하세요.",
+    "moreQuestions": "아직 질문이 있으신가요?",
+    "contactSupport": "지원팀에 문의",
+    "items": [
+      {
+        "question": "Code I을 어떻게 사용하나요?",
+        "answer": "Node.js와 Codex CLI 도구를 설치한 후, 터미널에서 API 키를 구성하기만 하면 됩니다. 설정은 1분밖에 걸리지 않습니다. 구독하기 전에 연결을 확인하기 위한 테스트 인터페이스를 제공합니다. OpenAI의 Codex 모델에 접근하기 위해 저렴한 가격으로 관대한 월간 토큰 쿼터를 제공하는 유연한 구독 플랜을 제공합니다."
+      },
+      {
+        "question": "Code I은 어떤 모델을 사용하나요?",
+        "answer": "Code I은 OpenAI의 Codex 모델에 대한 저렴한 API 접근을 제공합니다. 이는 GitHub Copilot에서 사용되는 것과 동일한 강력한 코드 생성 모델입니다."
+      },
+      {
+        "question": "Code I은 무엇에 적합하나요?",
+        "answer": "Code I은 비용 효율적인 고급 AI 코드 생성 접근을 찾는 개발자에게 완벽합니다. 기존 IDE 및 개발 도구와 원활하게 통합되며 워크플로우를 변경하지 않습니다. Python, JavaScript/TypeScript, Java, C++, Go, Rust 등을 포함한 여러 프로그래밍 언어를 지원합니다. Code i는 Git과 같은 명령줄 도구 및 다양한 MCP 서버와 협력하여 기능을 확장하고 개발 프로세스를 더 효율적이고 저렴하게 만듭니다."
+      },
+      {
+        "question": "월간 토큰 쿼터를 모두 사용하지 않으면 어떻게 되나요?",
+        "answer": "사용하지 않은 토큰은 낭비되지 않습니다! API 접근을 친구나 팀원과 공유할 수 있습니다. 하나의 계정에서 여러 API 키 생성을 지원하며, 각 API 키에 개별 쿼터와 만료 시간을 설정할 수 있습니다. 플러스 회원은 최대 10개의 API 키를 생성할 수 있고, 프로 회원은 최대 50개의 API 키를 생성할 수 있습니다."
+      },
+      {
+        "question": "어떤 플랫폼과 프로그래밍 언어가 지원되나요?",
+        "answer": "Code I은 Windows/Mac/Linux와 Python, JavaScript/TypeScript, Java, C++, Go, Rust, PHP, Ruby 등 모든 주요 프로그래밍 언어를 지원합니다."
+      },
+      {
+        "question": "Code I 가격은 다른 대안과 비교하여 어떤가요?",
+        "answer": "Code I은 다른 제공업체와 비교하여 Codex에 접근하는 것을 훨씬 저렴하게 제공합니다. 동일한 고품질 코드 생성을 비용의 일부로 제공할 수 있도록 인프라를 최적화했습니다. 또한, 버퍼 입력 토큰은 90% 할인되어 제공되어 반복적인 코드 분석 및 리팩토링을 매우 비용 효율적으로 만듭니다."
+      }
+    ]
+  },
+  "language": {
+    "current": "현재"
+  },
+  "admin": {
+    "title": "관리자 대시보드",
+    "description": "애플리케이션 통계 모니터링 및 관리",
+    "overview": "개요",
+    "users": {
+      "title": "사용자",
+      "total": "총 사용자",
+      "growth": "성장"
+    },
+    "revenue": {
+      "title": "수익",
+      "total": "총 수익",
+      "monthly": "월간 수익"
+    },
+    "usage": {
+      "title": "사용량",
+      "totalTokens": "총 토큰",
+      "activeUsers": "활성 사용자"
+    },
+    "subscriptions": {
+      "title": "구독",
+      "active": "활성",
+      "total": "합계",
+      "conversionRate": "전환율"
+    },
+    "loading": "로딩 중...",
+    "error": "통계 로드 실패",
+    "accessDenied": "접근 거부됨. 관리자 권한 필요."
+  },
+  "usage": {
+    "title": "API 키 사용량",
+    "description": "API 키를 입력하여 사용량 정보 및 세부사항을 확인하세요",
+    "apiKeyLabel": "API 키",
+    "apiKeyPlaceholder": "API 키를 입력하세요...",
+    "checkUsage": "사용량 확인",
+    "checking": "확인 중...",
+    "apiKeyRequired": "API 키가 필요합니다",
+    "invalidApiKey": "잘못된 API 키",
+    "checkError": "API 키 사용량 확인 실패",
+    "apiKeyInfo": {
+      "title": "API 키 정보",
+      "name": "키 이름",
+      "status": "상태",
+      "requestLimit": "요청 제한",
+      "tokensUsed": "사용된 토큰",
+      "remainingQuota": "남은 쿼터",
+      "createdAt": "생성일",
+      "lastUsedAt": "마지막 사용일",
+      "expiredAt": "만료일",
+      "active": "활성",
+      "expired": "만료됨",
+      "expiring": "만료 임박",
+      "noLimit": "제한 없음",
+      "neverUsed": "사용 안 함",
+      "noExpiration": "만료 없음",
+      "unlimited": "무제한",
+      "monthlyQuota": "월간 쿼터",
+      "quotaUsed": "사용된 쿼터",
+      "topUpQuotaAvailable": "충전 쿼터 사용 가능",
+      "quotaUsage": "쿼터 사용량",
+      "topUpActive": "충전 활성"
+    },
+    "usageDetails": {
+      "title": "사용량 세부사항",
+      "currentMonth": "당월 사용량",
+      "quotaUsage": "쿼터 사용량",
+      "noUsageData": "사용량 데이터 없음"
+    }
+  },
+  "sidebar": {
+    "dashboard": "대시보드",
+    "apiKeys": "API 키",
+    "profile": "프로필",
+    "billing": "결제",
+    "settings": "설정",
+    "navigation": "네비게이션",
+    "utcNotice": "모든 날짜와 시간은 UTC 기반이며, 데이터는 최대 5분 지연될 수 있습니다.",
+    "monthlyQuota": "월간 쿼터",
+    "subscriptionEndDate": "구독 종료일",
+    "upgradePlan": "업그레이드",
+    "membershipLevel": "멤버십 레벨",
+    "topUp": "충전",
+    "renew": "갱신",
+    "topUpLeft": "+ ${quota} 추가",
+    "topUpExpiresOn": "만료일",
+    "topUpDialog": {
+      "title": "계정 충전",
+      "description": "충전 패키지를 선택하세요. 이 패키지는 한 달간 유효합니다.",
+      "selectPlan": "플랜 선택",
+      "processing": "처리 중...",
+      "confirmPurchase": "구매 확정",
+      "validForOneMonth": "한 달간 유효"
+    },
+    "renewDialog": {
+      "title": "구독 갱신",
+      "description": "멤버십용 갱신 플랜을 선택하세요.",
+      "selectPlan": "플랜 선택",
+      "processing": "처리 중...",
+      "confirmPurchase": "구매 확정",
+      "renewSubscription": "구독 갱신"
+    },
+    "upgradeDialog": {
+      "title": "플랜 업그레이드",
+      "description": "멤버십용 업그레이드 플랜을 선택하세요.",
+      "selectPlan": "플랜 선택",
+      "processing": "처리 중...",
+      "confirmPurchase": "구매 확정",
+      "oneTimePayment": "일회성 결제"
+    },
+    "billingPage": {
+      "title": "결제",
+      "subtitle": "결제 내역",
+      "totalPayments": "총 결제액",
+      "noPayments": "결제 내역 없음",
+      "paymentId": "결제 ID",
+      "date": "날짜",
+      "amount": "금액",
+      "status": "상태",
+      "type": "유형",
+      "currency": "통화",
+      "subscriptionId": "구독 ID",
+      "loading": "결제 내역 로딩 중...",
+      "error": "결제 내역 로드 실패",
+      "loadMore": "더보기",
+      "perPage": "페이지당",
+      "pageOf": "페이지 {{page}} / {{totalPages}}",
+      "totalPages": "총 페이지",
+      "paymentTypes": {
+        "sub": "구독",
+        "pay": "일회성 결제",
+        "extra": "추가 쿼터",
+        "renew": "구독 갱신",
+        "trial": "체험"
+      },
+      "statuses": {
+        "pending": "보류 중",
+        "processing": "처리 중",
+        "succeeded": "성공",
+        "failed": "실패",
+        "refunded": "환불됨",
+        "cancelled": "취소됨",
+        "paid": "결제됨"
+      }
+    },
+    "month": "월",
+    "dailyTokenUsage": "일일 토큰 쿼터",
+    "currentUsage": "현재 사용량",
+    "ofQuota": "쿼터의",
+    "usageLog": {
+      "title": "사용량 로그",
+      "subtitle": "최근 일일 사용량 기록",
+      "loading": "사용량 로그 로딩 중...",
+      "refresh": "새로고침",
+      "error": "사용량 로그를 로드할 수 없습니다.",
+      "empty": "아직 사용 기록이 없습니다.",
+      "totalTokensLabel": "총 토큰",
+      "recordsCount": "{count}개 기록",
+      "date": "날짜",
+      "inputTokens": "입력: {value}",
+      "outputTokens": "출력: {value}",
+      "cachedTokens": "캐시: {value}",
+      "quotaUsed": "사용된 쿼터: {value}",
+      "loadMore": "더보기"
+    }
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "subtitle": "API 키를 관리하고 토큰 사용량을 모니터링하세요",
+    "noUsageData": "선택한 월의 사용량 데이터 없음",
+    "noSubscription": "활성 구독 없음",
+    "welcome": {
+      "title": "대시보드에 오신 것을 환영합니다! 🎉",
+      "message": "계정이 성공적으로 설정되었습니다. 기능 탐색을 시작하세요!"
+    },
+    "tokenStats": {
+      "total": "총 토큰",
+      "totalDescription": "월간 토큰 할당량",
+      "used": "사용된 토큰",
+      "usedDescription": "이번 달 소비된 토큰",
+      "remaining": "남은 토큰",
+      "remainingDescription": "사용 가능한 토큰"
+    },
+    "usage": {
+      "title": "토큰 사용량",
+      "description": "청구 주기 동안 토큰 소비 모니터링",
+      "currentUsage": "현재 사용량",
+      "used": "사용됨",
+      "total": "합계"
+    },
+    "apiKeys": {
+      "title": "API 키",
+      "description": "Code I Lab 접근용 API 키 관리",
+      "create": "API 키 생성",
+      "createTitle": "새 API 키 생성",
+      "createDescription": "애플리케이션용 새 API 키 생성",
+      "nameLabel": "키 이름",
+      "namePlaceholder": "이 키에 대한 설명적인 이름을 입력하세요",
+      "cancel": "취소",
+      "created": "생성됨",
+      "lastUsed": "마지막 사용",
+      "copied": "복사됨!",
+      "noApiKeys": "아직 API 키가 없습니다",
+      "noApiKeysDescription": "서비스 사용을 시작하려면 첫 번째 API 키를 생성하세요",
+      "planLimitError": "{{plan}} 회원은 최대 {{limit}}개의 API 키를 생성할 수 있습니다",
+      "creating": "새 API 키 생성 중",
+      "createError": "API 키 생성 실패",
+      "deleting": "삭제 중",
+      "delete": "삭제",
+      "deleteConfirmTitle": "API 키 삭제",
+      "deleteConfirmMessage": "API 키 '{{name}}'를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+      "deleteConfirmWarning": "경고: 이 API 키를 사용하는 모든 애플리케이션은 즉시 접근을 잃게 됩니다.",
+      "deleteError": "API 키 삭제 실패",
+      "totalApiKeys": "총 API 키",
+      "ofPlanLimitPrefix": "/ ",
+      "ofPlanLimitSuffix": " 허용됨",
+      "noPlanLimit": "플랜 제한 설정 없음",
+      "apiKeysQuotaUsed": "API 키 쿼터 사용됨",
+      "ofTotalPrefix": "/ ",
+      "ofTotalSuffix": " 합계",
+      "noKeysCreated": "생성된 키 없음",
+      "yourMonthlyQuota": "월간 쿼터",
+      "basedOnSubscription": "구독 플랜 기반",
+      "monthlyRequestLimit": "월간 쿼터 제한",
+      "noLimit": "제한 없음",
+      "unlimitedQuota": "무제한 쿼터",
+      "unlimitedAccess": "무제한 접근",
+      "quotaDescription": "이 API 키의 월간 토큰 제한 설정",
+      "active": "활성",
+      "expired": "만료됨",
+      "expiring": "만료 임박",
+      "expirationDate": "만료일",
+      "expirationDateOptional": "만료일 (선택사항)",
+      "expirationDescription": "비워두면 만료일 없음. API 키는 선택한 날짜의 00:00:00에 자동으로 만료됩니다.",
+      "noExpire": "만료 없음",
+      "oneMonth": "1개월",
+      "threeMonths": "3개월",
+      "sixMonths": "6개월 (반년)",
+      "oneYear": "1년",
+      "periodDescription": "API 키가 만료되어야 하는 시기를 선택하세요. 키는 선택한 날짜의 00:00:00에 만료됩니다.",
+      "editTitle": "API 키 편집",
+      "editDescription": "API 키 설정 업데이트",
+      "save": "변경사항 저장",
+      "updating": "업데이트 중...",
+      "updateError": "API 키 업데이트 실패"
+    },
+    "profile": {
+      "title": "프로필",
+      "subtitle": "프로필 정보",
+      "noSubscription": "프로필에 접근하려면 구독하세요.",
+      "basicInformation": "기본 정보",
+      "accountDetails": "계정 세부사항",
+      "preferences": "환경설정",
+      "name": "이름",
+      "email": "이메일 주소",
+      "nickname": "닉네임",
+      "emailVerified": "이메일 확인됨",
+      "verified": "확인됨",
+      "notVerified": "확인 안됨",
+      "userId": "사용자 ID",
+      "lastUpdated": "마지막 업데이트",
+      "subscriptionType": "구독 유형",
+      "subscriptionExpireDate": "구독 만료일",
+      "requestLimit": "요청 제한",
+      "language": "언어",
+      "requestRefund": "환불 요청",
+      "refundConfirm": "환불을 요청하시겠습니까? 24-48시간 내에 이메일로 답변드리겠습니다.",
+      "openEmailClient": "이메일 클라이언트 열기",
+      "cancel": "취소",
+      "notProvided": "제공되지 않음"
+    }
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없음",
+    "description": "찾고 계시는 페이지가 제거되었거나 일시적으로 사용할 수 없습니다.",
+    "backToHome": "홈으로 돌아가기"
+  },
+  "tutorial": {
+    "title": "서비스 시작하기",
+    "subtitle": "AI 기반 개발 도구 사용을 시작하기 위한 5가지 간단한 단계를 따르세요",
+    "steps": {
+      "title": "설정 단계"
+    },
+    "step1": {
+      "title": "빠른 시작 가이드",
+      "description": "Node.js 18.0.0 이상을 설치하고 OpenAI Codex CLI 도구를 전역적으로 설치하세요. 몇 분 만에 설정을 완료하고 OpenAI의 Codex API에 접근하세요.\n\n전제 조건:\n• Node.js - Node.js 버전 18.0.0 이상 설치\n  node --version (v18.0.0 이상)\n• OpenAI Codex CLI - OpenAI Codex CLI 도구를 전역적으로 설치\n  npm install -g @openai/codex"
+    },
+    "step2": {
+      "title": "API 키로 테스트",
+      "description": "테스트 API 키를 사용하여 모든 것이 올바르게 작동하는지 확인하고 첫 번째 API 호출 방법을 학습하세요"
+    },
+    "step3": {
+      "title": "플랜 구독",
+      "description": "요구사항에 가장 적합한 구독 플랜을 선택하고 결제 프로세스를 완료하여 전체 기능을 잠금 해제하세요"
+    },
+    "step4": {
+      "title": "API 생성",
+      "description": "API 키를 생성하고 서비스를 개발 워크플로우에 통합하는 방법을 학습하세요"
+    },
+    "step5": {
+      "title": "구축 시작",
+      "description": "AI 도구를 사용하여 개발 프로세스를 가속화하고 새로운 가능성을 열어보세요"
+    },
+    "help": {
+      "title": "도움이 필요하신가요?",
+      "description": "문제가 발생하거나 질문이 있는 경우, 지원팀이 성공할 수 있도록 도와드립니다",
+      "documentation": "문서",
+      "community": "커뮤니티 포럼"
+    },
+    "markAllComplete": "모두 완료로 표시"
+  },
+  "auth": {
+    "welcomeBack": "환영합니다",
+    "signInTitle": "CodeILab에 로그인",
+    "signInDescription": "계속하려면 선호하는 로그인 방법을 선택하세요",
+    "signInWith": "{provider}으로 로그인",
+    "or": "또는",
+    "emailLoginTitle": "로그인 링크를 이메일로 보내주세요",
+    "emailLoginDescription": "보안 마법 링크를 보내드립니다. 비밀번호는 필요 없습니다.",
+    "emailPlaceholder": "you@example.com",
+    "sendMagicLink": "마법 링크 보내기",
+    "magicLinkSent": "마법 링크를 보냈습니다! 받은편지함을 확인하세요.",
+    "magicLinkHint": "링크는 {minutes}분 후에 만료됩니다.",
+    "magicLinkError": "이메일을 보낼 수 없습니다. 다시 시도하세요.",
+    "emailRequired": "유효한 이메일 주소를 입력하세요.",
+    "magicLinkHeading": "이메일을 확인하세요",
+    "magicLinkChecking": "보안 로그인 링크 확인 중…",
+    "magicLinkRedirecting": "링크가 확인되었습니다! 지금 리디렉션 중…",
+    "magicLinkInvalid": "이 마법 링크는 무효하거나 만료되었습니다.",
+    "magicLinkAlreadyUsed": "그 마법 링크는 이미 사용되었습니다. 새 링크를 요청하세요.",
+    "magicLinkBackToLogin": "로그인으로 돌아가기"
+  }
+}

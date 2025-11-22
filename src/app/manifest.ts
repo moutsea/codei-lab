@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Claude-ide',
-        short_name: 'Claude-ide',
-        description: 'Claude-ide — Affordable AI coding assistant in your IDE.',
+        name: 'Code I Lab',
+        short_name: 'Code I',
+        description: 'Code I Lab delivers Codex-level AI coding assistance at www.codeilab.com for a fraction of the cost.',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',

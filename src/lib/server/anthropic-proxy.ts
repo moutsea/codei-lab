@@ -7,34 +7,54 @@ import {
   codexUserLimitExceedResponse,
   codexUserSubscriptionInvalidResponse,
 } from '@/lib/server/utils'
-import { currentDate, currentMonth, currentSubscription, extractApiKeyFromHeaders } from '@/lib/utils'
-import type { ApiDetail } from '@/types/db'
+import { currentDate, currentSubscription, extractApiKeyFromHeaders } from '@/lib/utils'
 import { addTokensToUsageService } from '@/lib/services/token_usage_service'
-import { UserDetail } from '@/types';
 import { getApiKeyUsageByApiKeyWithCache, validateApiKey } from '../services/api_key_service';
 import { getUserDetailByIdWithCache } from '../services/user_service';
+
+type Usage = {
+  input_tokens: number;
+  input_tokens_details?: {
+    cached_tokens?: number;  // Anthropic 重要字段
+    [key: string]: any;      // 允许未来扩展
+  };
+
+  output_tokens: number;
+  output_tokens_details?: {
+    reasoning_tokens?: number; // Claude 3.6/3.7 的 reasoning tokens
+    [key: string]: any;
+  };
+
+  total_tokens?: number;       // Anthropic 已经给了这个字段
+};
+
 
 export interface ProxyOptions {
   endpointName: string;
   requiresMessagesValidation?: boolean;
 }
 
-function calculateTotalTokens(responseText: string): {
+
+function calculateTotalTokens(
+  usage: Usage,
+  discount: number = 1.0,
+  modelName = process.env.ANTHROPIC_MODEL ?? ''
+): {
   totalInputTokens: number;
-  totalCacheReadTokens: number;
   totalOutputTokens: number;
+  totalCacheReadTokens: number;
   quota: number;
 } {
   try {
-    const lines = responseText.split('\n');
-    let totalInputTokens = 0;
-    let totalOutputTokens = 0;
-    let totalCacheReadTokens = 0;
+    let totalInputTokens = usage.input_tokens || 0;
+    let totalOutputTokens = usage.output_tokens || 0;
+    let totalCacheReadTokens = usage.input_tokens_details?.cached_tokens || 0;
 
-    // Find all lines that start with 'data:' and may contain usage information
-    const dataLines = lines.filter(line => line.startsWith('data:'));
-
-    if (dataLines.length === 0) {
+    if (
+      totalInputTokens === 0 &&
+      totalOutputTokens === 0 &&
+      totalCacheReadTokens === 0
+    ) {
       return {
         totalInputTokens: 0,
         totalCacheReadTokens: 0,
@@ -43,38 +63,14 @@ function calculateTotalTokens(responseText: string): {
       };
     }
 
-    for (const dataLine of dataLines) {
-      try {
-        // 去掉 "data:" 前缀
-        const jsonString = dataLine.slice(6).trim();
-
-        // Skip empty lines or [DONE] markers
-        if (!jsonString || jsonString === '[DONE]') {
-          continue;
-        }
-
-        // 解析 JSON 字符串
-        const responseBody = JSON.parse(jsonString);
-
-        if (responseBody && (responseBody.response && responseBody.response.usage)) {
-          const usage = responseBody.response.usage;
-
-          totalInputTokens += usage.input_tokens || 0;
-          totalOutputTokens += usage.output_tokens || 0;
-          totalCacheReadTokens += usage.input_tokens_details.cached_tokens || 0;
-        }
-      } catch (parseError) {
-        // Skip lines that can't be parsed but continue processing other lines
-        console.warn('Skipping malformed data line:', dataLine, parseError);
-        continue;
-      }
-    }
-
     totalInputTokens -= totalCacheReadTokens;
     const inputPrice = parseFloat(process.env.CODEX_INPUT_PRICE!);
     const outputPrice = parseFloat(process.env.CODEX_OUTPUT_PRICE!);
     const quota = inputPrice * totalInputTokens / 1000000.0 + inputPrice * totalCacheReadTokens / 10000000.0 + outputPrice * totalOutputTokens / 1000000.0;
-    console.log(`Token calculation: input=${totalInputTokens}, output=${totalOutputTokens}, cache_read=${totalCacheReadTokens}, quota=${quota.toFixed(4)}`);
+
+    console.log(
+      `Token calculation: model=${modelName}, input=${totalInputTokens}, output=${totalOutputTokens}, cache_read=${totalCacheReadTokens}, discount=${discount}, quota=${quota}`
+    );
 
     return {
       totalInputTokens,
@@ -83,7 +79,7 @@ function calculateTotalTokens(responseText: string): {
       quota
     };
   } catch (error) {
-    console.error('Error in calculateTotalTokens:', error);
+    // console.error('Error in calculateTokensFromUsage:', error);
     return {
       totalInputTokens: 0,
       totalCacheReadTokens: 0,
@@ -91,17 +87,6 @@ function calculateTotalTokens(responseText: string): {
       quota: 0
     };
   }
-}
-
-async function apiTokenUsageUpdate(
-  res: string,
-  apiData: ApiDetail,
-  userData: UserDetail,
-  apiKey: string,
-  userId: string
-) {
-  const totalTokens = calculateTotalTokens(res);
-  await addTokensToUsageService(apiKey, apiData, userId, currentDate(), currentSubscription(new Date(userData.startDate!)), userData, totalTokens.totalInputTokens, totalTokens.totalCacheReadTokens, totalTokens.totalOutputTokens, totalTokens.quota);
 }
 
 export async function createCodexProxy(
@@ -199,32 +184,221 @@ export async function createCodexProxy(
     const finalBody = { ...requestBody };
     headers.set("authorization", `Bearer ${authToken}`);
 
-    console.log(targetUrl);
+    const ac = new AbortController();
+    const upstreamTimeout = setTimeout(() => ac.abort(), 55_000);
 
-    const response = await fetch(targetUrl, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(finalBody),
-    });
+    let upstreamRes: Response;
 
-    const responseText = await response.text();
+    try {
+      upstreamRes = await fetch(targetUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(finalBody),
+        signal: ac.signal,
+      });
+    } catch (err: any) {
+      clearTimeout(upstreamTimeout);
 
-    await apiTokenUsageUpdate(responseText, apiData, userData, apiKey, userId!);
-
-    if (!response.ok) {
-      try {
-        const errorPayload = JSON.parse(responseText); // 关键：将 JSON 字符串解析成 JS 对象
-        return NextResponse.json(errorPayload, { status: response.status }); // 现在传入的是对象，行为正确
-      } catch (e) {
-        // 如果上游返回的错误不是一个有效的 JSON，则直接返回文本
-        return new NextResponse(responseText, { status: response.status });
+      if (err.name === 'AbortError') {
+        return new NextResponse(
+          JSON.stringify({ error: 'Upstream timeout' }),
+          { status: 504, headers: { 'content-type': 'application/json' } }
+        );
       }
+      console.error('Upstream error:', err);
+      return new NextResponse(
+        JSON.stringify({ error: 'Upstream fetch failed' }),
+        { status: 502, headers: { 'content-type': 'application/json' } }
+      );
     }
 
-    return new NextResponse(responseText, {
-      status: response.status,
+    clearTimeout(upstreamTimeout);
+
+    const contentType =
+      upstreamRes.headers.get('content-type') ?? 'application/json';
+
+    const upstreamBody = upstreamRes.body;
+
+    if (!upstreamBody) {
+      return new NextResponse(null, {
+        status: upstreamRes.status,
+        headers: { 'content-type': contentType },
+      });
+    }
+
+    // 单流 + 边转发边解析 usage
+    const stream = new ReadableStream({
+      async start(controller) {
+        const reader = upstreamBody.getReader();
+        const decoder = new TextDecoder();
+        const encoder = new TextEncoder();
+
+        let buffer = '';
+        let latestUsage: Usage | null = null;
+        let controllerClosed = false;
+
+        const safeClose = () => {
+          if (controllerClosed) return;
+          controllerClosed = true;
+          try {
+            controller.close();
+          } catch (e) {
+            // ignore
+          }
+        };
+
+        const safeError = (err: unknown) => {
+          if (controllerClosed) return;
+          controllerClosed = true;
+          try {
+            controller.error(err);
+          } catch (e) {
+            // ignore
+          }
+        };
+
+        const safeEnqueue = (chunk: Uint8Array | string) => {
+          if (controllerClosed) return false;
+          try {
+            if (typeof chunk === 'string') {
+              controller.enqueue(encoder.encode(chunk));
+            } else {
+              controller.enqueue(chunk);
+            }
+            return true;
+          } catch (e) {
+            // 关键：这里就是你现在遇到的 Invalid state 场景
+            // console.warn('enqueue after close, stop streaming:', e);
+            controllerClosed = true;
+            return false;
+          }
+        };
+
+        const HEARTBEAT_INTERVAL = 15_000;
+        let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+
+        const startHeartbeat = () => {
+          if (heartbeatTimer || controllerClosed) return;
+          heartbeatTimer = setInterval(() => {
+            // 心跳失败也说明流结束了，直接停
+            if (!safeEnqueue('\n')) {
+              stopHeartbeat();
+            }
+          }, HEARTBEAT_INTERVAL);
+        };
+
+        const stopHeartbeat = () => {
+          if (heartbeatTimer) {
+            clearInterval(heartbeatTimer);
+            heartbeatTimer = null;
+          }
+        };
+
+        const looksLikeStream =
+          contentType.includes('text/event-stream') ||
+          contentType.includes('stream+json');
+
+        if (!looksLikeStream) {
+          startHeartbeat();
+        }
+
+        const parseSSELines = (text: string) => {
+          buffer += text;
+          let newlineIdx: number;
+
+          while ((newlineIdx = buffer.indexOf('\n')) !== -1) {
+            const rawLine = buffer.slice(0, newlineIdx);
+            buffer = buffer.slice(newlineIdx + 1);
+
+            const line = rawLine.trim();
+            if (!line.startsWith('data:')) continue;
+
+            const jsonString = line.slice(5).trimStart();
+            if (!jsonString || jsonString === '[DONE]') continue;
+
+
+            // console.log(jsonString);
+
+            try {
+              const obj = JSON.parse(jsonString);
+              const usage =
+                obj.usage || (obj.response && obj.response.usage) || null;
+              if (usage) {
+                latestUsage = usage;
+              }
+            } catch (e) {
+              console.warn('Skipping malformed data line:', line, e);
+            }
+          }
+        };
+
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (!value) continue;
+
+            // 1. 先转发给客户端 —— 用 safeEnqueue 包一下
+            if (!safeEnqueue(value)) {
+              // 流已经被取消/关闭了，没必要再继续读上游
+              await reader.cancel();
+              break;
+            }
+
+            // 2. 再做文本解析
+            const textChunk = decoder.decode(value, { stream: true });
+
+            if (looksLikeStream) {
+              parseSSELines(textChunk);
+            } else {
+              buffer += textChunk;
+            }
+          }
+
+          const rest = decoder.decode();
+          if (rest) {
+            if (looksLikeStream) {
+              parseSSELines(rest);
+            } else {
+              buffer += rest;
+            }
+          }
+
+          if (!looksLikeStream && buffer) {
+            try {
+              const obj = JSON.parse(buffer);
+              const usage =
+                obj.usage || (obj.message && obj.message.usage) || null;
+              if (usage) {
+                latestUsage = usage;
+              }
+            } catch (e) {
+              console.error('Failed to parse non-stream JSON for usage:', e);
+            }
+          }
+
+          if (latestUsage) {
+
+            // console.log(latestUsage);
+
+            const totalTokens = calculateTotalTokens(latestUsage);
+            await addTokensToUsageService(apiKey, apiData, userData.userId, currentDate(), currentSubscription(new Date(userData.startDate!)), userData, totalTokens.totalInputTokens, totalTokens.totalCacheReadTokens, totalTokens.totalOutputTokens, totalTokens.quota);
+          }
+
+          stopHeartbeat();
+          safeClose();
+        } catch (err) {
+          console.error('Error while streaming upstream body:', err);
+          stopHeartbeat();
+          safeError(err);
+        }
+      },
+    });
+
+    return new NextResponse(stream, {
+      status: upstreamRes.status,
       headers: {
-        'content-type': response.headers.get('content-type') || 'application/json',
+        'content-type': contentType,
       },
     });
 

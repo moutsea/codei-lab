@@ -1,0 +1,575 @@
+{
+  "navigation": {
+    "home": "ホーム",
+    "document": "ドキュメント",
+    "usage": "API使用量",
+    "pricing": "料金プラン",
+    "faq": "よくある質問",
+    "contact": "お問い合わせ",
+    "language": "言語",
+    "current": "現在"
+  },
+  "userMenu": {
+    "dashboard": "ダッシュボード",
+    "profile": "プロフィール",
+    "billing": "請求",
+    "logout": "ログアウト"
+  },
+  "pricingSection": {
+    "title": "プランを選択",
+    "nonlogin": "ログインして購読してください",
+    "subtitle": "開発者のニーズに合わせた柔軟な価格プラン。個人学習からチーム開発まで、最適なプランが見つかります",
+    "featuredBadge": "最も人気",
+    "trialSubtitle": "週間トライアルカード。試して、急なニーズに対応",
+    "plusSubtitle": "プラス月額カード。通常の研究開発ワークロードをカバー",
+    "proSubtitle": "プロ月額カード。高頻度開発/チーム使用に",
+    "cta": "開始する",
+    "ctaFeatured": "今すぐ開始",
+    "mostPopular": "最も人気",
+    "includesQuota": "クオータを含む",
+    "includesRequests": "月間リクエスト",
+    "requests": "リクエスト",
+    "month": "月",
+    "quarter": "四半期",
+    "year": "年",
+    "week": "週",
+    "allPlansInclude": "すべてのプランに含まれる：",
+    "securePayment": "安全な支払い",
+    "instantAccess": "即時アクセス",
+    "cancelAnytime": "いつでも解約可能",
+    "loadError": "料金プランの読み込みに失敗しました: {{error}}",
+    "retry": "再試行",
+    "noPlansTitle": "利用可能なプランがありません",
+    "noPlansDescription": "後でもう一度確認するか、サポートにお問い合わせください。",
+    "features": "機能",
+    "claudeModel": "Claude Sonnet 4.5モデル",
+    "apiKeys": "{{count}}個の個別APIキー",
+    "tokensOff": "{{percent}}%トークンオフ",
+    "allModels": "すべてのAIモデル",
+    "prioritySupport": "優先サポート",
+    "apiAccess": "APIアクセス",
+    "billing": {
+      "monthly": "月額",
+      "quarterly": "四半期",
+      "yearly": "年額",
+      "weekly": "週間",
+      "quarterlyDiscount": "15%割引",
+      "yearlyDiscount": "30%割引"
+    },
+    "monthlyQuota": "月次クオータ",
+    "totalQuota": "合計クオータ",
+    "forOneWeek": "1週間",
+    "validityPeriod": "有効期間",
+    "featuresList": "機能リスト",
+    "aiModel": "モデル",
+    "sevenDays": "7日間",
+    "thirtyDays": "30日間",
+    "apiKeysQuota": "APIキー制限",
+    "apiKeysCount": "{count}個の個別APIキー",
+    "subscriptionDialog": {
+      "title": "購読サイクルを選択",
+      "description": "{planName}の希望する請求サイクルを選択してください",
+      "billedEvery": "{interval}ごとに請求",
+      "perInterval": "{interval}あたり",
+      "cancel": "キャンセル",
+      "processing": "処理中..."
+    },
+    "subscriptionError": "チェックアウトセッションの作成に失敗しました",
+    "duplicateError": "すでにトライアルプランに購読しており、再度購読することはできません。",
+    "currencyConflictError": "すでに{existingCurrency}の購読があります。同時に{requestedCurrency}で購読することはできません。",
+    "planDowngradeError": "現在{currentPlan}購読があります。{requestedPlan}へのダウングレードは許可されていません。",
+    "serverError": "予期しないサーバーエラーが発生しました。問題が続く場合は後でもう一度試すか、サポートにお問い合わせください。",
+    "stripeError": "決済処理エラーが発生しました({errorType})。支払い詳細を確認してもう一度お試しください。"
+  },
+  "pricingModal": {
+    "upgrade": "購読",
+    "title": "アカウントをアップグレード"
+  },
+  "tokenPricing": {
+    "eyebrow": "料金表",
+    "title": "公式トークン価格",
+    "description": "100万トークンあたりの入力、バッファー入力、出力トークン料金を比較。",
+    "unit": "/Mトークン",
+    "cards": {
+      "input": {
+        "title": "入力トークン"
+      },
+      "buffered": {
+        "title": "バッファー入力トークン",
+        "helper": "90%割引"
+      },
+      "output": {
+        "title": "出力トークン"
+      }
+    }
+  },
+  "hero": {
+    "title": "Code I Lab",
+    "subtitle": "開発者向けの利用しやすいOpenAI Codex APIアクセス。柔軟な価格プランと既存の開発ワークフローへのシームレスな統合で、強力なコード生成を体験してください。",
+    "cta": "開始する",
+    "learnMore": "詳細を見る",
+    "readDoc": "ドキュメントを読む",
+    "installNodeJs": "インストール",
+    "nodeJsLinkText": "Node.js 18+",
+    "thenRun": "次に実行"
+  },
+  "productFeatures": {
+    "title": "Code Iはコーディングする everywhereで実行",
+    "features": {
+      "cli": {
+        "title": "Code i CLI",
+        "description": "プロンプトからプルリクエストまで数分で。Codexをターミナルで使用して、新機能の shipped、バグ修正、解決策のブレインストーミング、その他次のタスクに対応できます。"
+      },
+      "ide": {
+        "title": "Code i IDE拡張機能",
+        "description": "VSCode、Cursor、その他のIDEでCodexと連携。変更をプレビューし、ターゲットを絞った編集を行い、アイデアから実装まで流れを維持します。"
+      },
+      "cloud": {
+        "title": "Code iクラウド",
+        "description": "クラウドでCodexにタスクを委譲して、flowを維持。Codexは安全なサンドボックスにリポジトリを読み込み、ローカルでレビュー、マージ、または作業を続行できるコードを生成します。"
+      }
+    }
+  },
+  "productWorkflows": {
+    "title": "Code Iは主要なワークフローにプラグインしてチーム全体を加速",
+    "workflows": {
+      "codeReview": {
+        "title": "GitHubでのコードレビュー",
+        "content": "新しいプルリクエストを自動的にレビューし、手動レビューのために@codexをタグ付けします。PR意図と変更を比較し、必要に応じてコードを実行して詳細なレビューを提供します。"
+      },
+      "slackTasks": {
+        "title": "Slackからタスクを割り当て",
+        "content": "CodexはSlackから質問に答え、バグを修正し、アイデアを探索します。会話からコンテキストを自動的に取得して、適切なリポジトリを選択し、作業を開始します。"
+      },
+      "sdk": {
+        "title": "Code I SDK",
+        "content": "GitHub Actionsや内部ツールにCodexを埋め込んで、CI/CD、コードメンテナンス、課題管理、その他のプロセスを自動化します。"
+      }
+    }
+  },
+  "useCases": {
+    "title": "使い方",
+    "step1": {
+      "title": "ターミナルまたはIDEでセットアップ",
+      "description": "Codex CLIまたはIDE拡張機能をダウンロードし、APIキーの取得を購読してください。"
+    },
+    "step2": {
+      "title": "コードリポジトリに移動",
+      "description": "ローカルリポジトリでIDEまたはターミナルを開き、Codexを開始します。"
+    },
+    "step3": {
+      "title": "最初のタスクを実行",
+      "description": "リポジトリについてCodexとチャットするか、新機能の実装やバグ修正を依頼してください。"
+    },
+    "step4": {
+      "title": "Codexに作業させる",
+      "description": "Codexはタスクを完了させるために、リポジトリを独立してナビゲートします。コード変更を受け入れるか、タスクが完了するまで作業を続けてください。"
+    }
+  },
+  "plans": {
+    "lite": {
+      "name": "Lite",
+      "price": 9.9,
+      "quota_tokens": 10000000,
+      "description": "学生と趣味の開発者向け。月額約1000万トークンのエントリーレベルアクセス。"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": 39,
+      "quota_tokens": 50000000,
+      "description": "個人開発者にとって最高の価値。日常のコーディングタスク用に月額約5000万トークン。"
+    },
+    "team": {
+      "name": "Team",
+      "price": 99,
+      "quota_tokens": 200000000,
+      "description": "スタートアップと小規模チーム向け。高い費用効率で月額約2億トークン。"
+    }
+  },
+  "footer": {
+    "description": "開発者向けの利用しやすいOpenAI Codex APIアクセス。Code i Labは費用対効果の高いコード生成ツールを提供し、開発ワークフローを加速し生産性を向上させます。",
+    "product": {
+      "title": "製品",
+      "features": "機能",
+      "pricing": "料金プラン",
+      "documentation": "ドキュメント",
+      "usage": "API使用量"
+    },
+    "wealsobuilt": {
+      "title": "私たちが構築したもの",
+      "cs61b": "CSオープンコース",
+      "claudeide": "Claude Code IDE"
+    },
+    "copyright": "Code I Lab",
+    "allRightsReserved": "すべての権利を留保",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "cookies": "Cookieポリシー"
+  },
+  "faq": {
+    "title": "よくある質問",
+    "subtitle": "Code iに関する一般的な質問の答えを見つけ、利用しやすいOpenAI Codex APIアクセスを始めましょう。",
+    "moreQuestions": "まだ質問がありますか？",
+    "contactSupport": "サポートチームにお問い合わせ",
+    "items": [
+      {
+        "question": "Code Iの使い方は？",
+        "answer": "Node.jsとCodex CLIツールをインストールした後、ターミナルでAPIキーを設定するだけです。セットアップは1分しかかかりません。購読前に接続を確認するためのテストインターフェースを提供しています。OpenAIのCodexモデルにアクセスするための、手頃な価格で寛大な月次トークンクオータを備えた柔軟な購読プランを提供しています。"
+      },
+      {
+        "question": "Code Iはどのモデルを使用していますか？",
+        "answer": "Code IはOpenAIのCodexモデルへの利用しやすいAPIアクセスを提供します。これはGitHub Copilotで使用されているのと同じ強力なコード生成モデルです。"
+      },
+      {
+        "question": "Code Iは何に適していますか？",
+        "answer": "Code Iは、費用対効果の高い高度なAIコード生成アクセスを求める開発者にとって完璧です。既存のIDEや開発ツールにシームレスに統合され、ワークフローを変更することはありません。Python、JavaScript/TypeScript、Java、C++、Go、Rustなどを含む複数のプログラミング言語をサポートしています。Code iはGitなどのコマンドラインツールや様々なMCPサーバーと連携し、その機能を拡張して開発プロセスをより効率的で利用しやすくします。"
+      },
+      {
+        "question": "月次トークンクオータを使い切らなかった場合はどうなりますか？",
+        "answer": "未使用のトークンは無駄になりません！APIアクセスを友達やチームメンバーと共有できます。1つのアカウントで複数のAPIキーの作成をサポートしており、各APIキーに個別のクオータと有効期限を設定できます。プラスメンバーは最大10個のAPIキーを作成でき、プロメンバーは最大50個のAPIキーを作成できます。"
+      },
+      {
+        "question": "どのプラットフォームとプログラミング言語がサポートされていますか？",
+        "answer": "Code IはWindows/Mac/Linuxをサポートしており、Python、JavaScript/TypeScript、Java、C++、Go、Rust、PHP、Rubyなど、すべての主要なプログラミング言語をサポートしています。"
+      },
+      {
+        "question": "Code Iの料金は他の選択肢と比較してどうですか？",
+        "answer": "Code Iは、他のプロバイダーと比較してCodexへのアクセスを大幅に安価に提供しています。同じ品質のコード生成を低コストで提供できるようにインフラを最適化しています。さらに、バッファー入力トークンは90%割引で提供されており、反復的なコード分析とリファクタリングを非常に費用対効果の高いものにしています。"
+      }
+    ]
+  },
+  "language": {
+    "current": "現在"
+  },
+  "admin": {
+    "title": "管理ダッシュボード",
+    "description": "アプリケーション統計を監視・管理",
+    "overview": "概要",
+    "users": {
+      "title": "ユーザー",
+      "total": "総ユーザー数",
+      "growth": "成長"
+    },
+    "revenue": {
+      "title": "収益",
+      "total": "総収益",
+      "monthly": "月間収益"
+    },
+    "usage": {
+      "title": "使用量",
+      "totalTokens": "総トークン数",
+      "activeUsers": "アクティブユーザー"
+    },
+    "subscriptions": {
+      "title": "購読",
+      "active": "アクティブ",
+      "total": "合計",
+      "conversionRate": "コンバージョン率"
+    },
+    "loading": "読み込み中...",
+    "error": "統計の読み込みに失敗しました",
+    "accessDenied": "アクセス拒否。管理者権限が必要です。"
+  },
+  "usage": {
+    "title": "APIキー使用量",
+    "description": "APIキーを入力して使用量情報と詳細を確認してください",
+    "apiKeyLabel": "APIキー",
+    "apiKeyPlaceholder": "APIキーを入力してください...",
+    "checkUsage": "使用量を確認",
+    "checking": "確認中...",
+    "apiKeyRequired": "APIキーが必要です",
+    "invalidApiKey": "無効なAPIキー",
+    "checkError": "APIキー使用量の確認に失敗しました",
+    "apiKeyInfo": {
+      "title": "APIキー情報",
+      "name": "キー名",
+      "status": "ステータス",
+      "requestLimit": "リクエスト制限",
+      "tokensUsed": "使用済みトークン",
+      "remainingQuota": "残りクオータ",
+      "createdAt": "作成日時",
+      "lastUsedAt": "最終使用日時",
+      "expiredAt": "有効期限",
+      "active": "アクティブ",
+      "expired": "期限切れ",
+      "expiring": "まもなく期限切れ",
+      "noLimit": "制限なし",
+      "neverUsed": "未使用",
+      "noExpiration": "有効期限なし",
+      "unlimited": "無制限",
+      "monthlyQuota": "月次クオータ",
+      "quotaUsed": "使用済みクオータ",
+      "topUpQuotaAvailable": "追加チャージクオータ利用可能",
+      "quotaUsage": "クオータ使用量",
+      "topUpActive": "追加チャージアクティブ"
+    },
+    "usageDetails": {
+      "title": "使用量詳細",
+      "currentMonth": "当月の使用量",
+      "quotaUsage": "クオータ使用量",
+      "noUsageData": "使用量データがありません"
+    }
+  },
+  "sidebar": {
+    "dashboard": "ダッシュボード",
+    "apiKeys": "APIキー",
+    "profile": "プロフィール",
+    "billing": "請求",
+    "settings": "設定",
+    "navigation": "ナビゲーション",
+    "utcNotice": "すべての日付と時刻はUTCベースで、データは最大5分遅延する場合があります。",
+    "monthlyQuota": "月次クオータ",
+    "subscriptionEndDate": "購読終了日",
+    "upgradePlan": "アップグレード",
+    "membershipLevel": "メンバーシップレベル",
+    "topUp": "追加チャージ",
+    "renew": "更新",
+    "topUpLeft": "+ ${quota} 追加",
+    "topUpExpiresOn": "有効期限",
+    "topUpDialog": {
+      "title": "アカウントに追加チャージ",
+      "description": "追加チャージパッケージを選択してください。これらのパッケージは1ヶ月間有効です。",
+      "selectPlan": "プランを選択",
+      "processing": "処理中...",
+      "confirmPurchase": "購入を確定",
+      "validForOneMonth": "1ヶ月間有効"
+    },
+    "renewDialog": {
+      "title": "購読を更新",
+      "description": "メンバーシップ用の更新プランを選択してください。",
+      "selectPlan": "プランを選択",
+      "processing": "処理中...",
+      "confirmPurchase": "購入を確定",
+      "renewSubscription": "購読を更新"
+    },
+    "upgradeDialog": {
+      "title": "プランをアップグレード",
+      "description": "メンバーシップ用のアップグレードプランを選択してください。",
+      "selectPlan": "プランを選択",
+      "processing": "処理中...",
+      "confirmPurchase": "購入を確定",
+      "oneTimePayment": "一回限りの支払い"
+    },
+    "billingPage": {
+      "title": "請求",
+      "subtitle": "支払い履歴",
+      "totalPayments": "総支払額",
+      "noPayments": "支払いが見つかりません",
+      "paymentId": "支払いID",
+      "date": "日付",
+      "amount": "金額",
+      "status": "ステータス",
+      "type": "タイプ",
+      "currency": "通貨",
+      "subscriptionId": "購読ID",
+      "loading": "支払いを読み込み中...",
+      "error": "支払いの読み込みに失敗しました",
+      "loadMore": "もっと読み込む",
+      "perPage": "ページあたり",
+      "pageOf": "ページ {{page}} / {{totalPages}}",
+      "totalPages": "総ページ数",
+      "paymentTypes": {
+        "sub": "購読",
+        "pay": "一回払い",
+        "extra": "追加クオータ",
+        "renew": "購読更新",
+        "trial": "トライアル"
+      },
+      "statuses": {
+        "pending": "保留中",
+        "processing": "処理中",
+        "succeeded": "成功",
+        "failed": "失敗",
+        "refunded": "返金済み",
+        "cancelled": "キャンセル済み",
+        "paid": "支払済み"
+      }
+    },
+    "month": "月",
+    "dailyTokenUsage": "日次トークンクオータ",
+    "currentUsage": "現在の使用量",
+    "ofQuota": "クオータの",
+    "usageLog": {
+      "title": "使用量ログ",
+      "subtitle": "最近の日次使用量記録",
+      "loading": "使用量ログを読み込み中...",
+      "refresh": "更新",
+      "error": "使用量ログを読み込めません。",
+      "empty": "まだ使用記録がありません。",
+      "totalTokensLabel": "総トークン",
+      "recordsCount": "{count}件の記録",
+      "date": "日付",
+      "inputTokens": "入力: {value}",
+      "outputTokens": "出力: {value}",
+      "cachedTokens": "キャッシュ: {value}",
+      "quotaUsed": "使用済みクオータ: {value}",
+      "loadMore": "もっと読み込む"
+    }
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "APIキーを管理し、トークン使用量を監視",
+    "noUsageData": "選択した月の使用量データがありません",
+    "noSubscription": "アクティブな購読がありません",
+    "welcome": {
+      "title": "ダッシュボードへようこそ！ 🎉",
+      "message": "アカウントが正常に設定されました。機能の探索を始めましょう！"
+    },
+    "tokenStats": {
+      "total": "総トークン数",
+      "totalDescription": "月次トークン割り当て",
+      "used": "使用済みトークン",
+      "usedDescription": "今月消費されたトークン",
+      "remaining": "残りトークン",
+      "remainingDescription": "使用可能なトークン"
+    },
+    "usage": {
+      "title": "トークン使用量",
+      "description": "請求サイクル中のトークン消費を監視",
+      "currentUsage": "現在の使用量",
+      "used": "使用済み",
+      "total": "合計"
+    },
+    "apiKeys": {
+      "title": "APIキー",
+      "description": "Code I Labアクセス用のAPIキーを管理",
+      "create": "APIキーを作成",
+      "createTitle": "新しいAPIキーを作成",
+      "createDescription": "アプリケーション用の新しいAPIキーを生成",
+      "nameLabel": "キー名",
+      "namePlaceholder": "このキーの説明的な名前を入力",
+      "cancel": "キャンセル",
+      "created": "作成済み",
+      "lastUsed": "最終使用",
+      "copied": "コピーしました！",
+      "noApiKeys": "まだAPIキーがありません",
+      "noApiKeysDescription": "最初のAPIキーを作成してサービスの利用を開始",
+      "planLimitError": "{{plan}}メンバーは最大{{limit}}個のAPIキーを作成できます",
+      "creating": "新しいAPIキーを作成中",
+      "createError": "APIキーの作成に失敗しました",
+      "deleting": "削除中",
+      "delete": "削除",
+      "deleteConfirmTitle": "APIキーを削除",
+      "deleteConfirmMessage": "APIキー '{{name}}' を削除してもよろしいですか？この操作は元に戻せません。",
+      "deleteConfirmWarning": "警告：このAPIキーを使用しているすべてのアプリケーションは直ちにアクセスできなくなります。",
+      "deleteError": "APIキーの削除に失敗しました",
+      "totalApiKeys": "総APIキー数",
+      "ofPlanLimitPrefix": "/ ",
+      "ofPlanLimitSuffix": " 許可済み",
+      "noPlanLimit": "プラン制限が設定されていません",
+      "apiKeysQuotaUsed": "APIキークオータ使用済み",
+      "ofTotalPrefix": "/ ",
+      "ofTotalSuffix": " 合計",
+      "noKeysCreated": "キーが作成されていません",
+      "yourMonthlyQuota": "月次クオータ",
+      "basedOnSubscription": "購読プランに基づく",
+      "monthlyRequestLimit": "月次クオータ制限",
+      "noLimit": "制限なし",
+      "unlimitedQuota": "無制限クオータ",
+      "unlimitedAccess": "無制限アクセス",
+      "quotaDescription": "このAPIキーの月次トークン制限を設定",
+      "active": "アクティブ",
+      "expired": "期限切れ",
+      "expiring": "まもなく期限切れ",
+      "expirationDate": "有効期限",
+      "expirationDateOptional": "有効期限（オプション）",
+      "expirationDescription": "空欄のままで有効期限なし。APIキーは選択した日の00:00:00に自動的に期限切れになります。",
+      "noExpire": "有効期限なし",
+      "oneMonth": "1ヶ月",
+      "threeMonths": "3ヶ月",
+      "sixMonths": "6ヶ月（半年）",
+      "oneYear": "1年",
+      "periodDescription": "APIキーの有効期限を選択してください。キーは選択した日の00:00:00に期限切れになります。",
+      "editTitle": "APIキーを編集",
+      "editDescription": "APIキー設定を更新",
+      "save": "変更を保存",
+      "updating": "更新中...",
+      "updateError": "APIキーの更新に失敗しました"
+    },
+    "profile": {
+      "title": "プロフィール",
+      "subtitle": "プロフィール情報",
+      "noSubscription": "プロフィールにアクセスするには購読してください。",
+      "basicInformation": "基本情報",
+      "accountDetails": "アカウント詳細",
+      "preferences": "設定",
+      "name": "名前",
+      "email": "メールアドレス",
+      "nickname": "ニックネーム",
+      "emailVerified": "メール確認済み",
+      "verified": "確認済み",
+      "notVerified": "未確認",
+      "userId": "ユーザーID",
+      "lastUpdated": "最終更新",
+      "subscriptionType": "購読タイプ",
+      "subscriptionExpireDate": "購読有効期限",
+      "requestLimit": "リクエスト制限",
+      "language": "言語",
+      "requestRefund": "返金をリクエスト",
+      "refundConfirm": "返金をリクエストしてもよろしいですか？24-48時間以内にメールでご連絡いたします。",
+      "openEmailClient": "メールクライアントを開く",
+      "cancel": "キャンセル",
+      "notProvided": "未提供"
+    }
+  },
+  "notFound": {
+    "title": "ページが見つかりません",
+    "description": "お探しのページは削除されたか、一時的に利用できなくなっている可能性があります。",
+    "backToHome": "ホームに戻る"
+  },
+  "tutorial": {
+    "title": "サービスの利用開始",
+    "subtitle": "AI搭載開発ツールの使用を開始するための5つの簡単なステップに従ってください",
+    "steps": {
+      "title": "セットアップ手順"
+    },
+    "step1": {
+      "title": "クイックスタートガイド",
+      "description": "Node.js 18.0.0以降をインストールし、OpenAI Codex CLIツールをグローバルにインストールしてください。数分でセットアップ完了し、OpenAIのCodex APIにアクセスできます。\n\n前提条件:\n• Node.js - Node.jsバージョン18.0.0以降をインストール\n  node --version (v18.0.0以降)\n• OpenAI Codex CLI - OpenAI Codex CLIツールをグローバルにインストール\n  npm install -g @openai/codex"
+    },
+    "step2": {
+      "title": "APIキーでテスト",
+      "description": "テストAPIキーを使用してすべてが正しく動作することを確認し、最初のAPI呼び出し方法を学習"
+    },
+    "step3": {
+      "title": "プランに購読",
+      "description": "ニーズに最適な購読プランを選択し、支払いプロセスを完了して全機能をアンロック"
+    },
+    "step4": {
+      "title": "APIを作成",
+      "description": "APIキーを生成し、サービスを開発ワークフローに統合する方法を学習"
+    },
+    "step5": {
+      "title": "構築を開始",
+      "description": "AIツールを使用して開発プロセスを加速し、新しい可能性を解き放つ"
+    },
+    "help": {
+      "title": "ヘルプが必要ですか？",
+      "description": "問題が発生した場合や質問がある場合、サポートチームが成功のサポートをします",
+      "documentation": "ドキュメント",
+      "community": "コミュニティフォーラム"
+    },
+    "markAllComplete": "すべてを完了としてマーク"
+  },
+  "auth": {
+    "welcomeBack": "おかえりなさい",
+    "signInTitle": "CodeILabにサインイン",
+    "signInDescription": "続行するには希望するサインイン方法を選択してください",
+    "signInWith": "{provider}でサインイン",
+    "or": "または",
+    "emailLoginTitle": "サインインリンクをメールで送信",
+    "emailLoginDescription": "安全なマジックリンクを送信します。パスワードは不要です。",
+    "emailPlaceholder": "you@example.com",
+    "sendMagicLink": "マジックリンクを送信",
+    "magicLinkSent": "マジックリンクを送信しました！受信箱を確認してください。",
+    "magicLinkHint": "リンクは{minutes}分で期限切れになります。",
+    "magicLinkError": "メールを送信できませんでした。もう一度お試しください。",
+    "emailRequired": "有効なメールアドレスを入力してください。",
+    "magicLinkHeading": "メールを確認してください",
+    "magicLinkChecking": "安全なサインインリンクを確認中…",
+    "magicLinkRedirecting": "リンクが確認されました！リダイレクト中…",
+    "magicLinkInvalid": "このマジックリンクは無効か有効期限が切れています。",
+    "magicLinkAlreadyUsed": "そのマジックリンクはすでに使用されています。新しいものをリクエストしてください。",
+    "magicLinkBackToLogin": "ログインに戻る"
+  }
+}
