@@ -36,7 +36,6 @@ export default async function LoginPage({
             <div className="space-y-4">
               <LoginButtonClient provider="google" />
               <LoginButtonClient provider="github" />
-              <LoginButtonClient provider="microsoft-entra-id" />
             </div>
 
             <div className="flex items-center gap-3 my-6">
