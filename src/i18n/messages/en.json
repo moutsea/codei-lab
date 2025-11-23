@@ -317,6 +317,7 @@
     "billing": "Billing",
     "settings": "Settings",
     "navigation": "Navigation",
+    "loading": "Loading...",
     "utcNotice": "All dates and times are UTC-based, and data may be delayed up to 5 minutes.",
     "monthlyQuota": "Monthly Quota",
     "subscriptionEndDate": "Subscription End Date",
@@ -509,6 +510,8 @@
       "refundConfirm": "Are you sure you want to request a refund? We'll reply your email within 24-48 hours.",
       "openEmailClient": "Open Email Client",
       "cancel": "Cancel",
+      "edit": "Edit",
+      "memberSince": "Member Since",
       "notProvided": "Not provided"
     }
   },

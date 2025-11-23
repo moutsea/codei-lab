@@ -324,6 +324,7 @@
     "billing": "账单",
     "settings": "设置",
     "navigation": "导航",
+    "loading": "加载中...",
     "utcNotice": "所有日期和时间均基于 UTC，数据可能延迟最多 5 分钟。",
     "monthlyQuota": "月度配额",
     "subscriptionEndDate": "订阅到期日期",
@@ -516,6 +517,8 @@
       "refundConfirm": "您确定要申请退款吗？我们将在24-48小时内回复您的邮件。",
       "openEmailClient": "打开邮件客户端",
       "cancel": "取消",
+      "edit": "编辑",
+      "memberSince": "注册时间",
       "notProvided": "未提供"
     }
   },

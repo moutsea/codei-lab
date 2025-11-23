@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { User, Mail, Calendar, CheckCircle, RefreshCw, Edit, Save, X } from "lucide-react";
+import { User, Mail, Calendar, CheckCircle, RefreshCw, Edit, Save, X, CreditCard, Activity, Shield } from "lucide-react";
 
 export default function ProfilePage() {
   const t = useTranslations("sidebar");
@@ -118,12 +118,17 @@ ${user.name || user.email}
   // Show loading while checking authentication or fetching data
   if (isLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <div className="text-gray-600">Loading...</div>
+      <DashboardLayout
+        pageTitle={t("profile")}
+        hasActiveSubscription={false}
+      >
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <div className="text-muted-foreground text-lg">{t("loading")}</div>
+          </div>
         </div>
-      </div>
+      </DashboardLayout>
     );
   }
 
@@ -134,9 +139,12 @@ ${user.name || user.email}
         pageTitle={t("profile")}
         hasActiveSubscription={false}
       >
-        <div className="text-center py-8">
-          <h2 className="text-2xl font-bold mb-4">{pt("title")}</h2>
-          <p className="text-gray-600">{pt("noSubscription")}</p>
+        <div className="max-w-2xl mx-auto">
+          <Card className="text-center p-8">
+            <Shield className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-3">{pt("title")}</h2>
+            <p className="text-muted-foreground leading-relaxed">{pt("noSubscription")}</p>
+          </Card>
         </div>
       </DashboardLayout>
     );
@@ -149,129 +157,202 @@ ${user.name || user.email}
       hasActiveSubscription={userDetail?.active}
     >
       {user && (
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Profile Header Card */}
-          <Card>
-            <CardHeader className="text-center">
+        <div className="space-y-8">
+          {/* Profile Header */}
+          <Card className="overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
                   <img
                     src={user.image || '/default_avatar.png'}
                     alt={userDetail.name || user.name || "Profile"}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl"
                   />
-                  <div className="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center">
-                    <CheckCircle className="w-4 h-4 text-white" />
+                  <div className="absolute bottom-0 right-0 bg-green-500 w-8 h-8 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
+                    <CheckCircle className="w-5 h-5 text-white" />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <CardTitle className="text-2xl font-bold text-gray-900">
+                <div className="text-center space-y-2">
+                  <CardTitle className="text-3xl font-bold text-white">
                     {userDetail.name || user.name || "User"}
                   </CardTitle>
-                  <p className="text-gray-600 flex items-center justify-center gap-2">
+                  <p className="text-blue-100 flex items-center justify-center gap-2">
                     <Mail className="w-4 h-4" />
                     {userDetail.email || user.email}
                   </p>
+                  <div className="flex items-center justify-center gap-2 text-sm">
+                    <div className="px-3 py-1 bg-green-500 text-white rounded-full font-medium">
+                      {userDetail?.membershipLevel ? userDetail.membershipLevel.charAt(0).toUpperCase() + userDetail.membershipLevel.slice(1) : 'Standard'}
+                    </div>
+                    {userDetail?.active && (
+                      <div className="px-3 py-1 bg-white/20 backdrop-blur text-white rounded-full font-medium flex items-center gap-1">
+                        <Activity className="w-3 h-3" />
+                        Active
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </CardHeader>
           </Card>
 
-          {/* User Details Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Information */}
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {quota !== undefined && (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 mb-4 mx-auto">
+                    <CreditCard className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-foreground">${quota.toFixed(2)}</div>
+                  <div className="text-sm text-muted-foreground">Monthly Quota</div>
+                </CardContent>
+              </Card>
+            )}
+            {quotaMonthlyUsed !== undefined && (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-orange-100 dark:bg-orange-900/30 mb-4 mx-auto">
+                    <Activity className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div className="text-2xl font-bold text-foreground">${quotaMonthlyUsed.toFixed(4)}</div>
+                  <div className="text-sm text-muted-foreground">Used This Month</div>
+                </CardContent>
+              </Card>
+            )}
             <Card>
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 mb-4 mx-auto">
+                  <Calendar className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="text-2xl font-bold text-foreground">
+                  {quota && quotaMonthlyUsed !== undefined
+                    ? `${((quotaMonthlyUsed / quota) * 100).toFixed(1)}%`
+                    : 'N/A'
+                  }
+                </div>
+                <div className="text-sm text-muted-foreground">Usage Rate</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-6 text-center">
+                <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 mb-4 mx-auto">
+                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="text-2xl font-bold text-foreground capitalize">
+                  {userDetail?.membershipLevel || 'standard'}
+                </div>
+                <div className="text-sm text-muted-foreground">Plan</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* User Details Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Basic Information */}
+            <Card className="lg:col-span-1">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5 text-blue-600" />
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <User className="w-5 h-5 text-primary" />
                     {pt("basicInformation")}
                   </CardTitle>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={handleEditProfile}
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    className="text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
                   >
                     <Edit className="w-4 h-4 mr-1" />
-                    Edit
+                    {pt("edit")}
                   </Button>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("name")}</span>
-                  <span className="text-sm text-gray-900">{userDetail.name || user.name || pt("notProvided")}</span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("email")}</span>
-                  <span className="text-sm text-gray-900">{userDetail.email || user.email}</span>
-                </div>
-                {/* <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("nickname")}</span>
-                  <span className="text-sm text-gray-900">{user.nickname || pt("notProvided")}</span>
-                </div> */}
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("userId")}</span>
-                  <span className="text-gray-900 font-mono text-xs break-all" style={{ wordBreak: 'break-all', maxWidth: '300px' }}>
-                    {userDetail?.userId || user?.id || "N/A"}
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center py-3 px-4 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium text-muted-foreground">{pt("name")}</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {userDetail.name || user.name || pt("notProvided")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 px-4 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium text-muted-foreground">{pt("email")}</span>
+                    <span className="text-sm font-semibold text-foreground break-all">
+                      {userDetail.email || user.email}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 px-4 bg-muted/50 rounded-lg">
+                    <span className="text-sm font-medium text-muted-foreground">{pt("userId")}</span>
+                    <span className="text-sm font-mono font-semibold text-foreground break-all" style={{ wordBreak: 'break-all' }}>
+                      {userDetail?.userId || user?.id || "N/A"}
+                    </span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Account Details */}
-            <Card>
+            <Card className="lg:col-span-2">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-purple-600" />
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Calendar className="w-5 h-5 text-primary" />
                   {pt("accountDetails")}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("subscriptionType")}</span>
-                  <span className="text-sm text-blue-600 font-medium capitalize">
-                    {userDetail?.membershipLevel || 'Standard'}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-sm font-medium text-gray-600">{pt("subscriptionExpireDate")}</span>
-                  <span className="text-sm text-gray-900">
-                    {userDetail?.currentEndAt
-                      ? new Date(userDetail.currentEndAt).toLocaleDateString()
-                      : userDetail?.active
-                        ? 'Active (no expiry)'
-                        : 'N/A'
-                    }
-                  </span>
-                </div>
-                {quota !== undefined && (
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-sm font-medium text-gray-600">Monthly Quota</span>
-                    <span className="text-sm text-gray-900 font-medium">
-                      ${quota.toFixed(2)}
-                    </span>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">{pt("subscriptionType")}</label>
+                    <div className="px-4 py-3 bg-primary/10 dark:bg-primary/20 rounded-lg border border-primary/30">
+                      <span className="text-primary font-semibold capitalize">
+                        {userDetail?.membershipLevel || 'Standard'}
+                      </span>
+                    </div>
                   </div>
-                )}
-                {quotaMonthlyUsed !== undefined && (
-                  <div className="flex justify-between items-center py-2">
-                    <span className="text-sm font-medium text-gray-600">Monthly Usage</span>
-                    <span className="text-sm text-gray-900 font-medium">
-                      ${quotaMonthlyUsed.toFixed(2)}
-                    </span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">{pt("subscriptionExpireDate")}</label>
+                    <div className="px-4 py-3 bg-card rounded-lg border">
+                      <span className="text-foreground font-medium">
+                        {userDetail?.currentEndAt
+                          ? new Date(userDetail.currentEndAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                          : userDetail?.active
+                            ? 'Active (no expiry)'
+                            : 'N/A'
+                        }
+                      </span>
+                    </div>
                   </div>
-                )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">{pt("memberSince")}</label>
+                    <div className="px-4 py-3 bg-card rounded-lg border">
+                      <span className="text-foreground font-medium">
+                        {userDetail?.startDate
+                          ? new Date(userDetail.startDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                          : 'N/A'
+                        }
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Refund Button */}
-                <div className="pt-4 border-t border-gray-200">
+                <div className="pt-6 border-t border-border">
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="lg"
                     onClick={handleRefundRequest}
-                    className="w-full flex items-center justify-center gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                    className="w-full flex items-center justify-center gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 hover:border-destructive/30 transition-all duration-200"
                   >
-                    <RefreshCw className="w-4 h-4" />
+                    <RefreshCw className="w-5 h-5" />
                     {pt("requestRefund")}
                   </Button>
                 </div>

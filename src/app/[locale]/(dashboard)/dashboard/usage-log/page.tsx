@@ -37,7 +37,7 @@ const PAGE_SIZE = 20;
 function formatNumber(locale: string, value: number | string) {
   const numericValue = typeof value === "number" ? value : parseFloat(value || "0");
   if (Number.isNaN(numericValue)) return "0";
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(numericValue);
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 4 }).format(numericValue);
 }
 
 function formatDate(locale: string, value: string) {
