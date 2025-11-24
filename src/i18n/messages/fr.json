@@ -451,7 +451,7 @@
       "deleting": "Suppression",
       "delete": "Supprimer",
       "deleteConfirmTitle": "Supprimer la Clé API",
-      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer la clé API '{name}' ? Cette action ne peut pas être annulée.",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer la clé API {name} ? Cette action ne peut pas être annulée.",
       "deleteConfirmWarning": "Attention : Toutes les applications utilisant cette clé API perdront immédiatement l'accès.",
       "deleteError": "Échec de la suppression de la clé API",
       "totalApiKeys": "Total des Clés API",

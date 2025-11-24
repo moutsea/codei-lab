@@ -458,7 +458,7 @@
       "deleting": "删除中",
       "delete": "删除",
       "deleteConfirmTitle": "删除API密钥",
-      "deleteConfirmMessage": "确定要删除API密钥 '{name}' 吗？此操作无法撤销。",
+      "deleteConfirmMessage": "确定要删除API密钥 {name} 吗？此操作无法撤销。",
       "deleteConfirmWarning": "警告：所有使用此API密钥的应用程序将立即失去访问权限。",
       "deleteError": "删除API密钥失败",
       "totalApiKeys": "总 API 密钥数",

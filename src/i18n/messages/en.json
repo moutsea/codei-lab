@@ -451,7 +451,7 @@
       "deleting": "Deleting",
       "delete": "Delete",
       "deleteConfirmTitle": "Delete API Key",
-      "deleteConfirmMessage": "Are you sure you want to delete the API key '{name}'? This action cannot be undone.",
+      "deleteConfirmMessage": "Are you sure you want to delete the API key {name}? This action cannot be undone.",
       "deleteConfirmWarning": "Warning: All applications using this API key will lose access immediately.",
       "deleteError": "Failed to delete API key",
       "totalApiKeys": "Total API Keys",

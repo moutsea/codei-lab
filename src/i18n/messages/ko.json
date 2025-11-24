@@ -451,7 +451,7 @@
       "deleting": "삭제 중",
       "delete": "삭제",
       "deleteConfirmTitle": "API 키 삭제",
-      "deleteConfirmMessage": "API 키 '{name}'를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+      "deleteConfirmMessage": "API 키 {name}를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
       "deleteConfirmWarning": "경고: 이 API 키를 사용하는 모든 애플리케이션은 즉시 접근을 잃게 됩니다.",
       "deleteError": "API 키 삭제 실패",
       "totalApiKeys": "총 API 키",
