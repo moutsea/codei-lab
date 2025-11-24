@@ -177,7 +177,7 @@ export default function ApiKeysPage() {
   };
 
   const createNewApiKey = async () => {
-    if (!user?.id || !newKeyName.trim()) return;
+    if (!user?.id || !newKeyName.trim() || !isActive) return;
 
     // 检查计划限制
     if (planInfo) {
