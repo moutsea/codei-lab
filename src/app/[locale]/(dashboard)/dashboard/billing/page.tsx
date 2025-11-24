@@ -14,7 +14,7 @@ export default function BillingPage() {
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoading = status === 'loading';
-  const { isActive } = useUserData({ enableCache: true });
+  const { isActive, loading: userLoading } = useUserData({ enableCache: true });
 
   const t = useTranslations("sidebar");
   const billingT = useTranslations("sidebar.billingPage");
@@ -75,7 +75,7 @@ export default function BillingPage() {
 
   // Initial load and page/order changes
   useEffect(() => {
-    if (user && !isLoading && isActive) {
+    if (user && !isLoading && !userLoading && isActive) {
       fetchPayments();
     }
   }, [user, isLoading, isActive, page, limit, orderBy, orderDirection]);
@@ -170,7 +170,7 @@ export default function BillingPage() {
 
 
   // Show loading while checking authentication
-  if (isLoading) {
+  if (isLoading || userLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

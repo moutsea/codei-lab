@@ -28,6 +28,7 @@ export default function ApiKeysPage() {
   const {
     userDetail,
     isActive,
+    loading,
     quota
   } = useUserData({ enableCache: true });
 
@@ -138,7 +139,7 @@ export default function ApiKeysPage() {
 
   // 当用户加载完成时获取 API Keys 和计划信息
   useEffect(() => {
-    if (user && !isLoading) {
+    if (user && !isLoading && !loading) {
       fetchApiKeys();
       fetchPlanInfo();
     }
