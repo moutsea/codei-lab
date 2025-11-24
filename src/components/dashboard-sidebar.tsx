@@ -1,7 +1,7 @@
 "use client";
 
 import type { ComponentType } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Sidebar,
   SidebarContent,
@@ -27,45 +27,45 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
     icon: ComponentType<{ className?: string }>;
     href: string;
   }
-
+  const locale = useLocale();
   // Sidebar navigation items - only show dashboard if user is not subscribed
   const navigationItems: NavigationItem[] = hasActiveSubscription ? [
     {
       title: t("dashboard"),
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: locale === 'en' ? "/dashboard" : `${locale}/dashboard`,
     },
     {
       title: t("apiKeys"),
       icon: Key,
-      href: "/dashboard/api-keys",
+      href: locale === 'en' ? "/dashboard/api-keys" : `${locale}/dashboard/api-keys`,
     },
     {
       title: t("billing"),
       icon: CreditCard,
-      href: "/dashboard/billing",
+      href: locale === 'en' ? "/dashboard/billing" : `${locale}/dashboard/billing`,
     },
     {
       title: t("usageLog.title"),
       icon: Activity,
-      href: "/dashboard/usage-log",
+      href: locale === 'en' ? "/dashboard/usage-log" : `${locale}/dashboard/usage-log`,
     },
     {
       title: t("profile"),
       icon: User,
-      href: "/dashboard/profile",
+      href: locale === 'en' ? "/dashboard/profile" : `${locale}/dashboard/profile`,
     }
 
   ] : [
     {
       title: t("dashboard"),
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: locale === 'en' ? "/dashboard" : `${locale}/dashboard`,
     },
     {
       title: t("usageLog.title"),
       icon: Activity,
-      href: "/dashboard/usage-log",
+      href: locale === 'en' ? "/dashboard/usage-log" : `${locale}/dashboard/usage-log`,
     }
   ];
 

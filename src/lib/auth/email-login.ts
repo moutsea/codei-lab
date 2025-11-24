@@ -3,7 +3,6 @@ import {
   createEmailLoginTokenRecord,
   deleteEmailLoginTokenById,
   deleteEmailLoginTokensForEmail,
-  deleteExpiredEmailLoginTokens,
   getEmailLoginTokenByHash,
   markEmailLoginTokenAsConsumed,
   createUserFromEmail,

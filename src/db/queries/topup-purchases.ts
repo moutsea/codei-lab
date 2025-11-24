@@ -1,4 +1,4 @@
-import { db } from "../index";
+import { db, DbClient } from "../index";
 import { topUpPurchases, users } from "../schema";
 import { eq, and, desc, asc, gte, lte, sql } from "drizzle-orm";
 import type { TopUpPurchaseInsert, TopUpPurchaseSelect } from "@/types";
@@ -124,25 +124,6 @@ export async function getTopUpPurchasesByDateRange(
         .orderBy(desc(topUpPurchases.createdAt));
 }
 
-/**
- * Get total top-up quota for a user (sum of active purchases)
- */
-export async function getTotalTopUpQuotaForUser(userId: string): Promise<string> {
-    const [result] = await db()
-        .select({
-            totalQuota: sql<string>`SUM(CAST(${topUpPurchases.quota} AS NUMERIC))`
-        })
-        .from(topUpPurchases)
-        .where(
-            and(
-                eq(topUpPurchases.userId, userId),
-                eq(topUpPurchases.status, 'active'),
-                gte(topUpPurchases.endDate, new Date())
-            )
-        );
-
-    return result?.totalQuota || "0";
-}
 
 /**
  * Get expired top-up purchases (for cleanup)
@@ -166,9 +147,10 @@ export async function getExpiredTopUpPurchases(): Promise<TopUpPurchaseSelect[]>
  */
 export async function updateTopUpPurchase(
     id: number,
-    data: Partial<Omit<TopUpPurchaseInsert, 'id' | 'createdAt'>>
+    data: Partial<Omit<TopUpPurchaseInsert, 'id' | 'createdAt'>>,
+    dbInstance: DbClient = db()
 ): Promise<TopUpPurchaseSelect | null> {
-    const [topUpPurchase] = await db()
+    const [topUpPurchase] = await dbInstance
         .update(topUpPurchases)
         .set({
             ...data,
@@ -197,59 +179,14 @@ export async function updateTopUpPurchaseStatus(
     return topUpPurchase || null;
 }
 
-/**
- * Extend top-up purchase end date
- */
-export async function extendTopUpPurchaseEndDate(
-    id: number,
-    additionalDays: number
-): Promise<TopUpPurchaseSelect | null> {
-    const currentPurchase = await getTopUpPurchaseById(id);
-    if (!currentPurchase || !currentPurchase.endDate) {
-        return null;
-    }
-
-    const newEndDate = new Date(currentPurchase.endDate);
-    newEndDate.setDate(newEndDate.getDate() + additionalDays);
-
-    const [topUpPurchase] = await db()
-        .update(topUpPurchases)
-        .set({
-            endDate: newEndDate,
-            updatedAt: new Date(),
-        })
-        .where(eq(topUpPurchases.id, id))
-        .returning();
-    return topUpPurchase || null;
-}
-
-/**
- * Mark expired top-up purchases as inactive
- */
-export async function markExpiredTopUpPurchasesAsInactive(): Promise<TopUpPurchaseSelect[]> {
-    const expiredPurchases = await getExpiredTopUpPurchases();
-
-    if (expiredPurchases.length === 0) {
-        return [];
-    }
-
-    return await db()
-        .update(topUpPurchases)
-        .set({
-            status: 'expired',
-            updatedAt: new Date(),
-        })
-        .where(eq(topUpPurchases.id, sql<number>`ANY(${expiredPurchases.map(p => p.id)})`))
-        .returning();
-}
 
 // ========== Delete Operations ==========
 
 /**
  * Delete top-up purchase by ID
  */
-export async function deleteTopUpPurchase(id: number): Promise<TopUpPurchaseSelect | null> {
-    const [topUpPurchase] = await db()
+export async function deleteTopUpPurchase(id: number, dbInstance: DbClient = db()): Promise<TopUpPurchaseSelect | null> {
+    const [topUpPurchase] = await dbInstance
         .delete(topUpPurchases)
         .where(eq(topUpPurchases.id, id))
         .returning();
@@ -266,29 +203,13 @@ export async function deleteTopUpPurchasesByUserId(userId: string): Promise<TopU
         .returning();
 }
 
-// ========== Utility Operations ==========
-
-/**
- * Count top-up purchases by user
- */
-export async function countTopUpPurchasesByUser(userId: string): Promise<number> {
-    const [result] = await db()
-        .select({
-            count: sql<number>`COUNT(*)`
-        })
-        .from(topUpPurchases)
-        .where(eq(topUpPurchases.userId, userId));
-
-    return result?.count || 0;
-}
-
 /**
  * Consume quota from the most recent active top-up purchase for a user
  * @param userId - The user ID to consume quota from
  * @param quotaToConsume - The amount of quota to consume (number)
  * @returns Promise<boolean> - true if quota was consumed, false if no active top-up found
  */
-export async function consumeTopUpQuota(userId: string, quotaToConsume: number): Promise<boolean> {
+export async function consumeTopUpQuota(userId: string, quotaToConsume: number, dbInstance: DbClient = db()): Promise<boolean> {
     try {
         // 获取最新的 active top-up 记录
         const [topUp] = await getTopUpPurchasesByUserId(userId); // 解构取第一个元素
@@ -301,13 +222,13 @@ export async function consumeTopUpQuota(userId: string, quotaToConsume: number):
         const currentQuota = parseFloat(topUp.quota.toString()); // 确保 quota 是数字类型
 
         if (currentQuota < quotaToConsume) {
-            await deleteTopUpPurchase(topUp.id);
+            await deleteTopUpPurchase(topUp.id, dbInstance);
         } else {
             const newQuota = Math.max(0, currentQuota - quotaToConsume); // 保证不为负数
             await updateTopUpPurchase(topUp.id, {
                 quota: newQuota.toString(),
                 status: topUp.status
-            });
+            }, dbInstance);
         }
 
         return true;

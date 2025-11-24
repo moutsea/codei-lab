@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Copy, Check } from "lucide-react";
-import { ComponentProps, useEffect, useState } from "react";
+import { ComponentProps, useEffect, useState, Children, isValidElement } from "react";
 
 import Image from 'next/image';
 
@@ -61,7 +61,41 @@ export function MarkdownImg({ src, alt = '', className, style, ...rest }: Markdo
 
 function CodeBlockWithLineNumbers({ language, children }: CodeBlockWithLineNumbersProps) {
   const [copied, setCopied] = useState(false);
-  const codeString = String(children).replace(/\n$/, "");
+  
+  // Properly handle children which might be a string, array of strings, or React elements
+  const getCodeString = (children: string | string[]): string => {
+    if (typeof children === 'string') {
+      return children;
+    }
+    if (Array.isArray(children)) {
+      // Handle array of strings or React elements
+      return children.map(child => {
+        if (typeof child === 'string') {
+          return child;
+        }
+        if (isValidElement(child)) {
+          // Extract text content from React elements recursively
+          const extractText = (element: any): string => {
+            if (typeof element === 'string' || typeof element === 'number') {
+              return String(element);
+            }
+            if (Array.isArray(element)) {
+              return element.map(extractText).join('');
+            }
+            if (isValidElement(element) && element.props && typeof element.props === 'object' && element.props !== null && 'children' in element.props) {
+              return extractText((element.props as any).children);
+            }
+            return '';
+          };
+          return extractText(child);
+        }
+        return String(child);
+      }).join('');
+    }
+    return String(children);
+  };
+  
+  const codeString = getCodeString(children).replace(/\n$/, "");
   const lines = codeString.split('\n');
 
   const handleCopy = async () => {
@@ -76,6 +110,28 @@ function CodeBlockWithLineNumbers({ language, children }: CodeBlockWithLineNumbe
 
   return (
     <div className="relative mb-4 ml-2">
+      {language === 'toml' && (
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            .toml-code-line pre,
+            .toml-code-line code,
+            .toml-code-line span[class*="token"],
+            .toml-code-line span,
+            .toml-code-line * {
+              white-space: pre !important;
+              word-break: keep-all !important;
+              overflow-wrap: normal !important;
+              display: inline !important;
+              line-break: auto !important;
+            }
+            .toml-code-line pre[class*="language-"],
+            .toml-code-line code[class*="language-"] {
+              white-space: pre !important;
+              word-break: keep-all !important;
+            }
+          `
+        }} />
+      )}
       <button
         onClick={handleCopy}
         className="absolute top-2 right-2 p-1 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors duration-200 z-10"
@@ -96,29 +152,66 @@ function CodeBlockWithLineNumbers({ language, children }: CodeBlockWithLineNumbe
                   {index + 1}
                 </td>
                 <td className="text-left py-0">
-                  <SyntaxHighlighter
-                    style={{
-                      ...oneDark,
-                      'pre[class*="language-"]': {
-                        ...oneDark['pre[class*="language-"]'],
-                        background: 'transparent',
-                        margin: 0,
-                        padding: 0,
-                        fontSize: '0.875rem',
-                        lineHeight: '1.25rem'
-                      },
-                      'code[class*="language-"]': {
-                        ...oneDark['code[class*="language-"]'],
-                        background: 'transparent',
-                        padding: 0
-                      }
+                  <div 
+                    style={{ 
+                      whiteSpace: 'nowrap',
+                      // For TOML, ensure no breaks in section headers
+                      ...(language === 'toml' ? {
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem'
+                      } : {})
                     }}
-                    language={language}
-                    PreTag="pre"
-                    className="m-0 p-0"
+                    className={language === 'toml' ? 'toml-code-line' : ''}
                   >
-                    {line || ' '}
-                  </SyntaxHighlighter>
+                    <SyntaxHighlighter
+                        customStyle={{
+                          margin: 0,
+                          padding: 0,
+                          background: 'transparent',
+                          whiteSpace: 'pre',
+                          wordBreak: 'keep-all',
+                          overflowWrap: 'normal',
+                          display: 'inline'
+                        }}
+                        codeTagProps={{
+                          style: {
+                            whiteSpace: 'pre',
+                            wordBreak: 'keep-all',
+                            overflowWrap: 'normal',
+                            display: 'inline'
+                          }
+                        }}
+                        style={{
+                          ...oneDark,
+                          'pre[class*="language-"]': {
+                            ...oneDark['pre[class*="language-"]'],
+                            background: 'transparent',
+                            margin: 0,
+                            padding: 0,
+                            fontSize: '0.875rem',
+                            lineHeight: '1.25rem',
+                            whiteSpace: 'pre'
+                          },
+                          'code[class*="language-"]': {
+                            ...oneDark['code[class*="language-"]'],
+                            background: 'transparent',
+                            padding: 0,
+                            whiteSpace: 'pre'
+                          },
+                          'span[class*="token"]': {
+                            whiteSpace: 'pre',
+                            wordBreak: 'keep-all',
+                            overflowWrap: 'normal',
+                            display: 'inline'
+                          }
+                        }}
+                        language={language}
+                        PreTag="pre"
+                        className="m-0 p-0"
+                      >
+                        {line || ' '}
+                      </SyntaxHighlighter>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -219,7 +312,7 @@ export function MarkdownContent({ content, className }: MarkdownContentProps) {
         </CodeBlockWithLineNumbers>
       ) : (
         <code
-          className={`${className ?? ''} bg-gray-100 dark:bg-[#212121] px-1.5 py-0.5 rounded text-sm font-mono text-red-600 dark:text-red-400`}
+          className={`${className ?? ''} bg-gray-100 dark:bg-[#212121] px-1.5 py-0.5 rounded text-sm font-mono text-red-600 dark:text-red-400 whitespace-pre`}
           {...props}
         >
           {children}
