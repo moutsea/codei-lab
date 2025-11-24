@@ -613,6 +613,8 @@ export default function Dashboard() {
     return null;
   }
 
+  console.log(userDetail);
+
   // 如果用户没有订阅，显示 tutorial
   if (!isActive) {
     return (

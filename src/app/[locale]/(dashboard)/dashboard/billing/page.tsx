@@ -181,6 +181,7 @@ export default function BillingPage() {
     );
   }
 
+  console.log(user, isActive);
   // Redirect to login if not authenticated
   if (!user?.id || !isActive) {
     window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
