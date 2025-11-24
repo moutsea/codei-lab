@@ -32,7 +32,14 @@ export async function generateApiKey(userId: string, name: string, quota: string
  * Get API key by ID
  */
 export async function getApiKeyById(id: number): Promise<ApiKeySelect | null> {
-  const [apiKey] = await db().select().from(apiKeys).where(eq(apiKeys.id, id)).limit(1);
+  const [apiKey] = await db()
+    .select()
+    .from(apiKeys)
+    .where(and(
+      eq(apiKeys.id, id),
+      eq(apiKeys.isDelete, 0) // Only return non-deleted records
+    ))
+    .limit(1);
   return apiKey || null;
 }
 
@@ -43,7 +50,10 @@ export async function getApiKeyByKey(key: string): Promise<ApiKeySelect | null> 
   const [apiKey] = await db()
     .select()
     .from(apiKeys)
-    .where(eq(apiKeys.key, key))
+    .where(and(
+      eq(apiKeys.key, key),
+      eq(apiKeys.isDelete, 0) // Only return non-deleted records
+    ))
     .limit(1);
   return apiKey || null;
 }
@@ -57,7 +67,8 @@ export async function getApiKeysByName(userId: string, name: string): Promise<Ap
     .from(apiKeys)
     .where(and(
       eq(apiKeys.userId, userId),
-      eq(apiKeys.name, name)
+      eq(apiKeys.name, name),
+      eq(apiKeys.isDelete, 0) // Only return non-deleted records
     ))
     .orderBy(desc(apiKeys.createdAt));
 }
@@ -71,6 +82,7 @@ export async function searchApiKeysByName(userId: string, namePattern: string): 
     .from(apiKeys)
     .where(and(
       eq(apiKeys.userId, userId),
+      eq(apiKeys.isDelete, 0), // Only return non-deleted records
       sql`${apiKeys.name} ILIKE ${`%${namePattern}%`}`
     ))
     .orderBy(desc(apiKeys.createdAt));
@@ -92,6 +104,7 @@ export async function getApiKeysByUserId(userId: string, currentMonth?: string):
       createdAt: apiKeys.createdAt,
       lastUsedAt: apiKeys.lastUsedAt,
       expiredAt: apiKeys.expiredAt,
+      isDelete: apiKeys.isDelete,
       // Add current month usage as a calculated field
       currentMonthUsage: sql<number>`COALESCE(${monthlyApiUsage.inputTokens} + ${monthlyApiUsage.cachedTokens} + ${monthlyApiUsage.outputTokens}, 0)`.mapWith(Number)
     })
@@ -100,7 +113,10 @@ export async function getApiKeysByUserId(userId: string, currentMonth?: string):
       eq(apiKeys.key, monthlyApiUsage.apikey),
       eq(monthlyApiUsage.month, month)
     ))
-    .where(eq(apiKeys.userId, userId))
+    .where(and(
+      eq(apiKeys.userId, userId),
+      eq(apiKeys.isDelete, 0) // Only return non-deleted records
+    ))
     .orderBy(desc(apiKeys.createdAt));
 }
 
@@ -127,6 +143,9 @@ export async function getApiKeys(options: {
   const offset = (page - 1) * limit;
 
   const whereConditions = [];
+
+  // Always include non-deleted filter
+  whereConditions.push(eq(apiKeys.isDelete, 0));
 
   // Add user filter
   if (userId !== undefined) {
@@ -161,7 +180,10 @@ export async function getRecentlyUsedApiKeys(limit: number = 10): Promise<ApiKey
   return await db()
     .select()
     .from(apiKeys)
-    .where(sql`${apiKeys.lastUsedAt} IS NOT NULL`)
+    .where(and(
+      eq(apiKeys.isDelete, 0), // Only return non-deleted records
+      sql`${apiKeys.lastUsedAt} IS NOT NULL`
+    ))
     .orderBy(desc(apiKeys.lastUsedAt))
     .limit(limit);
 }
@@ -171,6 +193,9 @@ export async function getRecentlyUsedApiKeys(limit: number = 10): Promise<ApiKey
  */
 export async function getApiKeysCount(userId?: string): Promise<number> {
   const whereConditions = [];
+
+  // Always include non-deleted filter
+  whereConditions.push(eq(apiKeys.isDelete, 0));
 
   // Add user filter
   if (userId !== undefined) {
@@ -285,9 +310,47 @@ export async function createApiKeyWithName(
 // ========== Delete Operations ==========
 
 /**
- * Delete API key by ID
+ * Delete API key by ID (soft delete)
  */
 export async function deleteApiKeyById(id: number): Promise<ApiKeySelect | null> {
+  const [apiKey] = await db()
+    .update(apiKeys)
+    .set({ isDelete: 1 }) // Soft delete by setting isDelete to 1
+    .where(eq(apiKeys.id, id))
+    .returning();
+  return apiKey || null;
+}
+
+/**
+ * Delete API key by key value (soft delete)
+ */
+export async function deleteApiKeyByKey(key: string): Promise<ApiKeySelect | null> {
+  const [apiKey] = await db()
+    .update(apiKeys)
+    .set({ isDelete: 1 }) // Soft delete by setting isDelete to 1
+    .where(eq(apiKeys.key, key))
+    .returning();
+  return apiKey || null;
+}
+
+// ========== Restore Operations ==========
+
+/**
+ * Restore soft deleted API key by ID
+ */
+export async function restoreApiKeyById(id: number): Promise<ApiKeySelect | null> {
+  const [apiKey] = await db()
+    .update(apiKeys)
+    .set({ isDelete: 0 }) // Restore by setting isDelete to 0
+    .where(eq(apiKeys.id, id))
+    .returning();
+  return apiKey || null;
+}
+
+/**
+ * Permanently delete API key by ID (hard delete - use with caution)
+ */
+export async function permanentlyDeleteApiKeyById(id: number): Promise<ApiKeySelect | null> {
   const [apiKey] = await db()
     .delete(apiKeys)
     .where(eq(apiKeys.id, id))
@@ -296,9 +359,9 @@ export async function deleteApiKeyById(id: number): Promise<ApiKeySelect | null>
 }
 
 /**
- * Delete API key by key value
+ * Permanently delete API key by key value (hard delete - use with caution)
  */
-export async function deleteApiKeyByKey(key: string): Promise<ApiKeySelect | null> {
+export async function permanentlyDeleteApiKeyByKey(key: string): Promise<ApiKeySelect | null> {
   const [apiKey] = await db()
     .delete(apiKeys)
     .where(eq(apiKeys.key, key))
@@ -316,7 +379,10 @@ export async function apiKeyExists(key: string): Promise<boolean> {
   const [result] = await db()
     .select({ exists: sql<boolean>`true` })
     .from(apiKeys)
-    .where(eq(apiKeys.key, key))
+    .where(and(
+      eq(apiKeys.key, key),
+      eq(apiKeys.isDelete, 0) // Only check non-deleted records
+    ))
     .limit(1);
 
   return !!result;
@@ -332,7 +398,10 @@ export async function isApiKeyValid(key: string): Promise<boolean> {
       expiredAt: apiKeys.expiredAt
     })
     .from(apiKeys)
-    .where(eq(apiKeys.key, key))
+    .where(and(
+      eq(apiKeys.key, key),
+      eq(apiKeys.isDelete, 0) // Only check non-deleted records
+    ))
     .limit(1);
 
   // Check if the key is expired
@@ -351,11 +420,14 @@ export async function isApiKeyExpired(key: string): Promise<boolean> {
   const [apiKey] = await db()
     .select({ expiredAt: apiKeys.expiredAt })
     .from(apiKeys)
-    .where(eq(apiKeys.key, key))
+    .where(and(
+      eq(apiKeys.key, key),
+      eq(apiKeys.isDelete, 0) // Only check non-deleted records
+    ))
     .limit(1);
 
   if (!apiKey) {
-    return true; // Non-existent keys are considered expired
+    return true; // Non-existent or deleted keys are considered expired
   }
 
   return apiKey.expiredAt ? apiKey.expiredAt < now : false;
@@ -407,7 +479,10 @@ export async function getApiKeyUsageByApiKey(apiKey: string): Promise<ApiDetail 
       .leftJoin(apiLastUsage,
         eq(apiKeys.key, apiLastUsage.apiKey)
       )
-      .where(eq(apiKeys.key, apiKey))
+      .where(and(
+        eq(apiKeys.key, apiKey),
+        eq(apiKeys.isDelete, 0) // Only return non-deleted records
+      ))
       .limit(1);
 
     const row = result[0];

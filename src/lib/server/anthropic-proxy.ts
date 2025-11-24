@@ -146,6 +146,8 @@ export async function createCodexProxy(
 
     const userData = await getUserDetailByIdWithCache(userId!);
 
+    console.log(userData);
+
     if (!userData) {
       return await codexApikey401Response();
     }

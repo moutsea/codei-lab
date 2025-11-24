@@ -111,6 +111,7 @@ export const apiKeys = pgTable("api_keys", {
     quota: numeric("quota", { precision: 10, scale: 4 }),
     createdAt: timestamp("created_at", { withTimezone: false }).defaultNow(),
     lastUsedAt: timestamp("last_used_at", { withTimezone: false }),
+    isDelete: integer("is_delete").notNull().default(0),
     expiredAt: timestamp("expiredAt", { withTimezone: false })
 });
 
