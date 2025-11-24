@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus, Key, Copy, Eye, EyeOff, Trash2, Clock, AlertCircle, CheckCircle, BarChart3, TrendingUp, Edit, Save, X } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useSession } from "next-auth/react";
-import { useUserData } from "@/hooks/useUserData";
+import { useDashboardUser } from "@/components/dashboard-user-provider";
 
 interface ApiKey {
   id: number;
@@ -30,7 +30,7 @@ export default function ApiKeysPage() {
     isActive,
     loading,
     quota
-  } = useUserData({ enableCache: true });
+  } = useDashboardUser();
 
   const t = useTranslations("sidebar");
   const dt = useTranslations("dashboard");
@@ -143,7 +143,7 @@ export default function ApiKeysPage() {
       fetchApiKeys();
       fetchPlanInfo();
     }
-  }, [user, isLoading, isActive, userDetail]);
+  }, [user, isLoading, loading, isActive, userDetail]);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
@@ -219,7 +219,7 @@ export default function ApiKeysPage() {
 
       // 重新获取数据以确保缓存一致性
       await fetchApiKeys();
-      console.log('Created new API key');
+      // console.log('Created new API key');
     } catch (error) {
       console.error('Error creating API key:', error);
       setError(apiKeysT("createError"));
@@ -256,7 +256,7 @@ export default function ApiKeysPage() {
 
       // 重新获取数据以确保缓存一致性
       await fetchApiKeys();
-      console.log('Deleted API key:', keyId);
+      // console.log('Deleted API key:', keyId);
     } catch (error) {
       console.error('Error deleting API key:', error);
       setError(apiKeysT("deleteError"));
@@ -450,7 +450,7 @@ export default function ApiKeysPage() {
 
       // Close modal instantly after successful API call
       cancelEditApiKey();
-      console.log('Updated API key:', apiKeyId);
+      // console.log('Updated API key:', apiKeyId);
 
       // Refresh data in background
       fetchApiKeys().catch(error => {
@@ -465,7 +465,7 @@ export default function ApiKeysPage() {
   };
 
   // Show loading while checking authentication or subscription status
-  if (isLoading) {
+  if (isLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -477,6 +477,7 @@ export default function ApiKeysPage() {
   }
 
   // console.log(userDetail);
+  // console.log(isActive);
   // Redirect to login if not authenticated
   if (!isActive) {
     window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);

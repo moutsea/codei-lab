@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { Loader2, RefreshCcw } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { useDashboardUser } from "@/components/dashboard-user-provider";
 
 interface UsageLogEntry {
   date: string;
@@ -56,6 +57,7 @@ export default function UsageLogPage() {
   const locale = useLocale();
   const { data: session } = useSession();
   const userId = (session?.user as { id?: string } | undefined)?.id;
+  const { isActive } = useDashboardUser();
 
   const [entries, setEntries] = useState<UsageLogEntry[]>([]);
   const [stats, setStats] = useState<UsageLogStatistics | null>(null);
@@ -141,7 +143,7 @@ export default function UsageLogPage() {
     <DashboardLayout
       pageTitle={headerTitle}
       pageSubtitle={headerSubtitle}
-      hasActiveSubscription={true}
+      hasActiveSubscription={isActive}
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">

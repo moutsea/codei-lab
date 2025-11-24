@@ -2,6 +2,7 @@
 
 import type { ComponentType } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import {
   Sidebar,
   SidebarContent,
@@ -33,34 +34,34 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
     {
       title: t("dashboard"),
       icon: LayoutDashboard,
-      href: locale === 'en' ? "/dashboard" : `${locale}/dashboard`,
+      href: locale === 'en' ? "/dashboard" : `/${locale}/dashboard`,
     },
     {
       title: t("apiKeys"),
       icon: Key,
-      href: locale === 'en' ? "/dashboard/api-keys" : `${locale}/dashboard/api-keys`,
+      href: locale === 'en' ? "/dashboard/api-keys" : `/${locale}/dashboard/api-keys`,
     },
     {
       title: t("billing"),
       icon: CreditCard,
-      href: locale === 'en' ? "/dashboard/billing" : `${locale}/dashboard/billing`,
+      href: locale === 'en' ? "/dashboard/billing" : `/${locale}/dashboard/billing`,
     },
     {
       title: t("usageLog.title"),
       icon: Activity,
-      href: locale === 'en' ? "/dashboard/usage-log" : `${locale}/dashboard/usage-log`,
+      href: locale === 'en' ? "/dashboard/usage-log" : `/${locale}/dashboard/usage-log`,
     },
     {
       title: t("profile"),
       icon: User,
-      href: locale === 'en' ? "/dashboard/profile" : `${locale}/dashboard/profile`,
+      href: locale === 'en' ? "/dashboard/profile" : `/${locale}/dashboard/profile`,
     }
 
   ] : [
     {
       title: t("dashboard"),
       icon: LayoutDashboard,
-      href: locale === 'en' ? "/dashboard" : `${locale}/dashboard`,
+      href: locale === 'en' ? "/dashboard" : `/${locale}/dashboard`,
     }
   ];
 
@@ -79,12 +80,12 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
                     asChild
                     className="h-12 w-[calc(100%-2rem)] mx-4 rounded-lg hover:bg-accent/50 transition-all duration-200 group"
                   >
-                    <a href={item.href} className="flex items-center gap-3">
+                    <Link href={item.href} className="flex items-center gap-3">
                       <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 group-hover:bg-primary/20 transition-colors duration-200">
                         <item.icon className="w-4 h-4 text-primary" />
                       </div>
                       <span className="text-foreground font-medium">{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

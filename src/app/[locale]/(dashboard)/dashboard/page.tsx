@@ -10,7 +10,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { DailyUsageChart } from "@/components/ui/daily-usage-chart";
 import { MonthPicker } from "@/components/ui/month-picker";
 import Tutorial from "@/components/tutorial/tutorial";
-import { useUserData } from "@/hooks/useUserData";
+import { useDashboardUser } from "@/components/dashboard-user-provider";
 import { usePlans } from "@/hooks/usePlans";
 import {
   Dialog,
@@ -57,7 +57,7 @@ export default function Dashboard() {
     membershipLevel,
     loading,
     fetchDailyUsageData
-  } = useUserData({ enableCache: true });
+  } = useDashboardUser();
 
   const {
     extraPlans,

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useSession } from "next-auth/react";
-import { useUserData } from "@/hooks/useUserData";
+import { useDashboardUser } from "@/components/dashboard-user-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,8 +23,8 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const locale = useLocale();
 
-  // 使用 useUserData hook 获取用户详情
-  const { userDetail, loading, quota, isActive, quotaMonthlyUsed } = useUserData();
+  // 使用共享的 Dashboard 用户数据
+  const { userDetail, loading, quota, isActive, quotaMonthlyUsed } = useDashboardUser();
 
   const [editingUser, setEditingUser] = useState({
     name: userDetail?.name || user?.name || '',

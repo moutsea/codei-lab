@@ -7,14 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CreditCard, ChevronDown, ChevronUp } from "lucide-react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useSession } from "next-auth/react";
-import { useUserData } from "@/hooks/useUserData";
+import { useDashboardUser } from "@/components/dashboard-user-provider";
 import type { PaymentSelect } from "@/types/schema";
 
 export default function BillingPage() {
   const { data: session, status } = useSession();
   const user = session?.user;
   const isLoading = status === 'loading';
-  const { isActive, loading: userLoading } = useUserData({ enableCache: true });
+  const { isActive, loading: userLoading } = useDashboardUser();
 
   const t = useTranslations("sidebar");
   const billingT = useTranslations("sidebar.billingPage");
@@ -78,7 +78,7 @@ export default function BillingPage() {
     if (user && !isLoading && !userLoading && isActive) {
       fetchPayments();
     }
-  }, [user, isLoading, isActive, page, limit, orderBy, orderDirection]);
+  }, [user, isLoading, userLoading, isActive, page, limit, orderBy, orderDirection]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -181,6 +181,7 @@ export default function BillingPage() {
     );
   }
 
+  // console.log(userLoading);
   // console.log(user, isActive);
   // Redirect to login if not authenticated
   if (!isActive) {
