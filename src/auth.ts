@@ -97,8 +97,7 @@ export const {
                 const resolvedEmail = user.email ?? profileEmail;
                 const resolvedName = user.name ?? profileName;
                 const resolvedImage = user.image ?? profilePicture ?? profileAvatar;
-                const resolvedId = account?.providerAccountId ?? user.id ?? token.appUserId;
-                token.sub = resolvedId;
+                const resolvedId = user.id ?? account?.providerAccountId ?? token.appUserId;
 
                 if (provider) {
                     token.provider = provider;
@@ -123,8 +122,8 @@ export const {
         },
 
         async session({ session, token }) {
-            if (session.user && token.sub) {
-                session.user.id = token.sub as string;
+            if (session.user && token.appUserId) {
+                session.user.id = token.appUserId as string;
             }
 
             if (token.provider) {
