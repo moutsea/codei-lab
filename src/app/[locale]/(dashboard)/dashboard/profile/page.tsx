@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { useSession } from "next-auth/react";
 import { useUserData } from "@/hooks/useUserData";
@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [showEditModal, setShowEditModal] = useState(false);
 
   const [isSaving, setIsSaving] = useState(false);
+  const locale = useLocale();
 
   // 使用 useUserData hook 获取用户详情
   const { userDetail, loading, quota, quotaMonthlyUsed } = useUserData();
@@ -45,7 +46,7 @@ export default function ProfilePage() {
 
   const handleSaveProfile = async () => {
     if (!user?.id) {
-      alert('User not authenticated');
+      window.location.assign(locale === 'en' ? '/' : `/${locale}`);
       return;
     }
 

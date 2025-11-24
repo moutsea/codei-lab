@@ -49,6 +49,7 @@ export default function ApiKeysPage() {
   // 获取用户订阅的计划信息
   const getUserPlanInfo = async () => {
     if (!user?.id || !isActive || !userDetail?.planId) {
+      window.location.assign(locale === 'en' ? '/' : `/${locale}`);
       return null;
     }
 

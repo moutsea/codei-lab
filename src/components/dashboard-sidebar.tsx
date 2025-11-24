@@ -61,11 +61,6 @@ export function DashboardSidebar({ hasActiveSubscription }: DashboardSidebarProp
       title: t("dashboard"),
       icon: LayoutDashboard,
       href: locale === 'en' ? "/dashboard" : `${locale}/dashboard`,
-    },
-    {
-      title: t("usageLog.title"),
-      icon: Activity,
-      href: locale === 'en' ? "/dashboard/usage-log" : `${locale}/dashboard/usage-log`,
     }
   ];
 

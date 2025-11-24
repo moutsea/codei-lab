@@ -65,7 +65,10 @@ export default function UsageLogPage() {
   const offsetRef = useRef(0);
 
   const loadLogs = useCallback(async (opts: { reset?: boolean; signal?: AbortSignal } = {}) => {
-    if (!userId) return;
+    if (!userId) {
+      window.location.assign(locale === 'en' ? '/' : `/${locale}`);
+      return;
+    }
     const { reset = false, signal } = opts;
 
     if (reset) {

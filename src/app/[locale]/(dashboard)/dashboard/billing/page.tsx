@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, ChevronDown, ChevronUp } from "lucide-react";
@@ -25,6 +25,7 @@ export default function BillingPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const locale = useLocale();
   const [totalPages, setTotalPages] = useState(0);
   const [limit, setLimit] = useState(10);
   const [orderBy, setOrderBy] = useState<'createdAt' | 'amount' | 'status'>('createdAt');
@@ -32,7 +33,10 @@ export default function BillingPage() {
 
   // Fetch payments data
   const fetchPayments = async () => {
-    if (!user?.id || !isActive) return;
+    if (!user?.id || !isActive) {
+      window.location.assign(locale === 'en' ? '/' : `/${locale}`);
+      return;
+    }
 
     try {
       setLoading(true);
