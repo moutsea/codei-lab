@@ -475,9 +475,9 @@ export default function ApiKeysPage() {
     );
   }
 
-  console.log(userDetail);
+  // console.log(userDetail);
   // Redirect to login if not authenticated
-  if (!user?.id || !isActive || !userDetail?.planId) {
+  if (!isActive) {
     window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
     return null;
   }

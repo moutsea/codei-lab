@@ -33,7 +33,7 @@ export default function BillingPage() {
 
   // Fetch payments data
   const fetchPayments = async () => {
-    if (!user?.id || !isActive) {
+    if (!isActive) {
       window.location.assign(locale === 'en' ? '/' : `/${locale}`);
       return;
     }
@@ -181,9 +181,9 @@ export default function BillingPage() {
     );
   }
 
-  console.log(user, isActive);
+  // console.log(user, isActive);
   // Redirect to login if not authenticated
-  if (!user?.id || !isActive) {
+  if (!isActive) {
     window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
     return null;
   }

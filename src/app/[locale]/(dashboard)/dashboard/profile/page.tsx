@@ -24,7 +24,7 @@ export default function ProfilePage() {
   const locale = useLocale();
 
   // 使用 useUserData hook 获取用户详情
-  const { userDetail, loading, quota, quotaMonthlyUsed } = useUserData();
+  const { userDetail, loading, quota, isActive, quotaMonthlyUsed } = useUserData();
 
   const [editingUser, setEditingUser] = useState({
     name: userDetail?.name || user?.name || '',
@@ -45,14 +45,14 @@ export default function ProfilePage() {
   };
 
   const handleSaveProfile = async () => {
-    if (!user?.id) {
+    if (!isActive) {
       window.location.assign(locale === 'en' ? '/' : `/${locale}`);
       return;
     }
 
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/user/${user.id}`, {
+      const response = await fetch(`/api/user/${userDetail?.userId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
