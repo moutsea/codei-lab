@@ -183,7 +183,7 @@ export default function BillingPage() {
 
   // Redirect to login if not authenticated
   if (!user?.id || !isActive) {
-    window.location.assign(locale === 'en' ? '/' : `/${locale}`);
+    window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
     return null;
   }
 

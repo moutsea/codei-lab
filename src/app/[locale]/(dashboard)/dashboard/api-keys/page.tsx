@@ -477,7 +477,7 @@ export default function ApiKeysPage() {
 
   // Redirect to login if not authenticated
   if (!user?.id || !isActive || !userDetail?.planId) {
-    window.location.assign(locale === 'en' ? '/' : `/${locale}`);
+    window.location.assign(locale === 'en' ? '/dashboard' : `/${locale}/dashboard`);
     return null;
   }
 
