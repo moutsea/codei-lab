@@ -43,16 +43,11 @@ export const createOrUpdateUserFromAuthProfile = async (authUser: AuthUserProfil
         throw new Error('Auth user payload is missing required email address');
     }
 
-    let user = await getUserById(authUser.id);
-
-    if (!user && normalizedEmail) {
-        user = await getUserByEmail(normalizedEmail);
-        if (user) {
-            console.log(`ℹ️ Found existing user by email for auth id ${authUser.id}`);
-        }
-    }
+    let user = await getUserByEmail(normalizedEmail);
 
     if (!user) {
+        console.log(`ℹ️ Found existing user by email for auth id ${authUser.id}`);
+
         user = await createUser({
             id: authUser.id,
             email: normalizedEmail,
