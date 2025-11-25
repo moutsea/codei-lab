@@ -161,12 +161,11 @@ export async function createCodexProxy(
     if (userData.quotaMonthlyUsed! > userData.quota) {
       return await codexUserLimitExceedResponse();
     }
-
     // return await codexTestStageResponse();
 
     const authToken = process.env.CODEX_AUTH_TOKEN!;
     const baseUrl = process.env.CODEX_BASE_URL!;
-    const model = process.env.CODEX_MODEL!;
+    // const model = process.env.CODEX_MODEL!;
 
     let body;
     try {

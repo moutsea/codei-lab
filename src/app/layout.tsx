@@ -41,6 +41,7 @@ export default async function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="google-site-verification" content="_32v18g-XDvB04tOz9Wg-8QgSzOiDVG8SfPrWPyncyo" />
+        <meta name="msvalidate.01" content="8B900A7AD31AF4E513F58422B9EBA7E5" />
         {googleAdsenseCode && (
           <meta name="google-adsense-account" content={googleAdsenseCode} />
         )}
