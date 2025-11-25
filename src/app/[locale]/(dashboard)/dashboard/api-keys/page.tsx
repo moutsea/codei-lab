@@ -110,7 +110,7 @@ export default function ApiKeysPage() {
         };
       });
 
-      console.log(normalizedKeys);
+      // console.log(normalizedKeys);
 
       setApiKeys(normalizedKeys);
     } catch (error) {
