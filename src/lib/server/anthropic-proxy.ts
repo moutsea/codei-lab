@@ -166,7 +166,7 @@ export async function createCodexProxy(
 
     const authToken = process.env.CODEX_AUTH_TOKEN!;
     const baseUrl = process.env.CODEX_BASE_URL!;
-    const model = process.env.codex_MODEL!;
+    const model = process.env.CODEX_MODEL!;
 
     let body;
     try {
