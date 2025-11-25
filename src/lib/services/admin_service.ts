@@ -1,5 +1,8 @@
 import { getTotalRevenue, getMonthlyRevenue, getTotalRevenueByCurrency, getMonthlyRevenueByCurrency } from '@/db/queries/payments';
-import { getQuotaUsedThisMonth, getTotalQuotaUsed } from '@/db/queries/monthly-api-usage';
+import {
+  getTotalQuotaUsed,
+  getTotalTokensUsed
+} from '@/db/queries/monthly-api-usage';
 import { getSubscriptionStats, getSubscriptionsThisMonth } from '@/db/queries/subscriptions';
 import { getUsersCount, getNewUsersThisMonth, getUserById } from '@/db/queries/users';
 import type {
@@ -46,7 +49,7 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
       totalRevenueBreakdown,
       monthlyRevenueBreakdown,
       totalQuotaUsed,
-      quotaUsedThisMonth,
+      totalTokens,
       subscriptionStats,
       subscriptionsThisMonth
     ] = await Promise.all([
@@ -57,10 +60,11 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
       getTotalRevenueByCurrency(),
       getMonthlyRevenueByCurrency(),
       getTotalQuotaUsed(),
-      getQuotaUsedThisMonth(),
+      getTotalTokensUsed(),
       getSubscriptionStats(),
       getSubscriptionsThisMonth()
     ]);
+
     return {
       success: true,
       data: {
@@ -75,8 +79,12 @@ export async function getAdminStatistics(userId: string): Promise<AdminStatsResu
           monthlyByCurrency: monthlyRevenueBreakdown.currencies
         },
         usage: {
-          totalQuotaUsed: totalQuotaUsed,
-          monthlyQuotaUsed: quotaUsedThisMonth, // Show tokens used this month instead of active users
+          inputTokens: totalTokens.inputTokens,
+          cachedTokens: totalTokens.cachedTokens,
+          outputTokens: totalTokens.outputTokens,
+        },
+        quota: {
+          used: String(totalQuotaUsed),
         },
         subscriptions: {
           active: subscriptionStats.active,

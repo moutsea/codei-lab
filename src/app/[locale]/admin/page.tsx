@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AdminPage() {
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AdminDashboardClient />
     </div>
   );

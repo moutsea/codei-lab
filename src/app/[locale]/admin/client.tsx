@@ -14,12 +14,13 @@ export function AdminDashboardClient() {
   // Use the admin dashboard hook - handles all auth and admin checking
   const {
     isAdmin,
-    loading,
-    error,
     adminStats,
     monthlyMetrics,
-    refreshData
-  } = useAdminDashboard(12, { enableCache: true, cacheTimeout: 5 * 60 * 1000 }); // 5 minutes cache
+    loading,
+  } = useAdminDashboard(12);
+
+  // Debug logging
+  // console.log('Admin Dashboard State:', { isAdmin, loading, adminStats, monthlyMetrics });
 
   // Handle access denied or non-admin users
   useEffect(() => {
@@ -60,23 +61,71 @@ export function AdminDashboardClient() {
 
   // Helper function to get primary revenue (USD as base, fallback to first available)
   const getPrimaryRevenue = (revenueByCurrency: { [currency: string]: { amount: number; currency: string; count?: number } }) => {
-    // Use USD if available, otherwise use the first currency found
-    if (revenueByCurrency.USD) {
-      return revenueByCurrency.USD.amount;
+    try {
+      // Use USD if available, otherwise use the first currency found
+      if (revenueByCurrency.USD) {
+        return revenueByCurrency.USD.amount;
+      }
+      const firstCurrency = Object.values(revenueByCurrency)[0];
+      return firstCurrency ? firstCurrency.amount : 0;
+    } catch (error) {
+      console.error('Error in getPrimaryRevenue:', error);
+      return 0;
     }
-    const firstCurrency = Object.values(revenueByCurrency)[0];
-    return firstCurrency ? firstCurrency.amount : 0;
   };
 
   const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM format
   const hasCurrentMonth = monthlyMetrics.some(metric => metric.month === currentMonth);
 
-  let transformedMonthlyMetrics = monthlyMetrics.map(metric => ({
-    ...metric,
-    cnyRevenue: metric.revenueByCurrency.CNY?.amount || 0,
-    usdRevenue: metric.revenueByCurrency.USD?.amount || 0,
-    totalRevenue: getPrimaryRevenue(metric.revenueByCurrency)
-  }));
+  let transformedMonthlyMetrics: Array<{
+    month: string;
+    users: number;
+    revenue: number;
+    revenueByCurrency: { [currency: string]: { amount: number; currency: string; count?: number } };
+    inputTokens: number;
+    cachedTokens: number;
+    outputTokens: number;
+    totalTokens: number;
+    subscriptions: number;
+    cnyRevenue: number;
+    usdRevenue: number;
+    totalRevenue: number;
+    quota: number;
+  }>;
+
+  try {
+    transformedMonthlyMetrics = monthlyMetrics.map(metric => {
+      try {
+        return {
+          ...metric,
+          cnyRevenue: metric.revenueByCurrency?.CNY?.amount || 0,
+          usdRevenue: metric.revenueByCurrency?.USD?.amount || 0,
+          totalRevenue: getPrimaryRevenue(metric.revenueByCurrency || {}),
+          quota: 0 // TODO: Add actual monthly quota data when available
+        };
+      } catch (error) {
+        console.error('Error transforming metric:', metric, error);
+        return {
+          month: metric.month || 'unknown',
+          users: 0,
+          revenue: 0,
+          revenueByCurrency: {},
+          inputTokens: 0,
+          cachedTokens: 0,
+          outputTokens: 0,
+          totalTokens: 0,
+          subscriptions: 0,
+          cnyRevenue: 0,
+          usdRevenue: 0,
+          totalRevenue: 0,
+          quota: 0
+        };
+      }
+    });
+  } catch (error) {
+    console.error('Error in transformedMonthlyMetrics:', error);
+    transformedMonthlyMetrics = [];
+  }
 
   // If current month is not included, add it with zero values
   if (!hasCurrentMonth) {
@@ -90,25 +139,31 @@ export function AdminDashboardClient() {
           USD: { amount: 0, currency: 'USD', count: 0 },
           CNY: { amount: 0, currency: 'CNY', count: 0 }
         },
-        tokens: 0,
+        inputTokens: 0,
+        cachedTokens: 0,
+        outputTokens: 0,
+        totalTokens: 0,
         subscriptions: 0,
         cnyRevenue: 0,
         usdRevenue: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
+        quota: 0
       }
     ].sort((a, b) => a.month.localeCompare(b.month));
   }
 
+  // console.log("Hook state:", { loading, isAdmin, adminStats, monthlyMetrics });
+
   // Show loading state while checking admin status
   if (loading || isAdmin === null) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background text-foreground">
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">{t('loading')}</p>
+              <p className="text-muted-foreground">{t('loading')}</p>
             </div>
           </div>
         </div>
@@ -117,16 +172,16 @@ export function AdminDashboardClient() {
   }
 
   // Show error state if admin check failed
-  if (error || isAdmin === false) {
+  if (isAdmin === false) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background text-foreground">
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-              <p className="text-gray-600">{error || 'You do not have admin privileges'}</p>
+              <h2 className="text-2xl font-bold text-foreground mb-2">Access Denied</h2>
+              <p className="text-muted-foreground">{'You do not have admin privileges'}</p>
             </div>
           </div>
         </div>
@@ -135,19 +190,19 @@ export function AdminDashboardClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('title')}</h1>
-          <p className="text-gray-600">{t('description')}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{t('title')}</h1>
+          <p className="text-muted-foreground">{t('description')}</p>
         </div>
 
         {adminStats ? (
           <>
             {/* Overview Section */}
             <div className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">{t('overview')}</h2>
+              <h2 className="text-2xl font-semibold text-foreground mb-6">{t('overview')}</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Users Card */}
                 <Card>
@@ -156,9 +211,9 @@ export function AdminDashboardClient() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{adminStats.users.total.toLocaleString()}</div>
+                    <div className="text-2xl font-bold text-foreground">{adminStats.users.total.toLocaleString()}</div>
                     <p className="text-xs text-muted-foreground">
-                      <span className="text-green-600">{adminStats.users.growth}</span> new users this month
+                      <span className="text-green-500">{adminStats.users.growth}</span> new users this month
                     </p>
                   </CardContent>
                 </Card>
@@ -170,13 +225,13 @@ export function AdminDashboardClient() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold space-y-1">
-                      <div className="flex items-center gap-3">
+                    <div className="text-2xl font-bold space-y-1 text-foreground">
+                      <div className="flex items-center gap-3 flex-wrap">
                         {adminStats.revenue.totalByCurrency.USD && (
                           <span>{formatCurrency(adminStats.revenue.totalByCurrency.USD.amount)}</span>
                         )}
                         {adminStats.revenue.totalByCurrency.USD && adminStats.revenue.totalByCurrency.CNY && (
-                          <span className="text-gray-400"></span>
+                          <span className="text-muted-foreground"></span>
                         )}
                         {adminStats.revenue.totalByCurrency.CNY && (
                           <span>{formatCurrency(adminStats.revenue.totalByCurrency.CNY.amount, 'CNY')}</span>
@@ -207,9 +262,9 @@ export function AdminDashboardClient() {
                     <Activity className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{formatTokens(adminStats.usage.totalTokens)}</div>
+                    <div className="text-2xl font-bold text-foreground">{formatTokens(adminStats.usage.inputTokens + adminStats.usage.cachedTokens + adminStats.usage.outputTokens)}</div>
                     <p className="text-xs text-muted-foreground">
-                      {formatTokens(adminStats.usage.monthlyTokens)} tokens this month
+                      ${adminStats.quota.used} quota used
                     </p>
                   </CardContent>
                 </Card>
@@ -221,7 +276,7 @@ export function AdminDashboardClient() {
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{adminStats.subscriptions.active}</div>
+                    <div className="text-2xl font-bold text-foreground">{adminStats.subscriptions.active}</div>
                     <p className="text-xs text-muted-foreground">
                       {adminStats.subscriptions.monthlySubscriptions} new subscriptions this month
                     </p>
@@ -234,7 +289,7 @@ export function AdminDashboardClient() {
             {/* Charts Section */}
             {monthlyMetrics.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">Monthly Trends</h2>
+                <h2 className="text-2xl font-semibold text-foreground mb-6">Monthly Trends</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Users & Subscriptions Chart */}
                   <Card className="w-full">
@@ -279,7 +334,7 @@ export function AdminDashboardClient() {
                         title=""
                         metrics={[
                           {
-                            key: 'tokens',
+                            key: 'totalTokens',
                             name: 'Tokens Used',
                             color: '#f59e0b', // amber
                             yAxis: 'left',
@@ -308,6 +363,15 @@ export function AdminDashboardClient() {
                             yAxis: 'right',
                             formatter: (value: number) => {
                               return formatCurrency(value, 'CNY');
+                            }
+                          },
+                          {
+                            key: 'quota',
+                            name: 'Quota Used',
+                            color: '#8b5cf6', // violet
+                            yAxis: 'right',
+                            formatter: (value: number) => {
+                              return formatCurrency(value);
                             }
                           }
                         ]}

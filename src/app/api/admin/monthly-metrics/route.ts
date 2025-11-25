@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/auth';
 import { getAdminStatistics } from '@/lib/services/admin_service';
 import { getMonthlyMetrics, getMonthlyMetricsForYear } from '@/db/queries/monthly-metrics';
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth();
+    const userId = session?.user?.id;
 
     if (!userId) {
       return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
+        { error: 'Authentication required' },
+        { status: 401 }
       );
     }
 
@@ -28,6 +30,8 @@ export async function GET(request: NextRequest) {
     const year = searchParams.get('year');
 
     let metricsData;
+
+    // console.log("========enter month metrics============");
 
     if (year) {
       // Get metrics for specific year
@@ -49,6 +53,8 @@ export async function GET(request: NextRequest) {
       }
       metricsData = await getMonthlyMetrics(months);
     }
+
+    // console.log(metricsData, authResult.data);
 
     return NextResponse.json({
       success: true,

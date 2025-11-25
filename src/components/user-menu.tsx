@@ -23,7 +23,9 @@ export default function UserMenu() {
   const t = useTranslations("userMenu");
   const router = useRouter();
   const locale = useLocale();
-  const { isAdmin } = useAdminStatus({ enableCache: true });
+  const { isAdmin } = useAdminStatus();
+
+  const showAdminLink = isAdmin !== false;
 
   if (!user) {
     return null;
@@ -81,7 +83,7 @@ export default function UserMenu() {
           <span>{t("dashboard")}</span>
         </DropdownMenuItem>
 
-        {isAdmin && (
+        {showAdminLink && (
           <>
             <DropdownMenuItem onClick={handleAdmin}>
               <Shield className="mr-2 h-4 w-4" />

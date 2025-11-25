@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import type { MonthlyMetricsData } from '@/types/db';
 
 export interface AdminStats {
   users: {
@@ -25,8 +26,12 @@ export interface AdminStats {
     };
   };
   usage: {
-    totalTokens: number;
-    monthlyTokens: number;
+    inputTokens: number;
+    cachedTokens: number;
+    outputTokens: number;
+  };
+  quota: {
+    used: string;
   };
   subscriptions: {
     active: number;
@@ -35,278 +40,172 @@ export interface AdminStats {
   };
 }
 
-export interface MonthlyMetrics {
-  month: string;
-  users: number;
-  revenue: number;
-  revenueByCurrency: {
-    [currency: string]: {
-      amount: number;
-      currency: string;
-    };
-  };
-  tokens: number;
-  subscriptions: number;
-}
+export type MonthlyMetrics = MonthlyMetricsData;
 
-export interface UseAdminOptions {
-  enableCache?: boolean;
-  cacheTimeout?: number; // in milliseconds
-}
-
-export interface UseAdminReturn {
+interface AdminHookResult {
   isAdmin: boolean | null;
-  loading: boolean;
-  error: string | null;
   adminStats: AdminStats | null;
   monthlyMetrics: MonthlyMetrics[];
-  checkAdminStatus: () => Promise<void>;
-  fetchAdminStats: () => Promise<void>;
-  fetchMonthlyMetrics: (months?: number) => Promise<void>;
-  refreshData: () => Promise<void>;
+  loading: boolean;
 }
 
-type AdminCacheEntry = {
-  value: boolean;
-  timestamp: number;
-  promise?: Promise<boolean>;
-};
-
-const adminStatusCache = new Map<string, AdminCacheEntry>();
-
-// Global admin status to avoid duplicate checks across hook instances
-let globalAdminStatus: { isAdmin: boolean | null; userId: string | null; timestamp: number } = {
-  isAdmin: null,
-  userId: null,
-  timestamp: 0
-};
-
-let globalAdminCheckPromise: Promise<boolean> | null = null;
-
-export function useAdmin(options: UseAdminOptions = {}): UseAdminReturn {
-  const { enableCache = true, cacheTimeout = 5 * 60 * 1000 } = options;
-  const { data: session } = useSession();
-  const user = session?.user;
-  const userId = user?.id;
+export function useAdmin(months: number = 12): AdminHookResult {
+  const { status } = useSession();
 
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [adminLoading, setAdminLoading] = useState<boolean>(false);
-  const [adminError, setAdminError] = useState<string | null>(null);
   const [adminStats, setAdminStats] = useState<AdminStats | null>(null);
   const [monthlyMetrics, setMonthlyMetrics] = useState<MonthlyMetrics[]>([]);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const resetAdminState = () => {
+    setIsAdmin(false);
+    setAdminStats(null);
+    setMonthlyMetrics([]);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    if (!userId) {
-      setAdminStats(null);
-      setMonthlyMetrics([]);
-    }
-  }, [userId]);
+    let cancelled = false;
 
-  const loading = useMemo(() => {
-    if (adminLoading) return true;
-    if (isAdmin) {
-      return !adminStats || monthlyMetrics.length === 0;
-    }
-    return false;
-  }, [adminLoading, isAdmin, adminStats, monthlyMetrics.length]);
+    const loadAdminData = async () => {
 
-  const error = adminError || fetchError;
+      setLoading(true);
 
-  const checkAdminStatus = useCallback(async () => {
-    if (!userId) {
-      setIsAdmin(null);
-      return;
-    }
-
-    // Check global cache first to avoid duplicate requests across hook instances
-    const now = Date.now();
-    if (globalAdminStatus.userId === userId &&
-        globalAdminStatus.isAdmin !== null &&
-        now - globalAdminStatus.timestamp < cacheTimeout) {
-      setIsAdmin(globalAdminStatus.isAdmin);
-      return;
-    }
-
-    // If another instance is currently checking, wait for that result
-    if (globalAdminCheckPromise && globalAdminStatus.userId === userId) {
       try {
-        const isAdminValue = await globalAdminCheckPromise;
-        setIsAdmin(isAdminValue);
-        return;
-      } catch (err) {
-        // Continue with normal error handling if global promise failed
+        const statusResponse = await fetch('/api/admin/status', {
+          credentials: 'include',
+        });
+
+        if (!statusResponse.ok) {
+          if (statusResponse.status === 401 || statusResponse.status === 403) {
+            resetAdminState();
+            return;
+          }
+          throw new Error(`Failed to check admin status: ${statusResponse.status}`);
+        }
+
+        const statusData = await statusResponse.json();
+        if (cancelled) return;
+
+        if (!statusData.isAdmin) {
+          resetAdminState();
+          return;
+        }
+
+        const metricsResponse = await fetch(`/api/admin/monthly-metrics?months=${months}`, {
+          credentials: 'include',
+        });
+
+        if (!metricsResponse.ok) {
+          if (metricsResponse.status === 401 || metricsResponse.status === 403) {
+            resetAdminState();
+            return;
+          }
+          throw new Error(`Failed to fetch monthly metrics: ${metricsResponse.status}`);
+        }
+
+        const metricsPayload = await metricsResponse.json();
+        if (cancelled) return;
+
+        if (!metricsPayload.success) {
+          resetAdminState();
+          return;
+        }
+
+        const metricsData: MonthlyMetrics[] = metricsPayload.success
+          ? (metricsPayload.data as MonthlyMetricsData[])
+          : [];
+        const statsData: AdminStats | null = metricsPayload.auth ?? null;
+
+        setIsAdmin(true);
+        setAdminStats(statsData);
+        setMonthlyMetrics(metricsData);
+        setLoading(false);
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Failed to load admin dashboard data:', error);
+        resetAdminState();
       }
-    }
+    };
 
-    setAdminLoading(true);
-    setAdminError(null);
+    loadAdminData();
 
-    // Create the admin check promise and store it globally
-    globalAdminCheckPromise = (async () => {
-      const response = await fetch(`/api/user/${userId}/admin-check`);
-      if (!response.ok) {
-        throw new Error(`Failed to check admin status: ${response.status}`);
-      }
+    return () => {
+      cancelled = true;
+    };
+  }, [status, months]);
 
-      const data = await response.json();
-      return Boolean(data.isAdmin);
-    })();
+  return {
+    isAdmin,
+    adminStats,
+    monthlyMetrics,
+    loading,
+  };
+}
 
-    try {
-      const isAdminValue = await globalAdminCheckPromise;
-      setIsAdmin(isAdminValue);
+export function useAdminDashboard(months: number = 12): AdminHookResult {
+  return useAdmin(months);
+}
 
-      // Update global cache
-      globalAdminStatus = {
-        isAdmin: isAdminValue,
-        userId,
-        timestamp: now
-      };
-
-      // Update local cache as well
-      if (enableCache) {
-        const cacheKey = `admin-status:${userId}`;
-        adminStatusCache.set(cacheKey, { value: isAdminValue, timestamp: now });
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to check admin status';
-      setAdminError(message);
-      setIsAdmin(false);
-
-      // Clear global cache on error
-      globalAdminStatus = { isAdmin: false, userId, timestamp: 0 };
-    } finally {
-      setAdminLoading(false);
-      globalAdminCheckPromise = null;
-    }
-  }, [userId, enableCache, cacheTimeout]);
+export function useAdminStatus() {
+  const { status } = useSession();
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (userId) {
-      checkAdminStatus();
-    } else {
-      setIsAdmin(null);
-    }
-  }, [userId, checkAdminStatus]);
+    let cancelled = false;
 
-  const fetchAdminStats = useCallback(async (): Promise<void> => {
-    if (!userId || !isAdmin) {
-      return;
-    }
-
-    try {
-      setFetchError(null);
-
-      const response = await fetch('/api/admin/stats', {
-        headers: {
-          'x-user-id': userId,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch admin stats: ${response.status}`);
+    const checkStatus = async () => {
+      if (status === 'loading') {
+        setLoading(true);
+        return;
       }
 
-      const data = await response.json();
-      setAdminStats(data);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch admin statistics';
-      setFetchError(errorMessage);
-    }
-  }, [userId, isAdmin]);
-
-  const fetchMonthlyMetrics = useCallback(async (months: number = 12): Promise<void> => {
-    if (!userId || !isAdmin) {
-      return;
-    }
-
-    try {
-      setFetchError(null);
-
-      const response = await fetch(`/api/admin/monthly-metrics?months=${months}`, {
-        headers: {
-          'x-user-id': userId,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch monthly metrics: ${response.status}`);
+      if (status === 'unauthenticated') {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
       }
 
-      const data = await response.json();
+      if (status !== 'authenticated') {
+        return;
+      }
 
-      if (data.success) {
-        setMonthlyMetrics(data.data);
-        if (data.auth) {
-          setAdminStats(data.auth);
+      setLoading(true);
+
+      try {
+        const response = await fetch('/api/admin/status', {
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            setIsAdmin(false);
+            return;
+          }
+          throw new Error(`Failed to check admin status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (cancelled) return;
+
+        setIsAdmin(Boolean(data.isAdmin));
+      } catch (error) {
+        if (cancelled) return;
+        console.error('Failed to load admin status:', error);
+        setIsAdmin(false);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
         }
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch monthly metrics';
-      setFetchError(errorMessage);
-    }
-  }, [userId, isAdmin]);
+    };
 
-  const refreshData = useCallback(async (): Promise<void> => {
-    if (isAdmin) {
-      await Promise.all([fetchAdminStats(), fetchMonthlyMetrics()]);
-    }
-  }, [fetchAdminStats, fetchMonthlyMetrics, isAdmin]);
+    checkStatus();
 
-  return {
-    isAdmin,
-    loading,
-    error,
-    adminStats,
-    monthlyMetrics,
-    checkAdminStatus,
-    fetchAdminStats,
-    fetchMonthlyMetrics,
-    refreshData,
-  };
-}
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
 
-export function useAdminStatus(options: UseAdminOptions = {}) {
-  const { isAdmin, loading, error, checkAdminStatus } = useAdmin(options);
-
-  return {
-    isAdmin,
-    loading,
-    error,
-    checkAdminStatus,
-  };
-}
-
-export function useAdminDashboard(months: number = 12, options: UseAdminOptions = {}) {
-  const {
-    isAdmin,
-    loading,
-    error,
-    adminStats,
-    monthlyMetrics,
-    fetchAdminStats,
-    fetchMonthlyMetrics,
-    refreshData,
-  } = useAdmin(options);
-
-  useEffect(() => {
-    if (isAdmin === true && !adminStats && monthlyMetrics.length === 0) {
-      fetchAdminStats();
-      fetchMonthlyMetrics(months);
-    }
-  }, [isAdmin, adminStats, monthlyMetrics.length, fetchAdminStats, fetchMonthlyMetrics, months]);
-
-  return {
-    isAdmin,
-    loading,
-    error,
-    adminStats,
-    monthlyMetrics,
-    refreshData: () => {
-      refreshData();
-    },
-    refetchStats: fetchAdminStats,
-    refetchMetrics: () => fetchMonthlyMetrics(months),
-  };
+  return { isAdmin, loading };
 }

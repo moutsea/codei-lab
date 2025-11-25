@@ -6,6 +6,12 @@ import type { MonthlyMetricsData } from "@/types/db";
 /**
  * Get monthly metrics for the past N months
  */
+const formatMonth = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+};
+
 export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMetricsData[]> {
   try {
     const endDate = new Date();
@@ -16,6 +22,7 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
     // Set endDate to the end of the current month
     endDate.setMonth(endDate.getMonth() + 1);
     endDate.setDate(0); // This goes to the last day of the current month
+
 
     // Get monthly user counts
     const userQuery = db()
@@ -43,7 +50,7 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
       .groupBy(sql`TO_CHAR(${payments.createdAt}, 'YYYY-MM')`, payments.currency);
 
     // Get monthly token usage
-    const firstDayOfMonth = `${startDate.toISOString().slice(0, 7)}-1`;
+    const firstDayOfMonth = `${formatMonth(startDate)}-01`;
 
     const tokensQuery = db()
       .select({
@@ -125,7 +132,7 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
 
     // Generate exactly 'months' number of months starting from startDate
     for (let i = 0; i < months; i++) {
-      const monthStr = currentMonth.toISOString().slice(0, 7); // YYYY-MM format
+      const monthStr = formatMonth(currentMonth); // YYYY-MM format
 
       const tokenData = tokensMap.get(monthStr) || {
         inputTokens: 0,

@@ -37,8 +37,12 @@ export interface AdminStatsSuccess {
       };
     };
     usage: {
-      totalQuotaUsed: number;
-      monthlyQuotaUsed: number;
+      inputTokens: number;
+      cachedTokens: number;
+      outputTokens: number;
+    };
+    quota: {
+      used: string;
     };
     subscriptions: {
       active: number;

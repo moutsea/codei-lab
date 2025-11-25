@@ -261,6 +261,31 @@ export async function getTokensUsedThisMonth(): Promise<number> {
 }
 
 /**
+ * Get separate token types used in current month
+ */
+export async function getTokensUsedThisMonthByType(): Promise<{
+  inputTokens: number;
+  cachedTokens: number;
+  outputTokens: number;
+}> {
+  const currentMonth = currentCycle();
+  const [result] = await db()
+    .select({
+      inputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.inputTokens}), 0)`,
+      cachedTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.cachedTokens}), 0)`,
+      outputTokens: sql<number>`COALESCE(SUM(${monthlyApiUsage.outputTokens}), 0)`
+    })
+    .from(monthlyApiUsage)
+    .where(gte(monthlyApiUsage.month, currentMonth));
+
+  return {
+    inputTokens: Number(result.inputTokens) || 0,
+    cachedTokens: Number(result.cachedTokens) || 0,
+    outputTokens: Number(result.outputTokens) || 0
+  };
+}
+
+/**
  * Get total quota used across all API keys
  */
 export async function getTotalQuotaUsed(): Promise<number> {
@@ -284,6 +309,19 @@ export async function getQuotaUsedThisMonth(): Promise<number> {
     })
     .from(monthlyApiUsage)
     .where(gte(monthlyApiUsage.month, currentMonth));
+
+  return Number(result.total) || 0;
+}
+
+/**
+ * Get total quota limits from all API keys
+ */
+export async function getTotalQuotaLimits(): Promise<number> {
+  const [result] = await db()
+    .select({
+      total: sql<number>`COALESCE(SUM(CAST(${apiKeys.quota} AS NUMERIC)), 0)`
+    })
+    .from(apiKeys);
 
   return Number(result.total) || 0;
 }
