@@ -148,7 +148,7 @@ export async function createCodexProxy(
 
     const userData = await getUserDetailByIdWithCache(userId!);
 
-    console.log(userData);
+    // console.log(userData);
 
     if (!userData) {
       return await codexApikey401Response();
@@ -168,6 +168,8 @@ export async function createCodexProxy(
     const baseUrl = process.env.CODEX_BASE_URL!;
     const model = process.env.CODEX_MODEL!;
 
+    // console.log("========model: ", model);
+
     let body;
     try {
       body = await request.json();
@@ -183,6 +185,8 @@ export async function createCodexProxy(
       ...body,
       model: model,
     };
+
+    // console.log(requestBody);
 
     const targetUrl = originalUrl.replace(
       process.env.LOCAL_CODEX_API!,
