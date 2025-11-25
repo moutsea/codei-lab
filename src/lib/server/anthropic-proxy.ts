@@ -158,7 +158,7 @@ export async function createCodexProxy(
       return await codexUserSubscriptionInvalidResponse();
     }
 
-    if (userData.quotaMonthlyUsed! > userData.quota) {
+    if (parseFloat(userData.quotaMonthlyUsed!) > parseFloat(userData.quota)) {
       return await codexUserLimitExceedResponse();
     }
     // return await codexTestStageResponse();
