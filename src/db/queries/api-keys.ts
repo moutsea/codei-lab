@@ -106,7 +106,7 @@ export async function getApiKeysByUserId(userId: string, currentMonth?: string):
       expiredAt: apiKeys.expiredAt,
       isDelete: apiKeys.isDelete,
       // Add current month usage as a calculated field
-      currentMonthUsage: sql<number>`COALESCE(${monthlyApiUsage.inputTokens} + ${monthlyApiUsage.cachedTokens} + ${monthlyApiUsage.outputTokens}, 0)`.mapWith(Number)
+      currentMonthUsage: sql<number>`COALESCE(CAST(monthlyApiUsage.quotaUsed AS FLOAT), 0)`.mapWith(Number)
     })
     .from(apiKeys)
     .leftJoin(monthlyApiUsage, and(
