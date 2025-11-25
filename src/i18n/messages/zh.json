@@ -105,7 +105,7 @@
   },
   "hero": {
     "title": "Code I Lab",
-    "subtitle": "为开发者提供经济实惠的 OpenAI Codex API 服务。体验强大的代码生成功能，享受物美价廉的定价方案，与您现有的开发工作流程无缝集成。",
+    "subtitle": "为开发者提供经济实惠的 Ai 智能编程服务，使用当前最强的 GPT-5.1 系列模型，只需五分钟，接入并开始新的任务",
     "cta": "开始使用",
     "learnMore": "了解更多",
     "installNodeJs": "安装",
@@ -138,7 +138,7 @@
     },
     "step2": {
       "title": "留在熟悉的编辑器",
-      "description": "在 VS Code 或 Cursor 中唤起 Code I，实时聊天、编辑并内联预览改动。"
+      "description": "在 VS Code 中唤起 Code I，实时聊天、编辑并内联预览改动。"
     },
     "step3": {
       "title": "自带常用工具",

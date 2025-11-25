@@ -138,7 +138,7 @@
     },
     "step2": {
       "title": "Stay in your editor",
-      "description": "Fire up Code I in VS Code or Cursor to chat, edit, and preview changes inline."
+      "description": "Fire up Code I in VS Code to chat, edit, and preview changes inline."
     },
     "step3": {
       "title": "Bring your own tools",
