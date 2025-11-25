@@ -8,6 +8,7 @@ export class RedisMonitor {
   private static instance: RedisMonitor;
   private isMonitoring = false;
   private monitoringInterval: NodeJS.Timeout | null = null;
+  private isChecking = false;
 
   private constructor() {}
 
@@ -30,8 +31,14 @@ export class RedisMonitor {
     this.isMonitoring = true;
     console.log(`Starting Redis connection monitoring (interval: ${intervalMs}ms)`);
 
-    this.monitoringInterval = setInterval(async () => {
-      await this.checkConnection();
+    this.monitoringInterval = setInterval(() => {
+      if (this.isChecking) {
+        return;
+      }
+      this.isChecking = true;
+      this.checkConnection().finally(() => {
+        this.isChecking = false;
+      });
     }, intervalMs);
   }
 
@@ -64,12 +71,13 @@ export class RedisMonitor {
       console.log(`Redis connection status: ${status}`);
 
       if (status === 'ready') {
-        // 获取 Redis 信息
-        const info = await client.info('memory');
-        const serverInfo = await client.info('server');
+        // 单次获取全部 Redis 信息，避免重复命令
+        const info = await client.info();
+        const memoryInfo = this.extractSection(info, 'memory');
+        const serverInfo = this.extractSection(info, 'server');
 
         console.log('Redis connection is healthy');
-        console.log('Memory usage:', this.parseMemoryInfo(info));
+        console.log('Memory usage:', this.parseMemoryInfo(memoryInfo));
         console.log('Server info:', this.parseServerInfo(serverInfo));
       } else {
         console.warn(`Redis connection is not ready: ${status}`);
@@ -97,7 +105,7 @@ export class RedisMonitor {
         const info = await client.info();
         return {
           status,
-          memory: this.parseMemoryInfo(info),
+          memory: this.parseMemoryInfo(this.extractSection(info, 'memory')),
           clients: this.parseClientsInfo(info),
           uptime: this.parseUptimeInfo(info)
         };
@@ -134,6 +142,15 @@ export class RedisMonitor {
   private parseMemoryInfo(info: string): string {
     const match = info.match(/used_memory_human:(.+)/);
     return match ? match[1].trim() : 'unknown';
+  }
+
+  /**
+   * 根据 section 提取信息
+   */
+  private extractSection(info: string, section: string): string {
+    const sectionRegex = new RegExp(`# ${section}\\r?\\n([\\s\\S]*?)(?=#|$)`, 'i');
+    const match = info.match(sectionRegex);
+    return match ? match[1] : info;
   }
 
   /**
