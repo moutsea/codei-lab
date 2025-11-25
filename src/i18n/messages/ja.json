@@ -113,77 +113,40 @@
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "次に実行"
   },
-  "productFeatures": {
-    "title": "Code Iはコーディングする everywhereで実行",
-    "features": {
-      "cli": {
-        "title": "Code i CLI",
-        "description": "プロンプトからプルリクエストまで数分で。Codexをターミナルで使用して、新機能の shipped、バグ修正、解決策のブレインストーミング、その他次のタスクに対応できます。"
-      },
-      "ide": {
-        "title": "Code i IDE拡張機能",
-        "description": "VSCode、Cursor、その他のIDEでCodexと連携。変更をプレビューし、ターゲットを絞った編集を行い、アイデアから実装まで流れを維持します。"
-      },
-      "cloud": {
-        "title": "Code iクラウド",
-        "description": "クラウドでCodexにタスクを委譲して、flowを維持。Codexは安全なサンドボックスにリポジトリを読み込み、ローカルでレビュー、マージ、または作業を続行できるコードを生成します。"
-      }
-    }
-  },
   "productWorkflows": {
-    "title": "Code Iは主要なワークフローにプラグインしてチーム全体を加速",
+    "title": "Code I が選ばれる理由",
     "workflows": {
-      "codeReview": {
-        "title": "GitHubでのコードレビュー",
-        "content": "新しいプルリクエストを自動的にレビューし、手動レビューのために@codexをタグ付けします。PR意図と変更を比較し、必要に応じてコードを実行して詳細なレビューを提供します。"
+      "powerful": {
+        "title": "妥協のないパワー",
+        "content": "最強クラスのコーディングモデル GPT-5.1 を採用し、多数ファイルの推論やリファクタリング、テストも正確にこなします。"
       },
-      "slackTasks": {
-        "title": "Slackからタスクを割り当て",
-        "content": "CodexはSlackから質問に答え、バグを修正し、アイデアを探索します。会話からコンテキストを自動的に取得して、適切なリポジトリを選択し、作業を開始します。"
+      "easy": {
+        "title": "1分で使い始め",
+        "content": "CLI を入れて一度認証するだけで、ターミナル・IDE・クラウドのどこでもすぐ協業できます。"
       },
-      "sdk": {
-        "title": "Code I SDK",
-        "content": "GitHub Actionsや内部ツールにCodexを埋め込んで、CI/CD、コードメンテナンス、課題管理、その他のプロセスを自動化します。"
+      "cheap": {
+        "title": "コストを抑えた価格",
+        "content": "他のサードパーティより大幅に安く、実験をスケールしても予想外の請求がありません。"
       }
     }
   },
   "useCases": {
-    "title": "使い方",
+    "title": "コードを書く場所ならどこでも Code I が使える",
     "step1": {
-      "title": "ターミナルまたはIDEでセットアップ",
-      "description": "Codex CLIまたはIDE拡張機能をダウンロードし、APIキーの取得を購読してください。"
+      "title": "ツールキットをセットアップ",
+      "description": "Node.js 18+ を用意し、Codex CLI をインストールして API キーを数秒で紐づけます。"
     },
     "step2": {
-      "title": "コードリポジトリに移動",
-      "description": "ローカルリポジトリでIDEまたはターミナルを開き、Codexを開始します。"
+      "title": "いつものエディタのまま",
+      "description": "VS Code や Cursor で Code I を起動し、チャットや編集、差分プレビューをインラインで行えます。"
     },
     "step3": {
-      "title": "最初のタスクを実行",
-      "description": "リポジトリについてCodexとチャットするか、新機能の実装やバグ修正を依頼してください。"
+      "title": "好みのツールを持ち込む",
+      "description": "JetBrains や Neovim などのネイティブ拡張、MCP サーバー連携を活用できます。"
     },
     "step4": {
-      "title": "Codexに作業させる",
-      "description": "Codexはタスクを完了させるために、リポジトリを独立してナビゲートします。コード変更を受け入れるか、タスクが完了するまで作業を続けてください。"
-    }
-  },
-  "plans": {
-    "lite": {
-      "name": "Lite",
-      "price": 9.9,
-      "quota_tokens": 10000000,
-      "description": "学生と趣味の開発者向け。月額約1000万トークンのエントリーレベルアクセス。"
-    },
-    "pro": {
-      "name": "Pro",
-      "price": 39,
-      "quota_tokens": 50000000,
-      "description": "個人開発者にとって最高の価値。日常のコーディングタスク用に月額約5000万トークン。"
-    },
-    "team": {
-      "name": "Team",
-      "price": 99,
-      "quota_tokens": 200000000,
-      "description": "スタートアップと小規模チーム向け。高い費用効率で月額約2億トークン。"
+      "title": "最初のタスクを出荷",
+      "description": "Code I にリポジトリ探索と修正・機能作成を任せ、マージ前に差分を確認しましょう。"
     }
   },
   "footer": {

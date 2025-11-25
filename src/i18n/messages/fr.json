@@ -113,77 +113,40 @@
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "ensuite exécuter"
   },
-  "productFeatures": {
-    "title": "Code I fonctionne partout où vous codez",
-    "features": {
-      "cli": {
-        "title": "Code i CLI",
-        "description": "Passez du prompt à la pull request en quelques minutes. Expédiez de nouvelles fonctionnalités, corrigez des bugs, trouvez des solutions ou relevez les prochains défis avec Codex dans votre terminal."
-      },
-      "ide": {
-        "title": "Extension Code i IDE",
-        "description": "Collaborez avec Codex dans VSCode, Cursor et autres IDE. Prévisualisez les changements, apportez des modifications ciblées et maintenez votre flux de l'idée à l'implémentation."
-      },
-      "cloud": {
-        "title": "Code i Cloud",
-        "description": "Déléguez des tâches à Codex dans le cloud pour rester dans le flux. Codex charge votre dépôt dans un bac à sable sécurisé, générant du code que vous pouvez réviser, fusionner ou continuer de travailler localement."
-      }
-    }
-  },
   "productWorkflows": {
-    "title": "Code I s'intègre aux workflows clés pour accélérer toute votre équipe",
+    "title": "Pourquoi les équipes choisissent Code I",
     "workflows": {
-      "codeReview": {
-        "title": "Revue de code dans GitHub",
-        "content": "Examinez automatiquement les nouvelles PR et mentionnez @codex pour demander des révisions manuelles. Il compare l'intention de la PR avec les changements, exécutant le code si nécessaire pour fournir une révision détaillée."
+      "powerful": {
+        "title": "Puissance sans compromis",
+        "content": "S'appuie sur GPT-5.1, l'un des modèles de code les plus performants, pour garantir une compréhension multi-fichiers et des refactorings fiables."
       },
-      "slackTasks": {
-        "title": "Assigner des tâches depuis Slack",
-        "content": "Codex répond aux questions, corrige les bugs et explore les idées directement depuis Slack. Il extrait automatiquement le contexte de la conversation pour choisir le bon dépôt et commencer à travailler."
+      "easy": {
+        "title": "Prise en main en 1 minute",
+        "content": "Installez le CLI, authentifiez-vous une fois et collaborez instantanément depuis le terminal, l'IDE et le cloud."
       },
-      "sdk": {
-        "title": "Code I SDK",
-        "content": "Intégrez Codex dans GitHub Actions et les outils internes pour automatiser CI/CD, la maintenance du code, la gestion des problèmes et autres processus."
+      "cheap": {
+        "title": "Tarifs imbattables",
+        "content": "Bien moins cher que les autres fournisseurs tiers, pour expérimenter à grande échelle sans facture surprise."
       }
     }
   },
   "useCases": {
-    "title": "Comment ça fonctionne",
+    "title": "Code I fonctionne partout où vous codez",
     "step1": {
-      "title": "Configurez-le dans votre terminal ou IDE",
-      "description": "Téléchargez le CLI ou l'extension IDE Codex et abonnez-vous pour obtenir la clé API."
+      "title": "Installez la boîte à outils",
+      "description": "Procurez-vous Node.js 18+, installez le CLI Codex et liez votre clé API en quelques secondes."
     },
     "step2": {
-      "title": "Allez dans un dépôt de code",
-      "description": "Ouvrez votre IDE ou terminal dans un dépôt local et lancez Codex."
+      "title": "Restez dans votre éditeur",
+      "description": "Lancez Code I dans VS Code ou Cursor pour discuter, éditer et prévisualiser les changements en ligne."
     },
     "step3": {
-      "title": "Exécutez votre première tâche",
-      "description": "Discutez avec Codex à propos du dépôt, ou demandez-lui d'implémenter une nouvelle fonctionnalité ou corriger un bug."
+      "title": "Apportez vos propres outils",
+      "description": "Utilisez les extensions natives dans JetBrains, Neovim et autres IDE ou connectez-vous via des serveurs MCP."
     },
     "step4": {
-      "title": "Laissez Codex travailler",
-      "description": "Codex navigue indépendamment dans votre dépôt pour exécuter votre tâche. Acceptez ses changements de code ou continuez jusqu'à ce que la tâche soit terminée."
-    }
-  },
-  "plans": {
-    "lite": {
-      "name": "Essentiel",
-      "price": 9.9,
-      "quota_tokens": 10000000,
-      "description": "Pour les étudiants et les amateurs. Accès d'entrée de gamme avec environ 10M tokens par mois."
-    },
-    "pro": {
-      "name": "Professionnel",
-      "price": 39,
-      "quota_tokens": 50000000,
-      "description": "Meilleur rapport qualité/prix pour les développeurs individuels. ~50M tokens par mois pour les tâches quotidiennes de codage."
-    },
-    "team": {
-      "name": "Équipe",
-      "price": 99,
-      "quota_tokens": 200000000,
-      "description": "Conçu pour les startups et les petites équipes. ~200M tokens par mois avec une grande efficacité de coût."
+      "title": "Livrez votre première tâche",
+      "description": "Demandez à Code I d'explorer un dépôt, de générer une correction ou une fonctionnalité, puis de relire le diff avant la fusion."
     }
   },
   "footer": {

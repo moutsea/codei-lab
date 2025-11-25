@@ -105,7 +105,7 @@
   },
   "hero": {
     "title": "Code I Lab",
-    "subtitle": "Affordable OpenAI Codex API access for developers. Experience powerful code generation with flexible pricing plans and seamless integration into your existing development workflow.",
+    "subtitle": "Affordable AI Coding Assistant for developers. One of Most powerful Coding Model GPT-5.1. Configure and try in 5 minutes!",
     "cta": "Get Started",
     "learnMore": "Learn More",
     "readDoc": "Read Documentation",
@@ -113,77 +113,40 @@
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "then run"
   },
-  "productFeatures": {
-    "title": "Code I runs everywhere you code",
-    "features": {
-      "cli": {
-        "title": "Code i CLI",
-        "description": "Go from prompt to pull request in minutes. Ship new features, fix bugs, brainstorm solutions, or tackle whatever's next with Codex in your terminal."
-      },
-      "ide": {
-        "title": "Code i IDE extension",
-        "description": "Partner with Codex in VSCode, Cursor, and other IDEs. Preview changes, make targeted edits, and stay in flow from idea to implementation."
-      },
-      "cloud": {
-        "title": "Code i cloud",
-        "description": "Delegate tasks to Codex in the cloud so you can stay in flow. Codex loads your repo in a secure sandbox, generating code you can review, merge, or continue working on locally."
-      }
-    }
-  },
   "productWorkflows": {
-    "title": "Code I plugs into key workflows to accelerate your entire team",
+    "title": "Why teams choose Code I",
     "workflows": {
-      "codeReview": {
-        "title": "Code review in GitHub",
-        "content": "Automatically review new PRs and tag @codex to manually request reviews. It compares PR intent with changes, running the code if needed to provide a detailed review."
+      "powerful": {
+        "title": "Uncompromised power",
+        "content": "Runs on GPT-5.1, one of the most capable coding models, so multi-file reasoning, refactors, and tests stay accurate."
       },
-      "slackTasks": {
-        "title": "Assign tasks from Slack",
-        "content": "Codex answers questions, fixes bugs, and explores ideas right from Slack. It automatically pulls context from the conversation to choose the right repo and start working."
+      "easy": {
+        "title": "Setup in one minute",
+        "content": "Install the CLI, authenticate once, and start collaborating across terminal, IDE, and cloud sessions instantly."
       },
-      "sdk": {
-        "title": "Code I SDK",
-        "content": "Embed Codex in GitHub Actions and internal tools to automate CI/CD, code maintenance, issue management and other processes."
+      "cheap": {
+        "title": "Pricing that stays low",
+        "content": "Usage stays far cheaper than other third-party providers, so you can scale experiments without surprise bills."
       }
     }
   },
   "useCases": {
-    "title": "How it works",
+    "title": "Code I runs everywhere you code",
     "step1": {
-      "title": "Set it up in your terminal or IDE",
-      "description": "Download the Codex CLI or IDE extension and subscribe for achieving api-key."
+      "title": "Install the toolkit",
+      "description": "Get Node.js 18+, install the Codex CLI, and link your API key in seconds."
     },
     "step2": {
-      "title": "Go to a code repo",
-      "description": "Open your IDE or terminal in a local repo and start Codex."
+      "title": "Stay in your editor",
+      "description": "Fire up Code I in VS Code or Cursor to chat, edit, and preview changes inline."
     },
     "step3": {
-      "title": "Run your first task",
-      "description": "Chat with Codex about the repo, or ask it to implement a new feature or fix a bug."
+      "title": "Bring your own tools",
+      "description": "Use native extensions in JetBrains, Neovim, and other IDEs or connect via MCP servers."
     },
     "step4": {
-      "title": "Let Codex work",
-      "description": "Codex independently navigates through your repo to execute your task. Accept its code changes or keep going till the task is complete."
-    }
-  },
-  "plans": {
-    "lite": {
-      "name": "Lite",
-      "price": 9.9,
-      "quota_tokens": 10000000,
-      "description": "For students and hobbyists. Entry-level access with ~10M tokens per month."
-    },
-    "pro": {
-      "name": "Pro",
-      "price": 39,
-      "quota_tokens": 50000000,
-      "description": "Best value for individual developers. ~50M tokens per month for daily coding tasks."
-    },
-    "team": {
-      "name": "Team",
-      "price": 99,
-      "quota_tokens": 200000000,
-      "description": "For startups and small teams. ~200M tokens per month with high cost efficiency."
+      "title": "Ship your first task",
+      "description": "Ask Code I to explore a repo, generate a fix or feature, and review the diff before you merge."
     }
   },
   "footer": {

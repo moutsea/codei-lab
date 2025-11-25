@@ -113,77 +113,40 @@
     "nodeJsLinkText": "Node.js 18+",
     "thenRun": "然后运行"
   },
-  "productFeatures": {
-    "title": "Code I 在您编码的任何地方运行",
-    "features": {
-      "cli": {
-        "title": "Code i CLI",
-        "description": "几分钟内从提示语到拉取请求。发布新功能、修复错误、集思广益解决方案，或在终端中用 Codex 处理任何接下来的任务。"
-      },
-      "ide": {
-        "title": "Code i IDE 扩展",
-        "description": "在 VSCode、Cursor 和其他 IDE 中与 Codex 协作。预览更改，进行针对性编辑，从想法到实现保持工作流畅。"
-      },
-      "cloud": {
-        "title": "Code i 云端",
-        "description": "将任务委托给云端 Codex，让您保持工作流畅。Codex 在安全沙箱中加载您的仓库，生成您可以审查、合并或在本地继续工作的代码。"
-      }
-    }
-  },
   "productWorkflows": {
-    "title": "Code I 集成到关键工作流程中，加速整个团队",
+    "title": "为什么团队选择 Code I",
     "workflows": {
-      "codeReview": {
-        "title": "GitHub 代码审查",
-        "content": "自动审查新的 PR 并标记 @codex 来手动请求审查。它比较 PR 意图与更改，在需要时运行代码以提供详细审查。"
+      "powerful": {
+        "title": "强大性能",
+        "content": "基于 GPT-5.1 这类顶尖编程模型，复杂的多文件推理、重构与测试都能保持高准确度。"
       },
-      "slackTasks": {
-        "title": "从 Slack 分配任务",
-        "content": "Codex 直接在 Slack 中回答问题、修复错误和探索想法。它自动从对话中提取上下文，选择正确的仓库并开始工作。"
+      "easy": {
+        "title": "1 分钟即可上手",
+        "content": "安装 CLI、完成一次认证，就能在终端、IDE、云端会话中即刻协作。"
       },
-      "sdk": {
-        "title": "Code I SDK",
-        "content": "将 Codex 嵌入 GitHub Actions 和内部工具，自动化 CI/CD、代码维护、问题管理和其他流程。"
+      "cheap": {
+        "title": "成本更低",
+        "content": "相比其他第三方服务便宜得多，扩展实验时不用担心突增账单。"
       }
     }
   },
   "useCases": {
-    "title": "如何使用",
+    "title": "Code I 在你编程的每个地方运行",
     "step1": {
-      "title": "在终端或IDE中设置",
-      "description": "下载Codex CLI或IDE扩展并订阅以获取API密钥。"
+      "title": "安装工具包",
+      "description": "准备好 Node.js 18+，安装 Codex CLI，并在数秒内绑定 API Key。"
     },
     "step2": {
-      "title": "进入代码仓库",
-      "description": "在本地仓库中打开IDE或终端并启动Codex。"
+      "title": "留在熟悉的编辑器",
+      "description": "在 VS Code 或 Cursor 中唤起 Code I，实时聊天、编辑并内联预览改动。"
     },
     "step3": {
-      "title": "运行第一个任务",
-      "description": "与Codex讨论仓库情况，或要求它实现新功能或修复错误。"
+      "title": "自带常用工具",
+      "description": "继续使用 JetBrains、Neovim 等 IDE 的原生扩展，或通过 MCP 服务器连接你的工作流。"
     },
     "step4": {
-      "title": "让Codex工作",
-      "description": "Codex会独立浏览你的仓库来执行任务。接受它的代码更改，或继续进行直到任务完成。"
-    }
-  },
-  "plans": {
-    "lite": {
-      "name": "基础版",
-      "price": 9.9,
-      "quota_tokens": 10000000,
-      "description": "适合学生和爱好者。提供约 1000 万 tokens/月的入门级套餐。"
-    },
-    "pro": {
-      "name": "专业版",
-      "price": 39,
-      "quota_tokens": 50000000,
-      "description": "个人开发者的最佳选择。提供约 5000 万 tokens/月，满足日常开发需求。"
-    },
-    "team": {
-      "name": "团队版",
-      "price": 99,
-      "quota_tokens": 200000000,
-      "description": "为初创公司和小型团队设计。提供约 2 亿 tokens/月，更高性价比。"
+      "title": "交付第一个任务",
+      "description": "让 Code I 探索仓库、生成修复或功能，并在合并前审阅 diff。"
     }
   },
   "footer": {

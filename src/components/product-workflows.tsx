@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { GitPullRequest, MessageSquare, Code } from "lucide-react";
+import { Sparkles, Timer, Wallet } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ProductWorkflows() {
@@ -7,16 +7,19 @@ export default async function ProductWorkflows() {
 
   const workflows = [
     {
-      key: "codeReview",
-      icon: GitPullRequest
+      key: "powerful",
+      icon: Sparkles,
+      accent: "from-yellow-500/30 to-transparent"
     },
     {
-      key: "slackTasks",
-      icon: MessageSquare
+      key: "easy",
+      icon: Timer,
+      accent: "from-blue-500/30 to-transparent"
     },
     {
-      key: "sdk",
-      icon: Code
+      key: "cheap",
+      icon: Wallet,
+      accent: "from-emerald-500/30 to-transparent"
     }
   ];
 
@@ -33,15 +36,23 @@ export default async function ProductWorkflows() {
         {/* Workflow Cards Grid - Bottom */}
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflows.map((workflow) => (
-            <Card key={workflow.key} className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-[#f8f8f8] dark:bg-card border border-gray-200 dark:border-gray-800">
-              <CardHeader className="pb-0">
-                <workflow.icon className="w-5 h-5 mb-4 text-gray-600 dark:text-gray-400" />
-                <CardTitle className="text-xl font-semibold leading-tight text-gray-900 dark:text-gray-100">
+            <Card
+              key={workflow.key}
+              className="h-full border border-white/10 bg-background/60 shadow-lg shadow-black/5 transition-all duration-300 hover:-translate-y-1 hover:border-white/20"
+            >
+              <CardHeader className="pb-2">
+                <div className={`inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r ${workflow.accent} px-4 py-2`}>
+                  <workflow.icon className="w-5 h-5 text-foreground" />
+                  <span className="text-xs uppercase tracking-[0.2em] text-foreground/80">
+                    {t(`workflows.${workflow.key}.title`)}
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <CardTitle className="text-2xl font-semibold leading-tight text-foreground">
                   {t(`workflows.${workflow.key}.title`)}
                 </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <CardDescription className="leading-relaxed text-base text-gray-600 dark:text-gray-400">
+                <CardDescription className="leading-relaxed text-base text-muted-foreground">
                   {t(`workflows.${workflow.key}.content`)}
                 </CardDescription>
               </CardContent>

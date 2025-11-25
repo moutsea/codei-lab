@@ -27,6 +27,7 @@ const redisConfig = {
   ...(process.env.NODE_ENV === 'development' && {
     connectTimeout: 5000,
     commandTimeout: 3000,
+    tls: {}
   })
 };
 

@@ -2,46 +2,38 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import CodeBlock from "@/components/ui/codeblock";
 import { ArrowRight, Zap } from "lucide-react";
-
-const InstallNodeDiv = () => {
-    const t = useTranslations();
-    return (
-        <div>
-            <p>
-                {t('hero.installNodeJs')}{' '} <Link href="https://nodejs.org/" target="_blank" className="text-muted-foreground underline">Node.js 18+</Link>, {t('hero.thenRun')}:
-            </p>
-        </div>
-    );
-}
 
 export default function HeroSection() {
     const t = useTranslations();
     const locale = useLocale();
-    const codeSnippet = `npm install -g @openai/codex`;
+
 
     return (
         <div className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 section-themed">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-                {/* Left Column - Content */}
-                <div className="text-center md:text-left">
-                    <h1 className="text-5xl md:text-7xl font-medium text-foreground mb-6 tracking-tight">
-                        {t("hero.title")}
-                    </h1>
+            <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div className="space-y-10 text-center lg:text-left">
+                    <div className="inline-flex items-center justify-center lg:justify-start gap-3 rounded-full border border-white/10 px-5 py-2 text-sm text-muted-foreground">
+                        <span className="text-foreground font-semibold uppercase tracking-wide">CodeILab · {t("hero.cta")}</span>
+                    </div>
+                    <div className="space-y-6">
+                        <h1 className="text-5xl md:text-7xl font-medium text-foreground tracking-tight leading-tight">
+                            {t("hero.title")}
+                        </h1>
 
-                    <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl leading-relaxed">
-                        {t("hero.subtitle")}
-                    </p>
+                        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                            {t("hero.subtitle")}
+                        </p>
+                    </div>
 
-                    <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 mb-12">
+                    <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
                         <Button
                             variant="black"
                             size="lg"
-                            className="text-lg px-8 py-4 h-12 rounded-2xl transition-colors duration-200 button-themed"
+                            className="text-lg px-8 py-4 h-12 rounded-2xl transition-colors duration-200 button-themed flex items-center gap-2"
                             asChild
                         >
-                            <Link href={`/${locale}/docs`}>
+                            <Link href={`/${locale}/login`}>
                                 {t("hero.cta")} <Zap />
                             </Link>
                         </Button>
@@ -55,32 +47,22 @@ export default function HeroSection() {
                                 {t('pricingModal.upgrade')} <ArrowRight />
                             </Link>
                         </Button>
-
                     </div>
 
-                    <div className="mt-8">
-                        {InstallNodeDiv()}
-                        <div suppressHydrationWarning className="w-full max-w-2xl mt-4 px-4 sm:px-0">
-                            <div className="overflow-x-auto">
-                                <CodeBlock
-                                    code={codeSnippet}
-                                    lang="bash"
-                                />
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
-                {/* Right Column - Hero Image */}
-                <div className="flex items-center justify-center">
-                    <Image
-                        src="/hero.png"
-                        alt="Hero illustration showing Code I Lab features and capabilities"
-                        width={600}
-                        height={400}
-                        className="w-full h-auto max-w-lg md:max-w-xl object-contain"
-                        priority
-                    />
+                <div className="w-full">
+                    <div className="relative rounded-[32px] bg-background/40 p-6 shadow-2xl backdrop-blur">
+                        <Image
+                            src="/hero.png"
+                            alt="CodeILab hero illustration"
+                            width={800}
+                            height={600}
+                            className="w-full h-auto rounded-3xl object-cover"
+                            priority
+                        />
+                    </div>
                 </div>
             </div>
         </div>
