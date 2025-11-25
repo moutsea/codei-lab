@@ -12,8 +12,8 @@ export interface PlanWithPricing extends PlanSelect {
 
 // Plan cache keys
 export const planCacheKeys = {
-    plansByType: (type: string) => `codei:plans:by_type:${type}`,
-    frontpagePlans: () => 'codei:plans:frontpage',
+    plansByType: (type: string) => `${process.env.NODE_ENV}:codei:plans:by_type:${type}`,
+    frontpagePlans: () => `${process.env.NODE_ENV}:codei:plans:frontpage`,
 };
 
 export const getPlanFromDBById = async (planId: string): Promise<PlanSelect | null> => {

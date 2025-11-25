@@ -16,6 +16,7 @@ const redisConfig = {
   keepAlive: 30000,
   dropBufferSupport: false,
   retryDelayOnClusterDown: 300,
+  tls: {},
   // ✅ 补丁 1: 限制重连次数
   retryStrategy: (times: number) => {
     if (times > 5) {
@@ -26,8 +27,7 @@ const redisConfig = {
   },
   ...(process.env.NODE_ENV === 'development' && {
     connectTimeout: 5000,
-    commandTimeout: 3000,
-    tls: {}
+    commandTimeout: 3000
   })
 };
 
