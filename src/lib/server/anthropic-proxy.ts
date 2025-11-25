@@ -159,6 +159,8 @@ export async function createCodexProxy(
     }
 
     if (parseFloat(userData.quotaMonthlyUsed!) > parseFloat(userData.quota)) {
+      console.log("user quota used: ", userData.quotaMonthlyUsed);
+      console.log("user's total quota: ", userData.quota)
       return await codexUserLimitExceedResponse();
     }
     // return await codexTestStageResponse();
