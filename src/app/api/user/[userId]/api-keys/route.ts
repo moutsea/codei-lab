@@ -28,6 +28,7 @@ export async function GET(
     const subscriptionCycle = currentSubscription(new Date(userData.startDate!));
     const apiKeys = await getUserApiKeys(userId, subscriptionCycle);
 
+    // console.log(apiKeys);
     const responseData = {
       apiKeys: apiKeys.map(key => ({
         id: key.id,
@@ -37,13 +38,14 @@ export async function GET(
         lastUsedAt: key.lastUsedAt,
         month: subscriptionCycle,
         quota: key.quota,
-        tokensUsed: key.currentMonthUsage || 0,
-        remainingQuota: key.quota ? Math.max(0, parseInt(key.quota) - (key.currentMonthUsage || 0)) : null,
+        tokensUsed: key.currentMonthUsage,
+        remainingQuota: key.quota ? Math.max(0, parseFloat(key.quota) - (key.currentMonthUsage)) : null,
         expiredAt: key.expiredAt
       })),
       userId: userId
     };
 
+    // console.log(responseData);
     return NextResponse.json(responseData);
 
   } catch (error) {

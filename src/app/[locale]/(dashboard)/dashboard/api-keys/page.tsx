@@ -96,7 +96,7 @@ export default function ApiKeysPage() {
       const normalizedKeys: ApiKey[] = (data.apiKeys || []).map((key: any) => {
         // Work with dollar amounts directly
         const quota = key.quota ? parseFloat(key.quota) : null;
-        const quotaUsed = key.quotaUsed || 0;
+        const quotaUsed = key.tokensUsed || 0;
         return {
           id: key.id,
           name: key.name,
@@ -109,6 +109,9 @@ export default function ApiKeysPage() {
           expiredAt: key.expiredAt
         };
       });
+
+      console.log(normalizedKeys);
+
       setApiKeys(normalizedKeys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
