@@ -179,8 +179,8 @@ export function useUserData(options: UseUserDataOptions = {}) {
       setUsageData(null);
       setUserDetail(null);
       setTopUpRecord(null);
-      setHasFetchedOnce(false);
-      setLoadingState(true);
+      setLoadingState(false);
+      setHasFetchedOnce(true);
       return;
     }
 
