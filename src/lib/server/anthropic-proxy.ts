@@ -69,7 +69,7 @@ function calculateTotalTokens(
     const quota = inputPrice * totalInputTokens / 1000000.0 + inputPrice * totalCacheReadTokens / 10000000.0 + outputPrice * totalOutputTokens / 1000000.0;
 
     // test stage consume * 20
-    discount = 20;
+    // discount = 20;
 
     console.log(
       `Token calculation: model=${modelName}, input=${totalInputTokens}, output=${totalOutputTokens}, cache_read=${totalCacheReadTokens}, discount=${discount}, quota=${quota}`
@@ -168,8 +168,6 @@ export async function createCodexProxy(
     const baseUrl = process.env.CODEX_BASE_URL!;
     const model = process.env.CODEX_MODEL!;
 
-    // console.log("========model: ", model);
-
     let body;
     try {
       body = await request.json();
@@ -183,10 +181,8 @@ export async function createCodexProxy(
 
     const requestBody = {
       ...body,
-      model: model,
+      text: { verbosity: 'medium' }
     };
-
-    // console.log(requestBody);
 
     const targetUrl = originalUrl.replace(
       process.env.LOCAL_CODEX_API!,
