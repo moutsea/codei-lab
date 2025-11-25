@@ -2,6 +2,10 @@
 
 // Script to clear active non-recurring plans cache
 // Usage: node scripts/clear-cache.js
+const planCacheKeys = {
+  plansByType: (type) => `codei:plans:by_type:${type}`,
+  frontpagePlans: () => 'codei:plans:frontpage',
+};
 
 async function clearActivePlansCache() {
   if (!cache.isCacheEnabled()) {
@@ -12,9 +16,10 @@ async function clearActivePlansCache() {
   try {
 
     await Promise.all([
-      cache.delete(cacheKeys.allActivePlans()),
-      cache.delete(cacheKeys.activeNonRecurringPlans()),
-      cache.delete(cacheKeys.processedPlans())]
+      cache.delete(planCacheKeys.frontpagePlans()),
+      cache.delete(planCacheKeys.plansByType("extra")),
+      cache.delete(planCacheKeys.plansByType("pay")),
+      cache.delete(planCacheKeys.plansByType("renew"))]
     )
 
     console.log('✅ Successfully cleared active non-recurring plans cache');

@@ -147,6 +147,7 @@ export async function POST(request: NextRequest) {
 
     let sessionId, url;
 
+    // console.log("middle")
     if (type === 'extra' || type === 'renew') {
       let name: string = "";
 
@@ -161,7 +162,7 @@ export async function POST(request: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
         client_reference_id: userId,
-        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['wechat_pay'],
         line_items: [{
           price_data: {
             currency: currency,
@@ -200,7 +201,7 @@ export async function POST(request: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
         client_reference_id: userId,
-        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['wechat_pay'],
         line_items: [{
           price: priceId,
           quantity: 1,
@@ -264,7 +265,7 @@ export async function POST(request: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
         client_reference_id: userId,
-        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['wechat_pay'],
         line_items: [{
           price_data: {
             currency: currency,
@@ -304,7 +305,7 @@ export async function POST(request: NextRequest) {
       const session = await stripe.checkout.sessions.create({
         customer: customerId!,
         client_reference_id: userId,
-        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+        payment_method_types: currency == 'USD' ? ['link', 'card'] : ['wechat_pay'],
         line_items: [{
           price: priceId,
           quantity: 1,
@@ -340,7 +341,7 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       customer: customerId!,
       client_reference_id: userId,
-      payment_method_types: currency == 'USD' ? ['link', 'card'] : ['alipay', 'wechat_pay'],
+      payment_method_types: currency == 'USD' ? ['link', 'card'] : ['wechat_pay'],
       line_items: [{
         price_data: {
           currency: currency,
