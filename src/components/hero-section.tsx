@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap } from "lucide-react";
+import { HeroLoginButton } from "./hero-login-button";
 
 export default function HeroSection() {
     const t = useTranslations();
@@ -27,16 +28,9 @@ export default function HeroSection() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
-                        <Button
-                            variant="black"
-                            size="lg"
-                            className="text-lg px-8 py-4 h-12 rounded-2xl transition-colors duration-200 button-themed flex items-center gap-2"
-                            asChild
-                        >
-                            <Link href={`/${locale}/login`}>
-                                {t("hero.cta")} <Zap />
-                            </Link>
-                        </Button>
+                        <HeroLoginButton locale={locale} className="text-lg px-8 py-4 h-12 rounded-2xl mr-6">
+                            {t("hero.cta")} <Zap />
+                        </HeroLoginButton>
 
                         <Button
                             variant="link"
