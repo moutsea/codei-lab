@@ -151,9 +151,9 @@ export const addTokensToUsageService = async (
                 addTokensToDailyUsage(userId, date, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToMonthlyUserUsage(userId, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToMonthlyApiUsage(apiKey, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
-                addTokensToDailyApiUsage(apiKey, date, inputTokens, cachedTokens, outputTokens, quotaUsed),
+                addTokensToDailyApiUsage(apiKey, date, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 consumeTopUpQuota(userId, quotaUsed, tx),
-                updateApiKeyByKey(apiKey, { lastUsedAt: new Date() })
+                updateApiKeyByKey(apiKey, { lastUsedAt: new Date() }, tx)
             ]);
 
             console.log(`(Tx) All staged updates completed.`);
