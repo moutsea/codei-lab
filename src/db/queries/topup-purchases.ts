@@ -205,35 +205,49 @@ export async function deleteTopUpPurchasesByUserId(userId: string): Promise<TopU
 
 /**
  * Consume quota from the most recent active top-up purchase for a user
+ * Uses atomic update to prevent race conditions
  * @param userId - The user ID to consume quota from
  * @param quotaToConsume - The amount of quota to consume (number)
+ * @param dbInstance - Database instance (for transaction support)
  * @returns Promise<boolean> - true if quota was consumed, false if no active top-up found
  */
 export async function consumeTopUpQuota(userId: string, quotaToConsume: number, dbInstance: DbClient = db()): Promise<boolean> {
-    try {
-        // 获取最新的 active top-up 记录
-        const [topUp] = await getTopUpPurchasesByUserId(userId); // 解构取第一个元素
+    const now = new Date();
 
-        if (!topUp) {
-            // 没有找到 active top-up
-            return false;
-        }
+    // 1. 原子扣减 quota，并拿到更新后的值
+    const updatedRows = await dbInstance
+        .update(topUpPurchases)
+        .set({
+            // quota = GREATEST(quota - quotaToConsume, 0)
+            quota: sql`GREATEST(CAST(${topUpPurchases.quota} AS NUMERIC) - ${quotaToConsume}, 0)`,
+            updatedAt: new Date(),
+        })
+        .where(
+            and(
+                eq(topUpPurchases.userId, userId),
+                eq(topUpPurchases.status, "active"),
+                gte(topUpPurchases.endDate, now)
+            )
+        )
+        .returning({
+            id: topUpPurchases.id,
+            quota: topUpPurchases.quota,
+        });
 
-        const currentQuota = parseFloat(topUp.quota.toString()); // 确保 quota 是数字类型
+    const row = updatedRows[0];
 
-        if (currentQuota < quotaToConsume) {
-            await deleteTopUpPurchase(topUp.id, dbInstance);
-        } else {
-            const newQuota = Math.max(0, currentQuota - quotaToConsume); // 保证不为负数
-            await updateTopUpPurchase(topUp.id, {
-                quota: newQuota.toString(),
-                status: topUp.status
-            }, dbInstance);
-        }
-
-        return true;
-    } catch (error) {
-        console.error('Error consuming top-up quota:', error);
-        throw error;
+    // 没有任何行被更新 => 没有 active top-up 或已过期
+    if (!row) {
+        return false;
     }
+
+    // 2. 如果用完了额度，可以顺手删掉这条记录（可选逻辑）
+    const remainingQuota = parseFloat(row.quota.toString());
+    if (remainingQuota === 0) {
+        await dbInstance
+            .delete(topUpPurchases)
+            .where(eq(topUpPurchases.id, row.id));
+    }
+
+    return true;
 }
