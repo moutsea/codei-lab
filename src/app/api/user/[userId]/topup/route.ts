@@ -18,6 +18,7 @@ export async function GET(
     // Get user's top-up record
     const topUpRecord = await getUserTopUpRecord(userId);
 
+    // console.log(topUpRecord);
     return NextResponse.json({
       success: true,
       data: topUpRecord

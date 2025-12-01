@@ -142,21 +142,29 @@ export const addTokensToUsageService = async (
             // 在事务内部，所有数据库操作都使用 `tx` 对象
             // 并将其传递给我们的底层服务函数
 
+            // First, try to consume from top-up quota
+            const topUpConsumed = await consumeTopUpQuota(userId, quotaUsed, tx);
+
+            // Execute remaining operations in parallel
             const [
-                , // addTokensToDailyUsage 的返回值我们不关心，用逗号占位
-                monthlyUsage,
+                , // addTokensToDailyUsage result (not used)
                 apiUsage,
-                // updateApiKeyByKey 的返回值我们也不关心
+                , // addTokensToDailyApiUsage result (not used)
+                , // updateApiKeyByKey result (not used)
             ] = await Promise.all([
                 addTokensToDailyUsage(userId, date, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
-                addTokensToMonthlyUserUsage(userId, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToMonthlyApiUsage(apiKey, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
                 addTokensToDailyApiUsage(apiKey, date, inputTokens, cachedTokens, outputTokens, quotaUsed, tx),
-                consumeTopUpQuota(userId, quotaUsed, tx),
                 updateApiKeyByKey(apiKey, { lastUsedAt: new Date() }, tx)
             ]);
 
-            console.log(`(Tx) All staged updates completed.`);
+            // Only add monthly user usage if top-up quota was NOT consumed
+            let monthlyUsage = null;
+            if (!topUpConsumed) {
+                monthlyUsage = await addTokensToMonthlyUserUsage(userId, month, inputTokens, cachedTokens, outputTokens, quotaUsed, tx);
+            }
+
+            console.log(`(Tx) All staged updates completed. Top-up consumed: ${topUpConsumed}`);
             return {
                 committedMonthlyUsage: monthlyUsage,
                 committedApiUsage: apiUsage!
@@ -168,7 +176,10 @@ export const addTokensToUsageService = async (
         console.log(`✅ Transaction committed for user ${userId}.`);
 
         // 更新缓存对象
-        userData.quotaMonthlyUsed = committedMonthlyUsage.quotaUsed?.toString() || "0";
+        // If committedMonthlyUsage is null (top-up was consumed), keep the current quotaMonthlyUsed value
+        if (committedMonthlyUsage) {
+            userData.quotaMonthlyUsed = committedMonthlyUsage.quotaUsed?.toString() || "0";
+        }
         apiData.apiMonthlyUsed = committedApiUsage.inputTokens + committedApiUsage.cachedTokens + committedApiUsage.outputTokens;
 
         await createOrUpdateUserDetailCache(userId, userData);

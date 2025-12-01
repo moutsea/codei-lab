@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { PlanWithPricing } from "@/types/plan";
+import { useUserData } from "@/hooks/useUserData";
 
 interface TokenStats {
   total: number;
@@ -57,8 +58,9 @@ export default function Dashboard() {
     membershipLevel,
     loading,
     fetchDailyUsageData
-  } = useDashboardUser();
+  } = useUserData();
 
+  // console.log(userDetail);
   const {
     extraPlans,
     renewPlans,
@@ -432,6 +434,8 @@ export default function Dashboard() {
       : plan.name.toLowerCase().includes('pro'))
   ) || [];
 
+  // console.log(userDetail);
+
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
 
@@ -629,6 +633,8 @@ export default function Dashboard() {
 
   // console.log(usageData);
   // console.log(dailyUsageData);
+
+  // console.log("userdetail top up quota=========", userDetail?.topUpQuota);
 
   return (
     <DashboardLayout
