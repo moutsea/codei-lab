@@ -149,6 +149,33 @@
       "description": "Code I에게 리포지토리를 탐색하고 수정이나 기능을 생성하도록 지시한 뒤 병합 전에 diff를 검토하세요."
     }
   },
+  "caseStudy": {
+    "badge": "사용 사례",
+    "title": "Code I가 한 세션으로 랜딩 페이지를 리팩터링했습니다",
+    "subtitle": "단 한 번의 CLI 명령으로 홈페이지를 점검·리팩터링·동기화했습니다. 수동 편집은 전혀 필요하지 않았습니다.",
+    "benefits": {
+      "rewrite": {
+        "title": "카피·레이아웃 전면 재작성",
+        "description": "Code I가 히어로, 섹션, CTA를 일관된 톤으로 새로 구성했습니다."
+      },
+      "autonomy": {
+        "title": "자율 실행",
+        "description": "Code I가 기획, 수정, 린트, 저장을 처리하며 최소한의 인력만 필요."
+      },
+      "handoff": {
+        "title": "Git 준비 완료",
+        "description": "즉시 리뷰·머지할 수 있는 깔끔한 diff를 제공합니다."
+      }
+    },
+    "before": {
+      "label": "개편 전",
+      "description": "원래 디자인, 간격 불일치 및 구식 색상 조합."
+    },
+    "after": {
+      "label": "개편 후",
+      "description": "세련된 디자인, 조화로운 색상과 현대적인 시각미."
+    }
+  },
   "footer": {
     "description": "개발자를 위한 저렴한 OpenAI Codex API 접근. Code i Lab은 비용 효율적인 코드 생성 도구를 제공하여 개발 워크플로우를 가속화하고 생산성을 향상시킵니다.",
     "product": {
@@ -443,6 +470,8 @@
       "threeMonths": "3개월",
       "sixMonths": "6개월 (반년)",
       "oneYear": "1년",
+      "customDate": "사용자 지정 날짜",
+      "selectCustomDate": "사용자 지정 날짜 선택",
       "periodDescription": "API 키가 만료되어야 하는 시기를 선택하세요. 키는 선택한 날짜의 00:00:00에 만료됩니다.",
       "editTitle": "API 키 편집",
       "editDescription": "API 키 설정 업데이트",

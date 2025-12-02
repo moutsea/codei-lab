@@ -149,6 +149,33 @@
       "description": "Ask Code I to explore a repo, generate a fix or feature, and review the diff before you merge."
     }
   },
+  "caseStudy": {
+    "badge": "USE CASE",
+    "title": "Code I refactored a landing page in one guided session",
+    "subtitle": "One CLI prompt audited, refactored, and synced the homepage — no manual edits required.",
+    "benefits": {
+      "rewrite": {
+        "title": "Full copy & layout rewrite",
+        "description": "Code I rewrote the hero, sections, and CTAs with a cohesive tone that sells value."
+      },
+      "autonomy": {
+        "title": "Autonomous execution",
+        "description": "Code I handled planning, editing, linting, and saving changes with minimal human effort."
+      },
+      "handoff": {
+        "title": "Git-ready handoff",
+        "description": "It outputs a clean diff so you can review, merge, or iterate instantly."
+      }
+    },
+    "before": {
+      "label": "Before",
+      "description": "Original design with inconsistent spacing and outdated color scheme."
+    },
+    "after": {
+      "label": "After",
+      "description": "Refined design with harmonious colors and modern visual aesthetics."
+    }
+  },
   "footer": {
     "description": "Affordable OpenAI Codex API access for developers. Code i Lab provides cost-effective code generation tools to accelerate your development workflow and boost productivity.",
     "product": {
@@ -443,6 +470,8 @@
       "threeMonths": "3 Months",
       "sixMonths": "6 Months (Half Year)",
       "oneYear": "1 Year",
+      "customDate": "Custom Date",
+      "selectCustomDate": "Select Custom Date",
       "periodDescription": "Choose when the API key should expire. Keys will expire at 00:00:00 on the selected date.",
       "editTitle": "Edit API Key",
       "editDescription": "Update your API key settings",

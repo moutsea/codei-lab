@@ -149,6 +149,33 @@
       "description": "让 Code I 探索仓库、生成修复或功能，并在合并前审阅 diff。"
     }
   },
+  "caseStudy": {
+    "badge": "使用案例",
+    "title": "使用 Code I 一次对话，重构网站落地页",
+    "subtitle": "一次 CLI 指令完成审查、重构与同步首页，全程无需手动改动。",
+    "benefits": {
+      "rewrite": {
+        "title": "文案 + 布局全量重写",
+        "description": "Code I 重写 Hero、章节与 CTA，以统一叙事凸显价值。"
+      },
+      "autonomy": {
+        "title": "自主执行",
+        "description": "Code I 负责规划、编辑、校验与保存，几乎无需人工干预。"
+      },
+      "handoff": {
+        "title": "Git 级交付",
+        "description": "输出清晰 diff，随时 Review、合并或继续迭代。"
+      }
+    },
+    "before": {
+      "label": "改版前",
+      "description": "原始设计，间距不一、配色过时。"
+    },
+    "after": {
+      "label": "改版后",
+      "description": "精致设计，色彩和谐、视觉现代。"
+    }
+  },
   "footer": {
     "description": "为开发者提供经济实惠的 OpenAI Codex API 访问。Code i Lab 提供高性价比的代码生成工具，加速您的开发工作流程，提升开发效率。",
     "product": {
@@ -450,6 +477,8 @@
       "threeMonths": "3 个月",
       "sixMonths": "6 个月（半年）",
       "oneYear": "1 年",
+      "customDate": "自定义日期",
+      "selectCustomDate": "选择自定义日期",
       "periodDescription": "选择 API 密钥的过期时间。密钥将在选定日期的 00:00:00 自动过期。",
       "editTitle": "编辑 API 密钥",
       "editDescription": "更新您的 API 密钥设置",

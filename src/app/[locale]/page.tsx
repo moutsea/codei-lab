@@ -7,6 +7,7 @@ import TokenPricing from "@/components/token-pricing";
 import FAQ from "@/components/faq";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import CaseStudyShowcase from "@/components/case-study-showcase";
 
 export default function Home() {
     return (
@@ -21,6 +22,8 @@ export default function Home() {
             {/* Product Workflows */}
             <ProductWorkflows />
 
+            {/* Case Study */}
+            <CaseStudyShowcase />
             {/* Pricing */}
             <section id="pricing">
                 <Pricing />

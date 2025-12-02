@@ -149,6 +149,33 @@
       "description": "Demandez à Code I d'explorer un dépôt, de générer une correction ou une fonctionnalité, puis de relire le diff avant la fusion."
     }
   },
+  "caseStudy": {
+    "badge": "CAS D'USAGE",
+    "title": "Code I a refactorisé une landing page en une session guidée",
+    "subtitle": "Une seule commande CLI a audité, refactorisé et synchronisé la page d'accueil — aucune modification manuelle.",
+    "benefits": {
+      "rewrite": {
+        "title": "Texte + layout réécrits",
+        "description": "Code I a réécrit le hero, les sections et les CTA avec un ton cohérent qui vend la valeur."
+      },
+      "autonomy": {
+        "title": "Exécution autonome",
+        "description": "Code I a géré planification, édition, lint et sauvegarde avec un minimum d'effort humain."
+      },
+      "handoff": {
+        "title": "Remise prête pour Git",
+        "description": "Il produit un diff propre pour relire, fusionner ou itérer immédiatement."
+      }
+    },
+    "before": {
+      "label": "Avant",
+      "description": "Design d'origine avec espacement irrégulier et palette de couleurs désuète."
+    },
+    "after": {
+      "label": "Après",
+      "description": "Design raffiné avec couleurs harmonieuses et esthétique visuelle moderne."
+    }
+  },
   "footer": {
     "description": "Accès API abordable à OpenAI Codex pour les développeurs. Code i Lab fournit des outils de génération de code rentables pour accélérer votre flux de travail de développement et augmenter votre productivité.",
     "product": {
@@ -443,6 +470,8 @@
       "threeMonths": "3 Mois",
       "sixMonths": "6 Mois (Six Mois)",
       "oneYear": "1 An",
+      "customDate": "Date personnalisée",
+      "selectCustomDate": "Sélectionner une date personnalisée",
       "periodDescription": "Choisissez quand la clé API devrait expirer. Les clés expireront à 00:00:00 à la date sélectionnée.",
       "editTitle": "Modifier la Clé API",
       "editDescription": "Mettre à jour les paramètres de votre clé API",
