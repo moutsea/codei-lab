@@ -154,14 +154,18 @@ export async function createCodexProxy(
       return await codexApikey401Response();
     }
 
-    if (!userData.active) {
-      return await codexUserSubscriptionInvalidResponse();
-    }
+    if (userData.topUpExpred && new Date(userData.topUpExpred) > new Date() && parseFloat(userData.topUpQuota || "0") > 0) {
+      console.log("use top up quota: ", userData.topUpQuota, userData.topUpExpred);
+    } else {
+      if (!userData.active) {
+        return await codexUserSubscriptionInvalidResponse();
+      }
 
-    if (parseFloat(userData.quotaMonthlyUsed!) > parseFloat(userData.quota)) {
-      console.log("user quota used: ", userData.quotaMonthlyUsed);
-      console.log("user's total quota: ", userData.quota)
-      return await codexUserLimitExceedResponse();
+      if (parseFloat(userData.quotaMonthlyUsed!) > parseFloat(userData.quota)) {
+        // console.log("user quota used: ", userData.quotaMonthlyUsed);
+        // console.log("user's total quota: ", userData.quota)
+        return await codexUserLimitExceedResponse();
+      }
     }
     // return await codexTestStageResponse();
 
