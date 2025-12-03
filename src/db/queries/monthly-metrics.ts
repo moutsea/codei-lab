@@ -120,7 +120,7 @@ export async function getMonthlyMetrics(months: number = 12): Promise<MonthlyMet
         inputTokens: row.inputTokens,
         cachedTokens: row.cachedTokens,
         outputTokens: row.outputTokens,
-        totalTokens: row.inputTokens + row.cachedTokens + row.outputTokens
+        totalTokens: Number(row.inputTokens) + Number(row.cachedTokens) + Number(row.outputTokens)
       }
     ]));
     const subscriptionsMap = new Map(subscriptionsResult.map(row => [row.month, row.count]));

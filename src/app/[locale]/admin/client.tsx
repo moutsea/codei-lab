@@ -127,6 +127,9 @@ export function AdminDashboardClient() {
     transformedMonthlyMetrics = [];
   }
 
+
+  // console.log(transformedMonthlyMetrics);
+
   // If current month is not included, add it with zero values
   if (!hasCurrentMonth) {
     transformedMonthlyMetrics = [
@@ -339,12 +342,7 @@ export function AdminDashboardClient() {
                             color: '#f59e0b', // amber
                             yAxis: 'left',
                             formatter: (value: number) => {
-                              if (value >= 1000000) {
-                                return `${(value / 1000000).toFixed(1)}M`;
-                              } else if (value >= 1000) {
-                                return `${(value / 1000).toFixed(1)}K`;
-                              }
-                              return value.toLocaleString();
+                              return formatTokens(value);
                             }
                           },
                           {
