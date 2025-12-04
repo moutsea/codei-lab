@@ -302,6 +302,7 @@
   },
   "sidebar": {
     "dashboard": "ダッシュボード",
+    "tutorial": "チュートリアル",
     "apiKeys": "APIキー",
     "profile": "プロフィール",
     "billing": "請求",
@@ -514,29 +515,26 @@
   },
   "tutorial": {
     "title": "サービスの利用開始",
-    "subtitle": "AI搭載開発ツールの使用を開始するための5つの簡単なステップに従ってください",
+    "subtitle": "AI搭載開発ツールの使用を開始するための4つの簡単なステップに従ってください",
     "steps": {
       "title": "セットアップ手順"
     },
     "step1": {
       "title": "クイックスタートガイド",
-      "description": "Node.js 18.0.0以降をインストールし、OpenAI Codex CLIツールをグローバルにインストールしてください。数分でセットアップ完了し、OpenAIのCodex APIにアクセスできます。\n\n前提条件:\n• Node.js - Node.jsバージョン18.0.0以降をインストール\n  node --version (v18.0.0以降)\n• OpenAI Codex CLI - OpenAI Codex CLIツールをグローバルにインストール\n  npm install -g @openai/codex"
-    },
-    "step2": {
-      "title": "APIキーでテスト",
-      "description": "テストAPIキーを使用してすべてが正しく動作することを確認し、最初のAPI呼び出し方法を学習"
+      "description": "Node.js 18.0.0 以上と OpenAI Codex CLI ツールをグローバルにインストールしてください。\n\n前提条件:\n• Node.js - Node.js 18.0.0 以上をインストール\n  node --version (v18.0.0 以上)\n• OpenAI Codex CLI - OpenAI Codex CLI をグローバルにインストール\n  npm install -g @openai/codex"
     },
     "step3": {
       "title": "プランに購読",
-      "description": "ニーズに最適な購読プランを選択し、支払いプロセスを完了して全機能をアンロック"
+      "description": "ニーズに合ったプランを選び、支払いを完了して全機能を解放します",
+      "button": "今すぐ購読"
     },
     "step4": {
       "title": "APIを作成",
-      "description": "APIキーを生成し、サービスを開発ワークフローに統合する方法を学習"
+      "description": "API Keys ページで API キーを生成します"
     },
     "step5": {
-      "title": "構築を開始",
-      "description": "AIツールを使用して開発プロセスを加速し、新しい可能性を解き放つ"
+      "title": "利用開始",
+      "description": "AI ツールで最初のタスクを出荷しましょう"
     },
     "help": {
       "title": "ヘルプが必要ですか？",

@@ -302,6 +302,7 @@
   },
   "sidebar": {
     "dashboard": "Tableau de Bord",
+    "tutorial": "Tutoriel",
     "apiKeys": "Clés API",
     "profile": "Profil",
     "billing": "Facturation",
@@ -514,29 +515,26 @@
   },
   "tutorial": {
     "title": "Commencer à Utiliser Notre Service",
-    "subtitle": "Suivez ces 5 étapes simples pour commencer à utiliser nos outils de développement alimentés par l'IA",
+    "subtitle": "Suivez ces 4 étapes simples pour commencer à utiliser nos outils de développement alimentés par l'IA",
     "steps": {
       "title": "Étapes de Configuration"
     },
     "step1": {
-      "title": "Guide de Démarrage Rapide",
-      "description": "Installez Node.js 18.0.0 ou supérieure et l'outil CLI OpenAI Codex globalement. Commencez en quelques minutes seulement pour accéder à l'API Codex d'OpenAI.\n\nPrérequis :\n• Node.js - Installez Node.js version 18.0.0 ou supérieure\n  node --version (v18.0.0 ou supérieure)\n• OpenAI Codex CLI - Installez l'outil CLI OpenAI Codex globalement\n  npm install -g @openai/codex"
-    },
-    "step2": {
-      "title": "Tester avec la Clé API",
-      "description": "Utilisez notre clé API de test pour vérifier que tout fonctionne correctement et apprenez à faire votre premier appel API"
+      "title": "Guide de démarrage rapide",
+      "description": "Installez Node.js 18.0.0 ou supérieur et l'outil OpenAI Codex CLI globalement.\n\nPrérequis :\n• Node.js - Installez Node.js version 18.0.0 ou supérieure\n  node --version (v18.0.0 ou supérieur)\n• OpenAI Codex CLI - Installez l'outil OpenAI Codex CLI globalement\n  npm install -g @openai/codex"
     },
     "step3": {
-      "title": "S'abonner à un Plan",
-      "description": "Choisissez le plan d'abonnement qui correspond le mieux à vos besoins et complétez le processus de paiement pour débloquer toutes les fonctionnalités"
+      "title": "S'abonner à un plan",
+      "description": "Choisissez la formule qui correspond à vos besoins et finalisez le paiement pour débloquer toutes les fonctionnalités",
+      "button": "Souscrire"
     },
     "step4": {
-      "title": "Créer Votre API",
-      "description": "Générez vos clés API et apprenez à intégrer nos services dans votre flux de travail de développement"
+      "title": "Créer votre API",
+      "description": "Générez vos clés API depuis la page API Keys"
     },
     "step5": {
-      "title": "Commencer à Construire",
-      "description": "Commencez à utiliser nos outils IA pour accélérer votre processus de développement et débloquer de nouvelles possibilités"
+      "title": "Commencer à utiliser",
+      "description": "Utilisez notre outil IA pour livrer votre première tâche"
     },
     "help": {
       "title": "Besoin d'Aide ?",

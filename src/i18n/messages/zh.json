@@ -309,6 +309,7 @@
   },
   "sidebar": {
     "dashboard": "控制台",
+    "tutorial": "教程",
     "apiKeys": "API 密钥",
     "profile": "个人资料",
     "billing": "账单",
@@ -521,29 +522,26 @@
   },
   "tutorial": {
     "title": "开始使用我们的服务",
-    "subtitle": "按照这5个简单步骤开始使用我们的AI驱动开发工具",
+    "subtitle": "按照这4个简单步骤开始使用我们的AI驱动开发工具",
     "steps": {
       "title": "设置步骤"
     },
     "step1": {
       "title": "快速入门指南",
-      "description": "安装 Node.js 18.0.0 或更高版本和 OpenAI Codex CLI 工具，全局安装。只需几分钟即可开始使用 OpenAI 的 Codex API。\n\n先决条件：\n• Node.js - 安装 Node.js version 18.0.0 或更高版本\n  node --version (v18.0.0 或更高)\n• OpenAI Codex CLI - 全局安装 OpenAI Codex CLI 工具\n  npm install -g @openai/codex"
-    },
-    "step2": {
-      "title": "使用测试API密钥测试",
-      "description": "使用我们的测试API密钥验证一切正常工作，并学习如何进行第一次API调用"
+      "description": "全局安装 Node.js 18.0.0 以上版本和 OpenAI Codex CLI 工具。\n\n前置条件：\n• Node.js - 安装 Node.js 18.0.0 或更高版本\n  node --version (v18.0.0 或更高)\n• OpenAI Codex CLI - 全局安装 OpenAI Codex CLI 工具\n  npm install -g @openai/codex"
     },
     "step3": {
       "title": "订阅计划",
-      "description": "选择最适合您需求的订阅计划并完成付款流程以解锁完整功能"
+      "description": "选择最适合你需求的订阅计划并完成付款流程以解锁全部功能",
+      "button": "立即订阅"
     },
     "step4": {
       "title": "创建您的API",
-      "description": "生成您的API密钥并学习如何将我们的服务集成到您的开发工作流程中"
+      "description": "在 API Keys 页面生成你的 API 密钥"
     },
     "step5": {
-      "title": "开始构建",
-      "description": "开始使用我们的AI工具加速您的开发过程并解锁新的可能性"
+      "title": "开始使用",
+      "description": "使用我们的 AI 工具完成你的第一个任务"
     },
     "help": {
       "title": "需要帮助？",

@@ -302,6 +302,7 @@
   },
   "sidebar": {
     "dashboard": "Dashboard",
+    "tutorial": "Tutorial",
     "apiKeys": "API Keys",
     "profile": "Profile",
     "billing": "Billing",
@@ -514,29 +515,26 @@
   },
   "tutorial": {
     "title": "Getting Started with Our Service",
-    "subtitle": "Follow these 5 simple steps to start using our AI-powered development tools",
+    "subtitle": "Follow these 4 simple steps to start using our AI-powered development tools",
     "steps": {
       "title": "Setup Steps"
     },
     "step1": {
       "title": "Quick Start Guide",
-      "description": "Install Node.js 18.0.0 or higher and OpenAI Codex CLI tool globally. Get up and running in just a few minutes to access OpenAI's Codex API.\n\nPrerequisites:\n• Node.js - Install Node.js version 18.0.0 or higher\n  node --version (v18.0.0 or higher)\n• OpenAI Codex CLI - Install OpenAI Codex CLI tool globally\n  npm install -g @openai/codex"
-    },
-    "step2": {
-      "title": "Test with API Key",
-      "description": "Use our test API key to verify everything works correctly and learn how to make your first API call"
+      "description": "Install Node.js 18.0.0 or higher and OpenAI Codex CLI tool globally.\n\nPrerequisites:\n• Node.js - Install Node.js version 18.0.0 or higher\n  node --version (v18.0.0 or higher)\n• OpenAI Codex CLI - Install OpenAI Codex CLI tool globally\n  npm install -g @openai/codex"
     },
     "step3": {
       "title": "Subscribe to a Plan",
-      "description": "Choose the subscription plan that best fits your needs and complete the payment process to unlock full features"
+      "description": "Choose the subscription plan that best fits your needs and complete the payment process to unlock full features",
+      "button": "Subscribe"
     },
     "step4": {
       "title": "Create Your API",
-      "description": "Generate your API keys and learn how to integrate our services into your development workflow"
+      "description": "Generate your API keys in the API Keys page"
     },
     "step5": {
-      "title": "Start Building",
-      "description": "Begin using our AI tools to accelerate your development process and unlock new possibilities"
+      "title": "Start Using",
+      "description": "Use our AI tool to ship your first task"
     },
     "help": {
       "title": "Need Help?",

@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Calendar, BarChart3, Plus } from "lucide-react";
+import { Calendar, BarChart3, Plus, BookOpen } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DailyUsageChart } from "@/components/ui/daily-usage-chart";
@@ -100,6 +100,7 @@ export default function Dashboard() {
   const [showTopUpDialog, setShowTopUpDialog] = useState(false);
   const [showRenewDialog, setShowRenewDialog] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [showTutorialDialog, setShowTutorialDialog] = useState(false);
   const [topUpPlanId, setTopUpPlanId] = useState<string | null>(null);
   const [renewPlanId, setRenewPlanId] = useState<string | null>(null);
   const [upgradePlanId, setUpgradePlanId] = useState<string | null>(null);
@@ -436,6 +437,19 @@ export default function Dashboard() {
 
   // console.log(userDetail);
 
+  const TutorialDialog = () => {
+    return (
+      <Dialog open={showTutorialDialog} onOpenChange={setShowTutorialDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="hidden">
+             <DialogTitle>{t("tutorial")}</DialogTitle>
+          </DialogHeader>
+          <Tutorial />
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   const TopUpDialog = () => {
     const dialogT = useTranslations('sidebar.topUpDialog');
 
@@ -644,8 +658,14 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto flex flex-col">
 
         {/* UTC and Data Delay Notice */}
-        <div className="text-md text-muted-foreground mb-4">
-          {t("utcNotice")}
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-md text-muted-foreground">
+            {t("utcNotice")}
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setShowTutorialDialog(true)}>
+            <BookOpen className="w-4 h-4 mr-2" />
+            {t("tutorial") || "Tutorial"}
+          </Button>
         </div>
 
         {/* Monthly Quota, Usage, and Upgrade Button */}
@@ -767,6 +787,7 @@ export default function Dashboard() {
       <TopUpDialog />
       <RenewDialog />
       <UpgradeDialog />
+      <TutorialDialog />
     </DashboardLayout>
   );
 }
