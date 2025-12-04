@@ -440,11 +440,13 @@ export default function Dashboard() {
   const TutorialDialog = () => {
     return (
       <Dialog open={showTutorialDialog} onOpenChange={setShowTutorialDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="!max-w-[75vw] w-[75vw] h-[85vh] flex flex-col p-0 overflow-hidden">
           <DialogHeader className="hidden">
              <DialogTitle>{t("tutorial")}</DialogTitle>
           </DialogHeader>
-          <Tutorial />
+          <div className="flex-1 overflow-y-auto p-8">
+            <Tutorial />
+          </div>
         </DialogContent>
       </Dialog>
     );
@@ -662,7 +664,7 @@ export default function Dashboard() {
           <div className="text-md text-muted-foreground">
             {t("utcNotice")}
           </div>
-          <Button variant="outline" size="sm" onClick={() => setShowTutorialDialog(true)}>
+          <Button variant="default" size="sm" onClick={() => setShowTutorialDialog(true)} className="shadow-md">
             <BookOpen className="w-4 h-4 mr-2" />
             {t("tutorial") || "Tutorial"}
           </Button>
