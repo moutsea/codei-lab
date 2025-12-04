@@ -199,7 +199,13 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
       topUpExpred: topUpPurchases.endDate
     })
     .from(topUpPurchases)
-    .where(eq(topUpPurchases.userId, userId))
+    .where(
+      and(
+        eq(topUpPurchases.userId, userId),
+        eq(topUpPurchases.status, "active"),
+        gt(topUpPurchases.endDate, sql`NOW()`),
+      )
+    )
     .orderBy(desc(topUpPurchases.createdAt))
     .limit(1)
     .as("topUpRecord");
