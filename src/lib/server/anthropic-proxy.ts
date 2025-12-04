@@ -316,7 +316,7 @@ export async function createCodexProxy(
           startHeartbeat();
         }
 
-        const parseSSELines = (text: string) => {
+        const parseSSELines = async (text: string) => {
           buffer += text;
           let newlineIdx: number;
 
@@ -338,7 +338,9 @@ export async function createCodexProxy(
               const usage =
                 obj.usage || (obj.response && obj.response.usage) || null;
               if (usage) {
-                latestUsage = usage;
+                // latestUsage = usage;
+                const totalTokens = calculateTotalTokens(usage);
+                await addTokensToUsageService(apiKey, apiData, userData.userId, currentDate(), currentSubscription(new Date(userData.startDate!)), userData, totalTokens.totalInputTokens, totalTokens.totalCacheReadTokens, totalTokens.totalOutputTokens, totalTokens.quota);
               }
             } catch (e) {
               console.warn('Skipping malformed data line:', line, e);
