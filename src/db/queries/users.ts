@@ -168,7 +168,16 @@ export async function deleteUserById(id: string): Promise<UserSelect | null> {
   return user || null;
 }
 
-
+export const periodTagPg = (startDateCol: any) => sql<string>`
+  to_char(${startDateCol}, 'YYYY-MM')
+  || '-'
+  || (
+    (
+      extract(year from age(current_date, ${startDateCol}))::int * 12
+      + extract(month from age(current_date, ${startDateCol}))::int
+    ) + 1
+  )::text
+`;
 
 // ========== User Cache Data Functions ==========
 
@@ -235,7 +244,11 @@ export async function getUserDetailById(userId: string): Promise<UserDetail | nu
       gt(subscriptions.currentPeriodEnd, sql`NOW()`),
     ))
     .leftJoin(plans, eq(subscriptions.planId, plans.id))
-    .leftJoin(userLastSubscription, eq(users.id, userLastSubscription.userId))
+    .leftJoin(userLastSubscription, and(
+      eq(users.id, userLastSubscription.userId),
+      eq(periodTagPg(subscriptions.startDate), userLastSubscription.month)
+    )
+    )
     .leftJoin(topUpRecord, eq(users.id, topUpRecord.userId))
     .where(eq(users.id, userId))
     .orderBy(desc(subscriptions.currentPeriodEnd))
